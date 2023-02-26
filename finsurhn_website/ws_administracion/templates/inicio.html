@@ -1,0 +1,793 @@
+{% extends 'base_website.html' %}
+{% load static %}
+
+{% block title %} Finsur {% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/custom/website/inicio.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom/website/inicio_tile_view.css' %}">
+{% endblock style %}
+
+{% block contenido %}
+
+{% if galeria_empresa %}
+    <div class="color_azulDegradado">
+        <div id="carousel_page" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+                {% for ga in galeria_empresa %}
+                    <li data-target="#carousel_page" data-slide-to="{{forloop.counter0}}" {% if forloop.counter0 == 0 %} class="active" {% endif %} ></li>
+                {% empty %}
+                    <li data-target="#carousel_page" data-slide-to="0" class="active"></li>
+                {% endfor %}
+            </ol>
+            <div class="carousel-inner" style="padding-top:40px; padding-bottom:60px;">
+                {% for g in galeria_empresa %}
+                    {% if g.estado %}
+                        {% if forloop.counter == 1 %}
+                            <div class="carousel-item active">
+                        {% else %}
+                            <div class="carousel-item">
+                        {% endif %}
+                            <div class="container">
+                                <div class="row justify-content-center align-items-center text-center no-gutters flex-column-reverse flex-lg-row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6" style="padding-right:15px; padding-top:20px;">
+                                        {{g.contenido|safe|linebreaksbr}}
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <img id="carousel_img" src="{{g.imagen.url}}" alt="Generic placeholder image" style="padding-left:15px; padding-right:15px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <a class="carousel-control-prev justify-content-start pl-4" href="#carousel_page" role="button" data-slide="prev" style="width:60px;">
+                <i class="bi bi-arrow-left-circle"></i>
+            </a>
+            <a class="carousel-control-next justify-content-end pr-4" href="#carousel_page" role="button" data-slide="next" style="width:60px;">
+                <i class="bi bi-arrow-right-circle"></i>
+            </a>
+        </div>
+    </div>
+{% endif %}
+
+
+{% if ctx_empresa.historia or ctx_empresa.objetivo_general or ctx_empresa.mision or ctx_empresa.vision %}
+    <div class="color_negroDegradado" id="info_general">
+        <div class="col-12 col-md-12" style="padding-top: 50px; padding-bottom: 10px;">
+            <h2 class="featurette-heading text-center">INFORMACIÓN GENERAL</h2>
+        </div>
+    </div>
+{% endif %}
+
+{% if ctx_empresa.historia %}
+    <div class="color_negroDegradado" style="padding-bottom: 25px;" id="historia">
+        <div class="container">
+            <div class="row featurette justify-content-center">
+                <div class="col-sm-12 col-md-10 col-lg-8" >
+                    {{ctx_empresa.historia|safe|linebreaks}}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if ctx_empresa.objetivo_general %}
+    <div class="color_negroDegradado" style="padding-bottom: 25px;" id="objetivo">
+        <div class="container">
+            <div class="row featurette justify-content-center">
+                <div class="col-sm-12 col-md-10 col-lg-8">
+                    {{ctx_empresa.objetivo_general|safe|linebreaks}}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if ctx_empresa.mision or ctx_empresa.vision %}
+    <div class="color_negroDegradado" style="padding-bottom: 20px;" id="mision_vision">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-12 col-md-12 col-lg-6" style="padding: 0px 15px;"> 
+                    {{ctx_empresa.mision|safe|linebreaks}}
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6" style="padding: 0px 15px;"> 
+                    {{ctx_empresa.vision|safe|linebreaks}}
+                </div>
+            </div>
+        </div>
+    </div>  
+{% endif %}
+
+
+{% if valores %}
+    <div class="color_grisDegradado" style="padding-top: 50px; padding-bottom: 40px;" id="valores">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-12 text-center" style="padding-bottom: 20px;">
+                    <h2 class="featurette-heading text-center">VALORES DE LA EMPRESA</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+            {% for v in valores %}                
+                <div class="col-12 col-sm-12 col-md-6" style="padding-top: 20px;"> 
+                    {{v.descripcion|safe|linebreaksbr}} 
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div> 
+{% endif %}
+
+
+{% if sectores %}
+    <div class="text-light" style="padding-top: 50px; padding-bottom: 20px; background-color: #161c1fa9;" id="sectores_financieros">
+        <div class="container">
+            <div class="row featurette justify-content-center">
+                <div class="col-12 col-md-12">
+                    <div class="col-12 col-md-12" style="padding-bottom: 20px;">
+                        <h4 class="featurette-heading text-center"><b>SECTORES FINANCIEROS</b></h4>
+                        <h5 class="text-center"> Brindamos financimiento a los emprendedores de los siguientes sectores </h5>
+                    </div>
+                </div>
+            </div>
+            <div class="row featurette justify-content-center">
+                {% for s in sectores %}
+                    <div class="col-6 col-sm-6 col-md-3" style="padding-bottom: 20px;">
+                        <div class="container-fluid">
+                            <div class="row justify-content-center ">
+                                <div class="col-12 col-sm-12 text-center">
+                                    <img src="{{s.imagen}}"  alt="" class="bd-placeholder-img rounded-circle" width="150" height="150" aria-label="Placeholder: 150x150" preserveAspectRatio="xMidYMid slice" focusable="false">
+                                </div>
+                                <div class="col-12 col-sm-12 text-center">
+                                    <h2>{{s.descripcion_sector}}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div> 
+{% endif %}
+
+
+<div id="div_LProductos_Servicios" class="text-light" style="display: none;">
+    <div class="container">
+        <div class="row featurette justify-content-center">
+            <div class="col-12 col-md-12">
+                <div class="col-12 col-md-12" style="padding-bottom: 20px;">
+                    <h4 class="featurette-heading text-center"><b>PRODUCTOS Y SERVICIOS FINANCIEROS FINSUR</b></h4>
+                </div>
+            </div>
+        </div>
+        <div class="row featurette mb-2 justify-content-center" >
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <div class="list-container" style="background-color: #808080; border-radius: 5px !important; border: 2px solid #909090 !important;">
+                    <div id="LProductos_Servicios"></div>
+                </div>
+            </div>
+        </div>            
+    </div>
+</div> 
+
+{% if info_empleo %}
+    <div class="text-dark color_grisDegradado">
+        <div class="container" id="vacantes_disponibles">
+            <div class="row featurette justify-content-center">
+                <div class="col-12 col-md-12 text-center" style="padding-top: 50px; margin-bottom: 20px;">
+                    <h3><b>VACANTES DISPONIBLES</b></h3>
+                </div>
+
+                {% for info in info_empleo %}
+                    {% if forloop.counter <= 2 %}
+                        <div class="col-12 col-md-10 col-lg-6" style="margin-bottom: 20px">
+                            <div class="card text-center">
+                                <h5 class="card-header text-secondary">
+                                    {{info.cargo}}
+                                </h5>
+                                <div class="card-body">
+                                    <img src="{{ info.imagen.url }}" class="card-img-top img_vacantes_disponibles" style="height: 400px;" alt="..."> 
+                                </div>
+                                <div class="card-footer text-muted">
+                                    <a href="{% url 'ws_administracion:informacion_empleo_vacante_info' info.id %}" class="btn btn-primary btn-sm text-light">
+                                        <i class="bi bi-eye-fill"></i> Ver Más
+                                    </a>
+                                </div>    
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if forloop.counter == 3 %}
+                        <div class="col-12 col-md-12 text-center" style="margin-bottom: 20px;"><br>
+                            <a href="{% url 'ws_administracion:informacion_empleo_vacantes' %}" class="btn btn-info btn-md text-light">
+                                <i class="bi bi-eye-fill"></i> Ver Más Vacantes Disponibles
+                            </a><br><br>
+                        </div>
+                    {% endif %}
+                
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+
+<div id="div_GaleriaRS" class="text-light" style="background-color: #0020358c; padding-top: 50px; padding-bottom: 20px;">
+    <div class="container-fluid">
+        <div class="row featurette justify-content-center">
+            <div class="col-12 col-md-12">
+                <div class="col-12 col-md-12" style="padding-bottom: 20px;">
+                    <h4 class="featurette-heading text-center">GALERÍA DE RESPONSABILIDAD SOCIAL</h4>
+                </div>
+            </div>
+            <div class="col-12 col-md-12" style="padding-bottom: 20px;">
+                <div id="TileVResponsabilidad"></div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<div id="div_SalaVideos" class="text-white" style="background-color: #002035a6; padding-top: 50px; padding-bottom: 20px;">
+    <div class="container-fluid">
+        <div class="row featurette justify-content-center">
+            <div class="col-12 col-md-12">
+                <div class="col-12 col-md-12" style="padding-bottom: 20px;">
+                    <h4 class="featurette-heading text-center">SALA DE VIDEOS</h4>
+                </div>
+            </div>
+            <div class="col-12 col-md-12" style="padding-bottom: 20px;">
+                <div id="TileVVideos"></div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<div class="text-dark" style="background-color: #3511003f; padding-top: 25px;">
+    <div class="container" id="contactanos">
+        <h2 class="featurette-heading text-center"><b>CONTÁCTANOS</b></h2>
+        <p class="lead text-center"><b>ENVÍANOS TÚ CONSULTA</b></p>
+        <div class="row featurette justify-content-center align-items-center">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6" id="contactanos_divImagen">
+                <img src="{% static '/media_finsur/contactanos.png' %}" style="width: 100%;">
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
+                <form id="frmContactos" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-group">
+                                <label>Nombre Completo: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                                {{form.nombre_completo}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label>Número de Identidad: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                                {{form.num_identidad}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label>Ciudad o Departamento: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                                {{form.ciudad}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-group">
+                                <label>Correo Electrónico: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                                {{form.correo}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label>Teléfono</label>
+                                {{form.telefono}}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-6">
+                            <div class="form-group">
+                                <label>Celular</label>
+                                {{form.celular}}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Asunto: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                                {{form.asunto}}
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 text-center" style="margin-top: 15px; padding-bottom: 15px;">
+                                    <button id="BtnCancelar" type="button" class="btn btn-danger btn-sm text-light text-danger" style="margin: 0px 5px 0px 0px;"> 
+                                        <i style="font-size: 16px;" class="bi bi-eraser"></i> Limpiar
+                                    </button>
+                                    <button id="BtnEnviar" type="button" class="btn btn-success btn-sm text-light text-success"> 
+                                        <i style="font-size: 16px;" class="bi bi-send"></i> Enviar
+                                    </button> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Modal de Detalles del Producto #}
+<div id="PopupDetalleProducto" style="display: none;">
+    <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupDetalleProducto' }">
+        <h5 class="dx-theme-accent-as-background-color" style="color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Detalle del Producto</h5>
+    </div>
+    <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupDetalleProducto' }">
+        <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+            <div style="padding: 5px !important; height: 100% !important;">
+                <div class="container text-center">
+                    <h4><b id="popup_producto"></b></h4>
+                    <small id="popup_producto_descripcion"></small>
+                </div>
+                <div id="DgvPopupDetalle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Modal Respondsabilidad Social #}
+<div id="PopupResponsabilidadSocial" style="display: none;">
+    <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupResponsabilidadSocial' }">
+        <h5 class="dx-theme-accent-as-background-color" style="color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Responsabilidad Social</h5>
+    </div>
+    <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupResponsabilidadSocial' }">
+        <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+            <div style="padding: 5px !important; height: 100% !important;">
+                <div class="text-center">
+                    <h4 id="rs_nombre"></h4>
+                    <p id="rs_fecha_realizacion" class="lead "></p><hr class="my-3">
+                </div>
+                <p id="rs_descripcion" class="lead text-center"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Modal de Sala de Videos #}
+<div id="PopupSalaVideos" style="display: none;">
+    <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupSalaVideos' }">
+        <h5 class="dx-theme-accent-as-background-color" style="color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Video</h5>
+    </div>
+    <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupSalaVideos' }">
+        <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+            <div style="padding: 5px !important; height: 100% !important;">
+                <iframe id="videoSalaVideo" style="height: 350px; width: 100%;" src="" title="YOUTUBE VIDEO PLAYER" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    $(function(){        
+        //RESPONDSABILIDAD SOCIAL
+        $('#PopupResponsabilidadSocial').dxPopup({
+            contentTemplate: "contenidoPopupResponsabilidadSocial",
+            height: "auto",
+            showTitle: true,
+            titleTemplate: "tituloPopupResponsabilidadSocial",
+            visible: false,
+            dragEnabled: true,
+            closeOnOutsideClick: true,
+            shading: true,
+            wrapperAttr: {
+				class: "dxPopupWidthVideos"
+			}
+            //resizeEnabled : true 
+        })
+
+        $('#TileVResponsabilidad').dxTileView({
+            dataSource: new DevExpress.data.CustomStore({
+                key: "id",
+                loadMode: "raw",
+                load: function() {
+                    return $.getJSON("{% url 'ws_administracion:ajax_responsabilidad_social_listar' %}", {'dxTileVideo': 1})
+                        .done(function(response){
+                            if (response.length == 0 || response == [] || response == ""){
+                                $('#a_GaleriaRS').hide();
+                                $('#div_GaleriaRS').hide();
+                            }
+                        })
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+                },
+            }),
+            height: 300,
+            baseItemHeight: 300,
+            baseItemWidth: 450,
+            hint: 'Click, Ver Más',
+            itemMargin: 10,
+            showScrollbar: true,
+            tabIndex:0,
+            hoverStateEnabled: true,
+            direction: 'horizontal',
+            onItemClick: function (e) {  
+                var popup = $("#PopupResponsabilidadSocial").dxPopup("instance");
+                popup.show();
+                var content = popup.content();
+            
+                content.css({
+                    "padding": 4
+                })
+            
+                popup.option("position", {
+                    my: "center",
+                    at: "center"
+                })
+
+                $('#rs_nombre').text(e.itemData.nombre);
+                $('#rs_descripcion').text(e.itemData.descripcion);
+                $('#rs_fecha_realizacion').text( moment(e.itemData.fecha_realizacion,'YYYY/MM/DD').format('DD/MM/YYYY') );
+            
+                popup.repaint();
+            },
+            itemTemplate: function(itemData, itemIndex, itemElement){
+                itemElement.append(`
+                    <div class="thumbnail">
+                        <div class="image view view-first">
+                            <img style="width: 100%; height: 100%;" src="${itemData.imagen}" alt="${itemData.nombre}"/>
+                            <div class="mask">
+                                <p style="font-size: 14px;">${itemData.nombre}</p>
+                                <div class="tools">
+                                    <a><i class="bi bi-eye"> Ver Más</i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                  
+                `);
+            },
+        });
+
+
+        //SALA DE VIDEOS
+        $('#PopupSalaVideos').dxPopup({
+            contentTemplate: "contenidoPopupSalaVideos",
+            height: "auto",
+            showTitle: true,
+            titleTemplate: "tituloPopupSalaVideos",
+            visible: false,
+            dragEnabled: true,
+            closeOnOutsideClick: true,
+            shading: true,
+            wrapperAttr: {
+				class: "dxPopupWidthVideos"
+			}
+            //resizeEnabled : true 
+        })
+
+        $('#TileVVideos').dxTileView({
+            dataSource: new DevExpress.data.CustomStore({
+                key: "id",
+                loadMode: "raw",
+                load: function(loadOptions) {
+                    return $.getJSON("{% url 'ws_administracion:ajax_sala_videos_listar' %}", {'dxTileVideo': 1})
+                        .done(function(response){
+                            if (response.length == 0 || response == [] || response == ""){
+                                $('#a_SalaVideos').hide();
+                                $('#div_SalaVideos').hide();
+                            }
+                        })
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+                },
+            }),
+            height: 300,
+            baseItemHeight: 300,
+            baseItemWidth: 450,
+            hint: 'Click, Ver Más',
+            itemMargin: 10,
+            showScrollbar: true,
+            tabIndex:0,
+            hoverStateEnabled: true,
+            direction: 'horizontal',
+            onItemClick: function (e) {           
+                var popup = $("#PopupSalaVideos").dxPopup("instance");
+                popup.show();
+                var content = popup.content();
+            
+                content.css({
+                    "padding": 4
+                })
+            
+                popup.option("position", {
+                    my: "center",
+                    at: "center"
+                })
+                
+                $("#videoSalaVideo").attr("src", `https://www.youtube.com/embed/${e.itemData.link}`);
+
+                popup.repaint();
+            },
+            itemTemplate: function(itemData, itemIndex, itemElement){
+                itemElement.append(`
+                    <div class="thumbnail">
+                        <div class="image view view-first">
+                            <img style="width: 100%; height: 100%;" src="${itemData.imagen}" alt="${itemData.nombre}"/>
+                            <div class="mask">
+                                <p style="font-size: 14px;">${itemData.nombre}</p>
+                                <div class="tools">
+                                    <i class="bi bi-youtube"> Ver Más</i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                  
+                `);
+            },
+        });
+
+        $('#LProductos_Servicios').dxList({
+            dataSource: new DevExpress.data.CustomStore({
+                key: "id",
+                loadMode: "raw",
+                load: function() {
+                    return $.getJSON("{% url 'ws_administracion:ajax_productos_servicios_listar_activos' %}")
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+                },
+            }),
+            height: '100%', 
+            activeStateEnabled: false,
+            hoverStateEnabled: false, //{# Se activa cuando pasa el mouse ensima #}
+            focusStateEnabled: false, //{# Especifica si el componente de interfaz de usuario se puede enfocar mediante la navegación por teclado. #}
+            searchEnabled: true,
+            searchExpr: 'nombre',
+            searchMode:"contains",
+            selectionMode: 'none', //{# Habilita si se puede seleccionar o no --> 'all' | 'multiple' | 'none' | 'single' #} 
+            scrollingEnabled: true, //Activa el scroll
+            showScrollbar: 'onHover',
+            useNativeScrolling: false,
+            itemTemplate: function (data, index, element) {
+                var result = $('<div class="listProServ" style="width: 100%;">');
+
+                //{# Aqui simplemente muestra el boton del detalle si es producto #}
+                if ( data.es_producto == true ){
+                    result.html(`
+                        <div class="row justify-content-center verItemList align-items-center no-gutters border rounded mb-0  h-md-100 flex-column-reverse flex-lg-row">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 p-3 d-flex flex-column position-static dxList-center">
+                                <p class="dxList-titulo text-light" style="font-size: 17px;">#${index + 1}: <b>${data.nombre}</b></p>
+                                <br>
+                                <p id="p_button${index + 1}">
+                                    <button class="btn btn-sm btn-light text-scondary btnVerMasProducto" data_id="${ data.id }" data_nombre="${ data.nombre }" data_descripcion="${ data.descripcion }">
+                                        Ver Detalle
+                                    </button>
+                                </p>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 text-center ">
+                                <img src="${data.imagen}" class="bd-placeholder-img rounded-circle" width="120" height="120" focusable="false" style="margin-top:10px; margin-bottom:10px;">
+                            </div>
+                        </div>   
+                    `);
+                } else {
+                    result.html(`
+                        <div class="row justify-content-center verItemList align-items-center no-gutters border rounded mb-0  h-md-200 flex-column-reverse flex-lg-row">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 p-3 d-flex flex-column position-static dxList-center">
+                                <p class="dxList-titulo text-light" style="font-size: 18px;">#${index + 1}: <b>${data.nombre}</b></p>
+                                <br>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 text-center ">
+                                <img src="${data.imagen}" class="bd-placeholder-img rounded-circle" width="120" height="120" focusable="false" style="margin-top:10px; margin-bottom:10px;">
+                            </div>
+                        </div>   
+                    `);
+                }
+
+                if ( !jQuery.isEmptyObject(data) ){
+                    $('#menuProductosServicios').show();
+                    $('#div_LProductos_Servicios').show();
+                }
+
+                return result;
+            }
+        });
+
+         //{# Modal del Detalle del producto #}
+         $('#PopupDetalleProducto').dxPopup({
+            contentTemplate: "contenidoPopupDetalleProducto",
+            height: "auto",
+            showTitle: true,
+            titleTemplate: "tituloPopupDetalleProducto",
+            visible: false,
+            dragEnabled: true,
+            closeOnOutsideClick: true,
+            shading: true,
+            wrapperAttr: {
+				class: "dxPopupWidthForDatagrid"
+			}
+            //resizeEnabled : true 
+        })
+
+        $(document).on('click', '.btnVerMasProducto', function(){
+            var popup = $("#PopupDetalleProducto").dxPopup("instance");
+            popup.show();
+            var content = popup.content();
+        
+            content.css({
+                "padding": 4
+            })
+        
+            popup.option("position", {
+                my: "center",
+                at: "center"
+            })
+            
+            //{# Datagrid Detalle del Producto  #}
+            let id_producto = parseInt($(this).attr('data_id'));
+            $('#popup_producto').text($(this).attr('data_nombre').toString().toUpperCase());
+            $('#popup_producto_descripcion').text($(this).attr('data_descripcion').toString().toUpperCase());
+            
+            $("#DgvPopupDetalle").dxDataGrid({
+                dataSource: new DevExpress.data.CustomStore({
+                    key: "id",
+                    loadMode: "raw",
+                    load: function() {
+                        return $.getJSON("{% url 'ws_administracion:ajax_detalle_producto_obtener' %}", { id_producto })
+                                .fail(
+                                function() { 
+                                    mensajeError("¡Error al Cargar los Datos, Actualice la Página Web!");
+                                });
+                    }
+                }),
+                columns: [
+                    {
+                        caption: "DESCRIPCIÓN",
+                        dataField: "descripcion_frecuencia",
+                        dataType: 'string',
+                        alignment: "left",
+                        cssClass: "centrado_vertical negrita_titulo",
+                        width: 150
+                    }, {
+                        caption: "REQUISITOS",
+                        dataField: "requisitos",
+                        dataType: 'string',
+                        alignment: "left",
+                        cssClass: "centrado_vertical negrita_titulo",
+                        minWidth: 360,
+                        showEditorAlways: false,
+                        cellTemplate: function(container, options){
+                            $('<div/>').dxHtmlEditor({
+                                valueType:"html",
+                                value: options.value,
+                                readOnly: true,
+                            }).appendTo(container); 
+                        }
+                    }
+                ],
+                height: 400,
+                width: "100%",
+                scrolling: {
+                    showScrollbar: "always",
+                },
+                remoteOperations: false,
+                allowColumnReordering: false, //{# Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta #}
+                allowColumnResizing: true, 
+                showBorders: true,
+                showRowLines: true,
+                showColumnLines: true,
+                rowAlternationEnabled: true,
+                wordWrapEnabled: true,
+                keyboardNavigation: {
+                    enterKeyAction: "startEdit",
+                    enterKeyDirection: "column",
+                    editOnKeyPress: true
+                },
+                columnChooser: {//{# Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta #}
+                    enabled: false
+                },
+                columnFixing: { 
+                    enabled: false
+                },
+                paging: {
+                    enabled: false
+                },
+                searchPanel:{
+                    visible: true
+                },
+                summary: {
+                    recalculateWhileEditing: false,
+                    totalItems: [{
+                        column: "descripcion_frecuencia",
+                        summaryType: "count",
+                        displayFormat: "Detalles: {0}",
+                    }]
+                },
+            });
+            
+            popup.repaint();
+        });
+
+        $(".link_menu a[href^='#']").bind('click', function(e) {
+            e.preventDefault();
+            var target = $(this).attr("href");
+            $('html, body').stop().animate({
+                scrollTop: $(target).offset().top - 50
+            }, 500, function() {
+                //location.hash = target;
+            });
+            return false;
+        });
+
+        $("footer a[href^='#']").bind('click', function(e) {
+            e.preventDefault();
+            var target = $(this).attr("href");
+            $('html, body').stop().animate({
+                scrollTop: $(target).offset().top - 50
+            }, 500, function() {
+                //location.hash = target;
+            });
+            return false;
+        });
+        
+    });
+
+    $('#BtnCancelar').on('click', function(){
+        $('#frmContactos').trigger("reset");
+    });
+    
+    $('#BtnEnviar').on('click', function(){
+        if ( $('#id_nombre_completo').val().length == 0 || $('#id_nombre_completo').val().length ==  undefined ){
+            $('#id_nombre_completo').focus();
+            mensajeError('Ingrese el <b> Nombre completo </b>', '¡Error!');
+        } else {
+            if ( $('#id_num_identidad').val().length == 0 || $('#id_num_identidad').val().length < 15 || $('#id_num_identidad').val().length ==  undefined ){
+                $('#id_num_identidad').focus();
+                mensajeError('Ingrese el <b> Número de Identidad </b>', '¡Error!');
+            
+            } else {
+                if ( $('#id_correo').val().length == 0 || $('#id_correo').val().length ==  undefined ){
+                    $('#id_correo').focus();
+                    mensajeError('Ingrese el <b> Correo </b>', '¡Error!');
+                
+                } else {
+                    if ( $('#id_ciudad').val().length == 0 || $('#id_ciudad').val().length ==  undefined ){
+                        $('#id_ciudad').focus();
+                        mensajeError('Ingrese la <b> Ciudad ó Departamento </b>', '¡Error!');
+                    
+                    } else {
+                        if ( $('#id_asunto').val().length == 0 || $('#id_asunto').val().length ==  undefined ){
+                            $('#id_asunto').focus();
+                            mensajeError('Ingrese el <b> Asunto (comentario) </b>', '¡Error!');
+                        
+                        } else {
+                            DevExpress.ui.dialog.confirm("¿Seguro(a) que desea Contactarse con Nosotros?", "Confirmación").done(function (r) {
+                                if (r){
+                                    var data = new FormData($('#frmContactos').get(0));
+                            
+                                    $.ajax({
+                                        url: "{% url 'ws_administracion:ajax_contactanos' %}",
+                                        type: "POST",
+                                        data: data,
+                                        cache: false,
+                                        processData: false,
+                                        contentType: false,
+                                        success: function(data) {
+                                            
+                                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                                mensajeSuccess(data.exito, '¡Exito!');
+                                                $('#frmContactos').trigger("reset");
+                                            }
+                                            
+                                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                                mensajeError(data.error, '¡Error!');
+                                            }
+                                        },
+                                    });
+                                }
+                            })
+                        }
+                    }
+                    
+                }
+            }
+        }        
+    });
+</script>
+{% endblock script %}
+

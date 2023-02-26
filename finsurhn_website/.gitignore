@@ -1,0 +1,4 @@
+migrations/*
+static/*
+finsurhn_website/settings.py
+*.pyc

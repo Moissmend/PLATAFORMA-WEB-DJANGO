@@ -1,0 +1,221 @@
+{% extends 'base_website_extra.html' %}
+
+{% block title %} Vacante Disponible {% endblock title %}
+
+{% block style %}
+    <style>
+        .custom-file-input ~ .custom-file-label::after {
+            content: "Seleccionar";
+        }
+    </style>
+{% endblock style %}
+
+
+{% block contenido %}
+<div class="color_grisDegradado">
+    <div class="container" id="historia">
+        <div class="row featurette justify-content-center">
+            <div class="col-12 col-md-12 text-center" style="margin-top:25px; margin-bottom:20px;">
+                <h3>VACANTE DISPONIBLES</h3>
+            </div>
+        </div>
+        <div class="row featurette justify-content-center">
+            <div class="col-12 col-sm-12 col-md-9 col-lg-8 col-xl-7 text-center" style="margin-bottom:20px">
+                <div class="card text-center" style="height:500;">
+                    <h5 class="card-header">
+                        {{info_empleo.cargo}}
+                    </h5>
+                    <div class="card-body">
+                        <img src="{{ info_empleo.imagen.url }}" class="card-img-top" style="height: 400px;" alt="..."> 
+                    </div>
+                    <div class="card-footer text-muted" style="height: 120px;">
+                        <span class="card-text"><b>No. Vacantes: {{info_empleo.num_vacantes}}</b></span><br>
+                        <span class="card-text"><b>{{info_empleo.ciudad}}</b></span><br>   
+                        <p style="padding-top:10px;" class="card-text">{{info_empleo.descripcion}}</p>
+                    </div>    
+                </div>
+            </div>
+        </div>
+        <div class="row featurette justify-content-center">
+            <div class="col-12 text-center">
+                <form id="frmInfoEmpleo" enctype="multipart/form-data">
+                    <div class="card text-center" >
+                        <div class="card-header">
+                            <h5>ENVÍANOS TU HOJA DE VIDA</h5>
+                            <p>COMPLETA ESTE FORMULARIO</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row featurette justify-content-center text-left">
+                                <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+                                    <div class="form-group">
+                                        <label>Nombre Completo: <a class="a_obligatorio fa fa-asterisk"></a></label></label>
+                                        {{form.nombre_completo}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+                                    <div class="form-group">
+                                        <label>Número de Identidad: <a class="a_obligatorio fa fa-asterisk"></a></label></label>
+                                        {{form.num_identidad}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+                                    <div class="form-group">
+                                        <label>Ciudad: <a class="a_obligatorio fa fa-asterisk"></a></label></label>
+                                        {{form.ciudad}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+                                    <div class="form-group">
+                                        <label>Correo Electrónico: <a class="a_obligatorio fa fa-asterisk"></a></label></label>
+                                        {{form.correo}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+                                    <div class="form-group">
+                                        <label>Teléfono: </label>
+                                        {{form.telefono}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-10 col-md-6 col-lg-5">
+                                    <div class="form-group">
+                                        <label>Celular: </label>
+                                        {{form.celular}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-10 col-md-12 col-lg-10">
+                                    <label>Asunto: <a class="a_obligatorio fa fa-asterisk"></a></label></label>
+                                    {{form.asunto}}
+                                </div>
+                            </div>
+                            <div class="row featurette justify-content-center text-left" style="padding: 15px 0px;">
+                                <div class="col-12 col-sm-10 col-md-12 col-lg-10">
+                                    <label>Hoja de Vida: <a class="a_obligatorio fa fa-asterisk"></a></label></label>
+                                    <div class="custom-file">
+                                        {{form.curriculum}}
+                                        <label class="custom-file-label" id="label_id_curriculum"> No ha seleccionado un archivo pdf </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted" style="height: 140px;">
+                            <div class="row">
+                                <div class="col-sm-12 text-center" style="padding-top:10px; padding-bottom:10px;">
+                                    <p>Nos contáctaremos contigo</p><hr>
+                                    <button id="BtnCancelar" type="button" class="btn btn-danger btn-sm text-light text-danger" style="margin: 0px 5px 0px 0px;"> 
+                                        <i style="font-size: 16px;" class="bi bi-eraser"></i> Limpiar
+                                    </button>
+                                    <button id="BtnEnviar" type="button" class="btn btn-success btn-sm text-light text-success"> 
+                                        <i style="font-size: 16px;" class="bi bi-send"></i> Enviar
+                                    </button> 
+                                </div>
+                            </div>
+                        </div>    
+                    </div>
+                </form>
+            </div>
+
+            {% if cant_empleos > 0 %}
+                <div class="col-12 col-md-12 text-center" style="margin-bottom:20px; margin-top: 20px;">
+                    <a href="{% url 'ws_administracion:informacion_empleo_vacantes' %}" class="btn btn-info">Ver Otras Vacantes Disponibles</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    $('#id_curriculum').on('change', function(){
+        var archivo = $(this).val().toLowerCase();
+        var extensiones = archivo.substring(archivo.lastIndexOf("."));
+
+        if ( archivo != '' && archivo != null && archivo != undefined ){
+            if(extensiones.toLowerCase() != ".pdf"){
+                mensajeError(`La Extensión del Archivo <b>${extensiones}</b> no es Válida`, '¡Error!');
+                $(this).val('');
+                $('#label_id_curriculum').text('No ha Seleccionado un Archivo PDF');
+            }else{
+                $('#label_id_curriculum').text($(this).val());
+               
+            }
+        }
+    });
+
+    $('#BtnCancelar').on('click', function(){
+        $('#id_curriculum').val('');
+        $('#label_id_curriculum').text('No ha seleccionado un archivo pdf');
+        $('#frmInfoEmpleo').trigger("reset");
+    });
+
+    $('#BtnEnviar').on('click', function(e){
+        if ( $('#id_nombre_completo').val().length == 0 || $('#id_nombre_completo').val().length ==  undefined ){
+            $('#id_nombre_completo').focus();
+            mensajeError('Ingrese el <b> Nombre completo </b>', '¡Error!');
+        } else {
+            if ( $('#id_num_identidad').val().length == 0 || $('#id_num_identidad').val().length < 15 || $('#id_num_identidad').val().length ==  undefined ){
+                $('#id_num_identidad').focus();
+                mensajeError('Ingrese el <b> Número de Identidad </b>', '¡Error!');
+            
+            } else {
+                if ( $('#id_correo').val().length == 0 || $('#id_correo').val().length ==  undefined ){
+                    $('#id_correo').focus();
+                    mensajeError('Ingrese el <b> Correo </b>', '¡Error!');
+                
+                } else {
+                    if ( $('#id_ciudad').val().length == 0 || $('#id_ciudad').val().length ==  undefined ){
+                        $('#id_ciudad').focus();
+                        mensajeError('Ingrese la <b> Ciudad ó Departamento </b>', '¡Error!');
+                    
+                    } else {
+                        if ( $('#id_asunto').val().length == 0 || $('#id_asunto').val().length ==  undefined ){
+                            $('#id_asunto').focus();
+                            mensajeError('Ingrese el <b> Asunto (comentario) </b>', '¡Error!');
+                        
+                        } else {
+                            {# VALIDACIÓN DE ARCHIVOS #}
+                            var archivo = $("#{{form.curriculum.id_for_label}}").val();
+                            var extensiones = archivo.substring(archivo.lastIndexOf("."));
+                            
+                            {# Validando el tipo de archivo #}
+                            if ( archivo != '' && archivo != null && archivo != undefined ){
+                                DevExpress.ui.dialog.confirm("¿Seguro(a) que desea Contactarse con Nosotros?", "Confirmación").done(function (r) {
+                                    if (r){
+                                        var data = new FormData($('#frmInfoEmpleo').get(0));
+                                        $.ajax({
+                                            url: "{% url 'ws_administracion:ajax_informacion_empleo_vacante_correo' info_empleo.id %}",
+                                            type: "POST",
+                                            data: data,
+                                            cache: false,
+                                            processData: false,
+                                            contentType: false,
+                                            success: function(data) {
+                                                
+                                                if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                                    mensajeSuccess(data.exito, '¡Exito!');
+                                                    $('#id_curriculum').val('');
+                                                    $('#label_id_curriculum').text('No ha seleccionado un archivo pdf');
+                                                    $('#frmInfoEmpleo').trigger("reset");
+                                                }
+                                                
+                                                if (! (jQuery.isEmptyObject(data.error)) ) {
+                                                    mensajeError(data.error, '¡Error!');
+                                                }
+                                            },
+                                        });
+                                    }
+                                })
+                            
+                            } else {
+                                mensajeError('Seleccione un <b>archivo .pdf</b>', '¡Error!');
+                                $("#{{form.curriculum.id_for_label}}").focus();
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        }
+    });
+</script>
+{% endblock script %}

@@ -1,0 +1,437 @@
+{% extends 'base_empleado.html' %}
+
+{% block title %} Redes Sociales {% endblock title %}
+
+{% block style %}
+    <style>
+        .dx-icon-image {
+			font-size: 2em !important;
+			height: auto;
+			text-decoration: none !important;
+            vertical-align: middle !important;
+			width: auto;
+		}
+    </style>
+{% endblock style %}
+
+{% block contenido %}
+<div class="content-header">
+    <h3 class="text-center"><b>REDES SOCIALES</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <button id="BtnNuevo" type="button" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nuevo</button> 
+        <div id="frmContainer" class="card card-secondary" style="display: none; margin-top: 10px;">
+            <div class="card-header">
+                <h3 class="card-title m-0">FORMULARIO - <small id="SubtituloFrm"> NUEVO </small></h3>
+            </div>
+            <div class="card-body p-2">
+                <form id="frmRedes" action="" method="POST" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="row">
+                        <div id="div_pk" style="display: none;"></div>
+                        <div class="col-md-6">
+                            <label>Nombre: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.nombre}}
+                        </div>
+                        <div class="col-md-6">
+                            <label>Link: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.link}}
+                        </div>
+                        <div class="col-md-12">
+                            <label>Imagen: <a class="a_obligatorio fa fa-asterisk"></a> <span id="p_imagen" class="file-upload">Actualmente: <a class="aNubeGC" href="" target="__blank"></a></span></label>
+                            {{form.imagen}}
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-12 text-center">
+                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="DgvRedesSociales"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    
+    $(function(){
+        //JS 
+        var customDataSource = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+
+                return $.getJSON("{% url 'ws_administracion:ajax_redes_sociales_empresa_listar' %}")
+                    .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+
+            },
+            update: function(key, values) {
+
+                $.ajax({
+                        url: "{% url 'ws_administracion:ajax_redes_sociales_empresa_editar_datagrid' %}",
+                        method: "POST",
+                        data: {
+                            'key':key,
+                            'data': JSON.stringify(values),
+                        },
+                        success: function(data){
+                                            
+                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                mensajeSuccess(data.exito, '¡Exito!');
+                            }
+                            
+                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+        
+                        },
+                })
+            },
+        });
+
+        $("#DgvRedesSociales").dxDataGrid({
+            dataSource: customDataSource,
+            columns: [
+                {
+                    caption: "NOMBRE",
+                    dataField: "nombre",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    width: 200,
+                    allowEditing: false,
+                },{
+                    caption: "LINK",
+                    dataField: "link",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    minWidth: 400,
+                    allowEditing: false,
+                },{
+                    caption: "ORDEN",
+                    dataField: "orden",
+                    dataType: 'number',
+                    alignment: "center",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: true,
+                    format: "#",
+                    validationRules: [{
+                        type: "required",
+                        message: '¡El campo es Requerido!'
+                    },
+                    {
+                        type: "numeric",
+                        message: '¡El valor debe ser númerico!'
+                    },
+                    {
+                        type: "range",
+                        min: 1,
+                        message: '¡El valor debe ser mayor a Cero!'
+                    },{
+                        type: "custom",
+                        validationCallback: function(options) {
+
+                            var DgvRedesSociales = $("#DgvRedesSociales").dxDataGrid('instance');
+
+                            //{# Obtenemos nuestra fila #}
+                            myRow = DgvRedesSociales.getVisibleRows().filter((row) => row.key == options.validator._validationGroup.key);
+
+                            //{# Obtenemos las filas visibles excepto la que intentamos editar #}
+                            rows = DgvRedesSociales.getVisibleRows().filter((row) => row.key !== options.validator._validationGroup.key);
+
+                            //{# Recorremos las filas #}
+                            (rows || []).forEach(function (fila) {
+                                //{# Verificamos que el dato no sea nullo #}
+                                if(fila.data.orden != null){
+                                    if (parseInt(fila.data.orden) == parseInt(options.value)) {
+                                        DgvRedesSociales.cellValue(myRow[0].rowIndex, "orden", null);
+                                        DgvRedesSociales.getCellElement(myRow[0].rowIndex, "orden").focus();
+                                        mensajeError("¡Ya Existe!, Ingrese otro Orden.", '¡Error!');
+                                    }
+                                }
+                            })
+
+                            return !rows.filter((row) => row.data.orden == options.value).length;
+                        },
+                        message: "El Orden debe ser único"
+                    }],
+                },{
+                    caption: "ESTADO",
+                    dataField: "estado",
+                    dataType: 'boolean',
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: true,
+                }, {
+                    caption: "IMAGEN",
+                    dataField: "ver_imagen",
+                    cssClass: "centrado_vertical",
+                    type: "buttons",
+                    width: 100,
+                    buttons: [{
+                        name: "editar",
+                        hint: "Ver Imagen",
+                        icon: "image",
+                        onClick(e){
+                            var popup = $("#PopupImagen").dxPopup("instance");
+                            popup.show();
+                            var content = popup.content();
+                        
+                            content.css({
+                                "padding": 4
+                            })
+                        
+                            popup.option("position", {
+                                my: "center",
+                                at: "center"
+                            })
+
+                            $("#tituloPopupI").text('Red Social');
+                            obtenerImagenNube(e.row.data.imagen, 1);
+
+                            popup.repaint();
+                        }
+                    }],
+                }, {
+                    caption: "EDITAR",
+                    type: "buttons",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    buttons: [{
+                        name: "editar",
+                        icon: "rename",
+                        onClick(e){
+                            onClick_Editar_Redes_Sociales(e);
+                        }
+                    }],
+                },
+            ],
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowAdding: false,
+                allowDeleting: false,
+                selectTextOnEditStart: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            width: "100%",
+            height: "500px",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true, 
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true
+            },
+            columnChooser: {//Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            columnFixing: { //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            paging: {
+                enabled: false
+            },
+            searchPanel:{
+                visible: true
+            },
+            export: {
+                enabled: false,
+                fileName: "Redes Sociales",
+                allowExportSelectedData: true,
+                allowExportSelectedData: false
+            },
+            summary: {
+                recalculateWhileEditing: true,
+                totalItems: [{
+                    column: "nombre",
+                    summaryType: "count",
+                    displayFormat: "Redes Sociales: {0}"
+                }]
+            },
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+                    let index = e.component.getRowIndexByKey(e.key);
+                    let el = e.component.getCellElement(index, e.brokenRules[0].columnIndex);
+                    e.component.focus(el);
+
+                    mensajeError('Complete el llenado o la selección del Formulario', '¡Error!');
+                }
+            }
+        });
+    });
+
+    function onClick_Editar_Redes_Sociales(e){
+        $('#BtnGuardar').attr('accion', 'EDITAR');
+        $('#SubtituloFrm').text('EDITAR');
+        $('#frmRedes').attr('action', '{% url "ws_administracion:ajax_redes_sociales_empresa_editar" %}');
+        $('#frmContainer').show();
+        limpiar_form();
+
+        //{# Creando el input con el name dato_pk #}
+        $('#div_pk').append(`<input type="number" name="dato_pk" value="${e.row.data.id}">`);
+
+        //{# LLENANDO Y ASIGNANDO DATOS AL FORMULARIO PARA EDITAR #}
+        $('#id_nombre').val(e.row.data.nombre);
+        $('#id_link').val(e.row.data.link);
+
+        if (e.row.data.estado == true){
+            if(!$('#id_estado').prop('checked')){
+                $('#id_estado').trigger('click');
+            }
+        }else{
+            if($('#id_estado').prop('checked')){
+                $('#id_estado').trigger('click');
+            }
+        }
+        
+        //{# Mostrando la imagen en el input #}
+        $('#id_imagen').val(''); //{# reseteando el input imagen #}
+        $("#p_imagen").show();
+        obtenerImagenNube(e.row.data.imagen, 2);
+        $('.aNubeGC').text(e.row.data.imagen); 
+    }
+
+
+    //********************************************************** //
+    //                           INICIO                          //
+    //                 {# Funciones Principales #}               //
+    //********************************************************** //
+    $('#BtnNuevo').on('click', function(){
+        $('#BtnGuardar').attr('accion', 'NUEVO');
+        $('#SubtituloFrm').text('NUEVO');
+        $('#frmRedes').attr('action', '{% url "ws_administracion:ajax_redes_sociales_empresa_agregar" %}');
+        $('#frmContainer').show();
+        limpiar_form();
+    });
+
+    $('#BtnCancelar').on('click', function(){
+        $('#frmContainer').hide();
+    });
+
+    
+    $('#BtnGuardar').on('click', function(){
+        var data = new FormData($('#frmRedes').get(0));
+        
+        if (validarFrm() == true){
+            DevExpress.ui.dialog.confirm("¿Seguro(a) de Guardar el formulario de Redes Sociales?", "Confirmación").done(function (r) {
+                if (r) {
+                    $.ajax({
+                        url: $('#frmRedes').attr('action'),
+                        type: "POST",
+                        data: data,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        success: function(data) {
+
+                            $("#DgvRedesSociales").dxDataGrid("instance").refresh();
+
+                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                $('#frmContainer').hide();
+                                mensajeSuccess(data.exito, '¡Exito!');
+                            }
+                            
+                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+                        },
+                    });
+                }
+            });
+        }
+    });
+    
+
+    $('#id_imagen').on('change', function(){
+        var imagen = $(this).val().toLowerCase();
+        var extensiones = imagen.substring(imagen.lastIndexOf("."));
+
+        if ( imagen != '' && imagen != null && imagen != undefined ){
+            if(extensiones.toLowerCase() != ".jpg" && extensiones.toLowerCase() != ".png" && extensiones.toLowerCase() != ".jpeg"){
+                mensajeError(`El archivo de tipo ${extensiones} no es válido`, '¡Error!');
+                $(this).val('');
+            }
+        }
+    });
+
+    function validarFrm(){
+        retorno = false;
+
+        //$(//{# VALIDANDO FORMULARIO #}
+        if ( $('#id_nombre').val().length == 0 || $('#id_nombre').val().length ==  undefined ){
+            $('#id_nombre').focus();
+            mensajeError('Ingrese el <b>Nombre</b>', '¡Error!');
+
+        } else {
+
+            if ( $('#id_link').val().length == 0 || $('#id_link').val().length ==  undefined ){
+                $('#id_link').focus();
+                mensajeError('Ingrese el <b> Link </b>', '¡Error!');
+
+            } else { 
+                //{# Validando imagen #}
+                var imagen = $('#id_imagen').val().toLowerCase();
+                            
+                if ( imagen != '' && imagen != null && imagen != undefined ){
+                    retorno = true;
+                } else {
+                    
+                    //{# Al editar no se necesita seleccionar una imagen #}
+                    if ( $('#BtnGuardar').attr('accion') == 'EDITAR' ) {
+                        retorno = true;
+                    } else {
+                        mensajeError('Seleccione la <b>Imagen</b>', '¡Error!');
+                        $("#id_imagen").focus();
+                    }
+                }  
+            }
+        }
+
+        return retorno;
+    }
+    
+    function limpiar_form(){
+        //{# El trigger click se coloca antes que el trigger resest porque sino, no funciona #}
+        if(!$('#id_estado').prop('checked')){
+            $('#id_estado').trigger('click');
+        }
+
+        //{# Limpiando el Formulario #}
+        $('#frmRedes').trigger("reset");
+        $('#id_imagen').val('');
+
+        //{# Eliminando el input con el name dato_pk #}
+        if ( $('input[name="dato_pk"]') ) {
+            $('input[name="dato_pk"]').remove(); 
+        }
+
+        $("#p_imagen").hide();
+    }
+
+
+</script>
+{% endblock script %}

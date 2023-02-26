@@ -1,0 +1,259 @@
+{% extends 'base_empleado.html' %}
+
+{% block title %} Valores de la empresa {% endblock title %}
+
+{% block style %}
+    <style>
+        .color_grisDegradado{
+            background-color: #cecece52 !important;
+        }
+        .color_azulDegradado{
+            background-color: #335364a9 !important;
+            color: white;
+        }
+        
+        .color_negroDegradado{
+            background-color: #161c1fa9 !important;
+            color: white;
+        }
+    </style>
+{% endblock style %}
+
+{% block contenido %}
+<div class="content-header">
+    <h3 class="text-center"><b>VALORES DE LA EMPRESA</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="DgvValores"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    $(function(){
+        
+        //Funcion de los items que llevara el editor de texto, para que no se repita
+        function itemsToolbar(){
+            return [
+                'undo', 'redo', 'separator',
+                {
+                    name: 'size',
+                    acceptedValues: ['11pt', '12pt', '13pt', '14pt', '15pt', '16pt', '17pt', '18pt'],
+                },
+                {
+                    name: 'font',
+                    acceptedValues: ['Arial', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Times New Roman', 'Verdana'],
+                },
+                'separator',
+                'bold', 'italic', 'strike', 'underline', 'separator',
+                'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'separator',
+            ]
+        }
+
+
+        //JS de las 
+        var customDataSourceValores = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+                retorno = $.getJSON("{% url 'ws_administracion:ajax_valores_empresa_listar' %}")
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+
+                //Si el objeto no viene vacio, retorna los datos.
+                //Asi muestra el datagrid "Sin datos" y no se muestra como cargando.
+                if (! (jQuery.isEmptyObject(retorno)) ) {
+                    return retorno
+                }else{
+                    return []
+                }
+            },
+            insert: function(values) {
+                $.ajax({
+                    url: "{% url 'ws_administracion:ajax_valores_empresa_agregar' %}",
+                    method: "POST",
+                    data: {
+                        'data': JSON.stringify(values),
+                    },
+                    success: function(data){
+                        
+                        $("#DgvValores").dxDataGrid("instance").refresh();    
+                                        
+                        if (! (jQuery.isEmptyObject(data.exito)) ) {
+                            $('#frmContainer').hide();
+                            mensajeSuccess(data.exito, '¡Exito!');
+                        }
+                        
+                        if (! (jQuery.isEmptyObject(data.error)) ) {
+                            mensajeError(data.error, '¡Error!');
+                        }
+
+                    },
+                })
+            },
+            update: function(key, values) {
+                
+                $.ajax({
+                        url: "{% url 'ws_administracion:ajax_valores_empresa_editar' %}",
+                        method: "POST",
+                        data: {
+                            'key':key,
+                            'data': JSON.stringify(values),
+                        },
+                        success: function(data){
+                                            
+                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                mensajeSuccess(data.exito, '¡Exito!');
+                            }
+                            
+                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+        
+                        },
+                })
+            },
+            remove: function(key) {
+                $.ajax({
+                    url: "{% url 'ws_administracion:ajax_valores_empresa_eliminar' %}",
+                    method: "POST",
+                    data: {
+                        'key':key,
+                    },
+                    success: function(data) {
+                        
+                        if (! (jQuery.isEmptyObject(data.exito)) ) {
+                            mensajeSuccess(data.exito, '¡Exito!');
+                        }
+                        
+                        if (! (jQuery.isEmptyObject(data.error)) ) {
+                            mensajeError(data.error, '¡Error!');
+                        }
+                    },
+                })
+            },
+        });
+
+        //
+        $("#DgvValores").dxDataGrid({
+            dataSource: customDataSourceValores,
+            columns: [
+                {
+                    caption: "VALOR",
+                    dataField: "valor",
+                    dataType: "string",
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    validationRules: [{
+                        type: "required",
+                        message: 'Ingrese el Valor!'
+                    }],
+                    width: 150,
+                }, {
+                    caption: "DESCRIPCIÓN",
+                    dataField: "descripcion",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    validationRules: [{
+                        type: "required",
+                        trim: true,
+                        message: '¡Ingrese los Valores!'
+                    },
+                    {
+                        type: "stringLength",
+                        trim: true,
+                        min: 1,
+                        message: '¡Ingrese los Valores!'
+
+                    }],
+                    minWidth: 360,
+                    showEditorAlways: true,
+                    editCellTemplate: function(container, options){
+                        return $('<div>').dxHtmlEditor({
+                            height: 240,
+                            valueType:"html",
+                            toolbar: {
+                                items: itemsToolbar(),
+                            },
+                            value: options.value,
+                            onValueChanged: function(e) {
+                                options.setValue(e.value);
+                            }
+                        })
+                    },
+                },
+            ],
+            editing: {
+                mode: "batch",
+                allowUpdating: true, 
+                allowAdding: true,
+                allowDeleting: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            width: "100%",
+            height: "500px",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true, 
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true
+            },
+            columnChooser: {//Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            columnFixing: { //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            paging: {
+                enabled: false
+            },
+            searchPanel:{
+                visible: true
+            },
+            export: {
+                enabled: false,
+                fileName: "Valores de la Empresa",
+                allowExportSelectedData: true,
+                allowExportSelectedData: false
+            },
+            summary: {
+                recalculateWhileEditing: false,
+                totalItems: [{
+                    column: "valor",
+                    summaryType: "count",
+                    displayFormat: "Valores de la Empresa: {0}"
+                }]
+            },
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+                    let index = e.component.getRowIndexByKey(e.key);
+                    let el = e.component.getCellElement(index, e.brokenRules[0].columnIndex);
+                    e.component.focus(el);
+                    
+                    mensajeError('Complete el llenado o la selección del Formulario', '¡Error!');
+                }
+            }
+        });
+
+    });
+</script>
+{% endblock script %}

@@ -1,0 +1,101 @@
+body{
+    margin-top: 59px;
+}
+
+.color_grisDegradado{
+    background-color: #cecece52 !important;
+}
+.color_azulDegradado{
+    background-color: #335364a9 !important;
+    color: white;
+}
+
+.color_negroDegradado{
+    background-color: #161c1f94 !important;
+    color: white;
+}
+
+
+/* -------------------------------Nabvar menú------------------------------- */
+/* Diseño del nabvar, menú principal */
+#webSiteMenu{
+    background: linear-gradient(to bottom, #ff9233 , #cececef8 95%, #A6ACAF);
+    /* background: linear-gradient(to bottom, #e67d22f6, #c7c8c9) !important; */
+}
+ 
+#webSiteMenu a{
+    color: #ffffff;
+    font-size: 18px;
+}
+
+#webSiteMenu a:hover{
+    color: #4b4b4b;
+    cursor: pointer !important;
+    font-size: 19px;
+}
+
+/* Diseño para el toggle de dwnNuestraEmpresa */
+@media (min-width: 992px) { 
+    #toggleWebSiteMenu ul li .dropdown-menu{
+        background-color: #eeeeee !important;
+    }
+    
+    #toggleWebSiteMenu ul li .dropdown-menu a{
+        color: rgba(87, 87, 87, 0.76) !important;
+    }
+    
+    #toggleWebSiteMenu ul li .dropdown-menu a:hover{
+        background-color: #F0B27A !important;
+        color: #ffffff !important;
+    }
+}
+@media (max-width: 991px) and (min-width: 0px){ 
+    #toggleWebSiteMenu ul li .dropdown-menu{
+        background: linear-gradient(to bottom, #fdca9d , #cececef8 95%, #A6ACAF);
+        border: none;
+    }
+    
+    #toggleWebSiteMenu ul li .dropdown-menu a{
+        color: rgba(87, 87, 87, 0.87) !important;
+    }
+    
+    #toggleWebSiteMenu ul li .dropdown-menu a:hover{
+        background-color: #F0B27A !important;
+        color: #ffffff !important;
+    }
+}
+
+/* FOOTER DE LA PAGINA */
+footer#footerSitio {
+    background: linear-gradient(to bottom, #d7dbdde0, #ecb788fa) !important;
+    padding-top:40px;
+    padding-bottom:30px;
+}
+
+footer#footerSitio ul li{
+    color: #00000096 !important; 
+    border: none;
+}
+
+
+footer#footerSitio ul li a{
+    color: #00000096 !important;
+}
+
+footer#footerSitio ul li a:hover{
+    color: #ec5519 !important;
+    text-decoration: none;
+}
+
+#footerIcon_arriba a{
+    color: rgb(61, 61, 61);
+    font-size: 30px;
+    font-weight: bold;
+}
+
+#footerIcon_arriba a:hover{
+    color: #3dbe38 !important;
+}
+
+
+/* TODO ESTO SERÁ PARA EL INICIO DE SESIÓN */

@@ -1,0 +1,501 @@
+{% extends 'base_empleado.html' %}
+
+{% block title %}Información de Empleo{% endblock title %}
+
+{% block contenido %}
+<div class="content-header">
+    <h3 class="text-center"><b>INFORMACIÓN DE EMPLEO</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <button id="BtnNuevo" type="button" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nuevo</button> 
+        <div id="frmContainer" class="card card-secondary" style="display: none; margin-top: 10px;">
+            <div class="card-header">
+                <h3 class="card-title m-0">FORMULARIO - <small id="SubtituloFrm"> NUEVO </small></h3>
+            </div>
+            <div class="card-body p-2">
+                <form id="frmInfoEmpleo" action="" method="POST" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="row">
+                        <div id="div_pk" style="display: none;"></div>
+                        <div class="col-md-4">
+                            <label>Cargo: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            <div class="dx-field">
+                                <div id="CboLookupCargo" style="height:36px;"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Ciudad: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.ciudad}}
+                        </div>
+                        <div class="col-md-4">
+                            <label>Vacantes: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.num_vacantes}}
+                        </div>
+                        <div class="col-md-12">
+                            <label>Descripción: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.descripcion}}
+                        </div>
+                        <div class="col-md-12">
+                            <label>Imagen: <a class="a_obligatorio fa fa-asterisk"></a> <span id="p_imagen" class="file-upload">Actualmente: <a class="aNubeGC" href="" target="__blank"></a></span></label>
+                            {{form.imagen}}
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-12 text-center">
+                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="DgvInfoEmpleo"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    //SÓLO NÚMEROS, SIN PUNTOS NI NADA
+    function numberKeyPress(event){
+        if ( event.charCode >= 48 && event.charCode <= 57){
+            return true;
+        }
+        return false;
+    };
+
+    $(function(){
+
+        var customDataSourceCargo = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+                return $.getJSON("{% url 'ws_administracion:ajax_cargo_listar' %}")
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+            },
+        });
+
+        $('#CboLookupCargo').dxLookup({
+            dataSource: customDataSourceCargo,
+            valueExpr: 'id',
+            displayExpr: 'cargo',
+            placeholder: '---- SELECCIONE ----',
+            dropDownOptions: {
+                closeOnOutsideClick: true,
+                showTitle: false,
+                minHeight: 300,
+                height: 400,
+            }
+        });
+        
+        $("#DgvInfoEmpleo").dxDataGrid({
+            dataSource: new DevExpress.data.CustomStore({
+                key: "id",
+                loadMode: "raw",
+                load: function() {
+
+                    return $.getJSON("{% url 'ws_administracion:ajax_informacion_empleo_listar' %}")
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+
+                },
+                update: function(key, values) {
+
+                    $.ajax({
+                        url: "{% url 'ws_administracion:ajax_informacion_empleo_editar_datagrid' %}",
+                        method: "POST",
+                        data: {
+                            'key':key,
+                            'data': JSON.stringify(values),
+                        },
+                        success: function(data){
+                                            
+                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                mensajeSuccess(data.exito, '¡Exito!');
+                            }
+                            
+                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+        
+                        },
+                    })
+                },
+            }),
+            columns: [
+                {
+                    caption: "CARGO",
+                    dataField: "idcargo",
+                    dataType: 'number',
+                    alignment: "left",
+                    allowEditing: false,
+                    lookup: {
+                        dataSource: customDataSourceCargo,
+                        displayExpr: "cargo",
+                        valueExpr: "id",
+                    },
+                    alignment: "left",
+                    cssClass: "centrado_vertical", 
+                    width: 260,
+                },{
+                    caption: "DESCRIPCIÓN",
+                    dataField: "descripcion",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    minWidth: 360,
+                    allowEditing: false,
+                },{
+                    caption: "CIUDAD",
+                    dataField: "ciudad",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    width: 200,
+                    allowEditing: false,
+                },{
+                    caption: "# VACANTES",
+                    dataField: "num_vacantes",
+                    dataType: 'numeric',
+                    alignment: "center",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    allowEditing: false,
+                },{
+                    caption: "ORDEN",
+                    dataField: "orden",
+                    dataType: 'number',
+                    alignment: "center",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 80,
+                    format: "#0",
+                    validationRules: [{
+                        type: "required",
+                        message: '¡El campo es Requerido!'
+                    }, {
+                        type: "numeric",
+                        message: '¡El valor debe númerico!'
+                    }, {
+                        type: "range",
+                        min: 1,
+                        message: '¡El valor debe ser mayor a Cero!'
+                    },{
+                        type: "custom",
+                        validationCallback: function(options) {
+
+                            var DgvInfoEmpleo = $("#DgvInfoEmpleo").dxDataGrid('instance');
+
+                            //{# Obtenemos nuestra fila #}
+                            myRow = DgvInfoEmpleo.getVisibleRows().filter((row) => row.key == options.validator._validationGroup.key);
+
+                            //{# Obtenemos las filas visibles excepto la que intentamos editar #}
+                            rows = DgvInfoEmpleo.getVisibleRows().filter((row) => row.key !== options.validator._validationGroup.key);
+
+                            //{# Recorremos las filas #}
+                            (rows || []).forEach(function (fila) {
+                                //{# Verificamos que el dato no sea nullo #}
+                                if(fila.data.orden != null){
+                                    if (parseInt(fila.data.orden) == parseInt(options.value)) {
+                                        DgvInfoEmpleo.cellValue(myRow[0].rowIndex, "orden", null);
+                                        DgvInfoEmpleo.getCellElement(myRow[0].rowIndex, "orden").focus();
+                                        mensajeError("¡Ya Existe!, Ingrese otro Orden.", '¡Error!');
+                                    }
+                                }
+                            })
+                            return !rows.filter((row) => row.data.orden == options.value).length;
+                        },
+                        message: "El Orden debe ser único"
+                    }],
+                },{
+                    caption: "ESTADO",
+                    dataField: "estado",
+                    dataType: 'boolean',
+                    alignment: "center",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 80,
+                }, {
+                    caption: "IMAGEN",
+                    type: "buttons",
+                    dataField: "ver_imagen",
+                    cssClass: "centrado_vertical",
+                    width: 80,
+                    buttons: [{
+                        name: "ver_imagen",
+                        hint: "Ver Imagen",
+                        icon: "image",
+                        onClick(e){
+                            var popup = $("#PopupImagen").dxPopup("instance");
+                            popup.show();
+                            var content = popup.content();
+                        
+                            content.css({
+                                "padding": 4
+                            })
+                        
+                            popup.option("position", {
+                                my: "center",
+                                at: "center"
+                            })
+
+                            $("#tituloPopupI").text('Imagen del Empleo');
+                            obtenerImagenNube(e.row.data.imagen, 1);
+
+                            popup.repaint();
+                        }
+                    }],
+                }, {
+                    caption: "EDITAR",
+                    type: "buttons",
+                    dataField: "editar",
+                    cssClass: "centrado_vertical",
+                    width: 80,
+                    buttons: [{
+                        name: "editar",
+                        icon: "rename",
+                        onClick(e){
+                            onClick_Editar_Información_Empleo(e);
+                        }
+                    }],
+                },
+            ],
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowAdding: false,
+                allowDeleting: false,
+                selectTextOnEditStart: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            width: "100%",
+            height: "500px",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true, 
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true
+            },
+            columnChooser: {//Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            loadPanel: {
+                enabled: true,
+            },
+            columnFixing: { //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            paging: {
+                enabled: false
+            },
+            searchPanel:{
+                visible: true
+            },
+            export: {
+                enabled: false,
+                fileName: "Lista de Empleos",
+                allowExportSelectedData: true,
+                allowExportSelectedData: false
+            },
+            summary: {
+                recalculateWhileEditing: false,
+                totalItems: [{
+                    column: "cargo",
+                    summaryType: "count",
+                    displayFormat: "Lista de Empleos: {0}"
+                }]
+            },
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+    
+                    let index = $("#DgvInfoEmpleo").dxDataGrid("instance").getRowIndexByKey(e.key);
+                    let el = e.component.getCellElement(index, e.brokenRules[0].columnIndex);
+                    e.component.focus(el);
+    
+                    mensajeError('Complete el llenado o la selección del Formulario', '¡Error!');
+                }
+            },
+        });
+
+        
+        //********************************************************** //
+        //                     INICIO FUNCIONES                      //
+        //             {# DATAGRID DETALLE DE PRODUCTOS #}           //
+        //********************************************************** //
+
+        $('#BtnNuevo').on('click', function(){
+            $('#SubtituloFrm').text('NUEVO');
+            $('#BtnGuardar').attr('accion', 'NUEVO');
+            $('#frmInfoEmpleo').attr('action', '{% url "ws_administracion:ajax_informacion_empleo_agregar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+        });
+
+        $('#BtnCancelar').on('click', function(){
+            $('#frmContainer').hide();
+        });
+
+        function onClick_Editar_Información_Empleo(e){
+            $('#SubtituloFrm').text('EDITAR');
+            $('#BtnGuardar').attr('accion', 'EDITAR');
+            $('#frmInfoEmpleo').attr('action', '{% url "ws_administracion:ajax_informacion_empleo_editar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+
+            ////{# Creando el input con el name dato_pk #}
+            $('#div_pk').append(`<input type="number" name="dato_pk" value="${e.row.data.id}">`);
+
+            ////{# LLENANDO Y ASIGNANDO DATOS AL FORMULARIO PARA EDITAR #}
+            $('#CboLookupCargo').dxLookup('instance').option('value', e.row.data.idcargo);
+
+            $('#id_ciudad').val(e.row.data.ciudad);
+            $('#id_num_vacantes').val(e.row.data.num_vacantes);
+            $('#id_descripcion').val(e.row.data.descripcion);
+
+            if (e.row.data.estado == true){
+                if(!$('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }else{
+                if($('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }
+            
+            //{# Mostrando la imagen en el input #}
+            $('#id_imagen').val(''); //{# reseteando el input imagen #}
+            $("#p_imagen").show();
+            obtenerImagenNube(e.row.data.imagen, 2);
+            $('.aNubeGC').text(e.row.data.imagen);                
+        }
+
+        $('#BtnGuardar').on('click', function(){
+            var data = new FormData($('#frmInfoEmpleo').get(0));
+            data.append('idcargo', $('#CboLookupCargo').dxLookup('instance').option('value'));
+            
+            if (validarFrm() == true){
+                DevExpress.ui.dialog.confirm("¿Seguro(a) de Guardar la Información del Empleo?", "Confirmación").done(function (r) {
+                    if (r) {
+                        $.ajax({
+                            url: $('#frmInfoEmpleo').attr('action'),
+                            type: "POST",
+                            data: data,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function(data) {
+
+                                $("#DgvInfoEmpleo").dxDataGrid("instance").refresh();
+
+                                if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                    $('#frmContainer').hide();
+                                    mensajeSuccess(data.exito, '¡Exito!');
+                                }
+                                
+                                if (! (jQuery.isEmptyObject(data.error)) ) {
+                                    mensajeError(data.error, '¡Error!');
+                                }
+                            },
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#id_imagen').on('change', function(){
+            var imagen = $(this).val().toLowerCase();
+            var extensiones = imagen.substring(imagen.lastIndexOf("."));
+    
+            if ( imagen != '' && imagen != null && imagen != undefined ){
+                if(extensiones.toLowerCase() != ".jpg" && extensiones.toLowerCase() != ".png" && extensiones.toLowerCase() != ".jpeg"){
+                    mensajeError(`El archivo de tipo ${extensiones} no es válido`, '¡Error!');
+                    $(this).val('');
+                }
+            }
+        });
+    
+        function validarFrm(){
+            retorno = false;
+            var CboLookupCargo = $('#CboLookupCargo').dxLookup('instance');
+
+            //{# VALIDANDO FORMULARIO #}
+            if ( CboLookupCargo.option('value') == '' || CboLookupCargo.option('value') ==  null){
+                CboLookupCargo.focus();
+                mensajeError('Seleccione el <b>Cargo</b>', '¡Error!');
+    
+            } else {
+                if ( $('#id_ciudad').val().length == 0 || $('#id_ciudad').val() == "" ){
+                    $('#id_ciudad').focus();
+                    mensajeError('Ingrese la <b>Ciudad</b>', '¡Error!');
+        
+                } else { 
+                    if ( $('#id_num_vacantes').val().length == 0 || $('#id_num_vacantes').val() == "" ){
+                        $('#id_num_vacantes').focus();
+                        mensajeError('Ingrese el número de <b> Vacantes </b>', '¡Error!');
+        
+                    } else { 
+                        if ( $('#id_descripcion').val().length == 0 || $('id_descripcion').val() == "" ){
+                            $('#id_descripcion').focus();
+                            mensajeError('Ingrese la <b> Descripción </b>', '¡Error!');
+    
+                        }else{
+                            //{# Validando imagen #}
+                            var imagen = $('#id_imagen').val().toLowerCase();
+                            
+                            if ( imagen != '' && imagen != null && imagen != undefined ){
+                                retorno = true;
+                            } else {
+                                
+                                //{# Al editar no se necesita seleccionar una imagen #}
+                                if ( $('#BtnGuardar').attr('accion') == 'EDITAR' ) {
+                                    retorno = true;
+                                } else {
+                                    mensajeError('Seleccione la <b>Imagen</b>', '¡Error!');
+                                    $("#id_imagen").focus();
+                                }
+                            }
+                        } //imagenes
+                    } //vacantes
+                } //ciudad
+            } //cargo
+    
+            return retorno;
+        }
+    
+        function limpiar_form(){
+            //{# Limpiando el lookup (select/combobox) de cargo #}
+            $('#CboLookupCargo').dxLookup('instance').option('value', '');
+    
+            //{# El trigger click se coloca antes que el trigger resest porque sino, no funciona #}
+            if(!$('#id_estado').prop('checked')){
+                $('#id_estado').trigger('click');
+            }
+    
+            //{# Limpiando el Formulario #}
+            $('#frmInfoEmpleo').trigger("reset");
+            $('#id_imagen').val('');
+    
+            //{# Eliminando el input con el name dato_pk #}
+            if ( $('input[name="dato_pk"]') ) {
+                $('input[name="dato_pk"]').remove(); 
+            }
+    
+            $("#p_imagen").hide();
+        }
+    });
+</script>
+{% endblock script %}

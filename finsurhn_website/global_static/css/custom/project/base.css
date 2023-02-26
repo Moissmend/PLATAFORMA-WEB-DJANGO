@@ -1,0 +1,228 @@
+@media screen and (max-width: 550px) {
+    .dxPopupWidthUno .dx-popup-normal{
+        width: 380px !important;
+    }
+}
+
+@media screen and (min-width: 551px) {
+    .dxPopupWidthUno .dx-popup-normal{
+        width: 450px !important;
+    }
+}
+
+
+/****************************************/
+/*             CSS BOOTSTRAP          */
+/****************************************/
+
+/* CSS para los campos obligatorios */
+.a_obligatorio{
+    color: red;
+    cursor: pointer;
+    font-size: 10px;
+    text-decoration: none !important;
+}
+
+.padding_dgv{  
+    padding: 6px !important;
+} 
+
+.margen_bottom{  
+    margin-bottom: 2px !important;
+} 
+
+.negrita {
+    font-weight: bold !important
+}
+
+/* Input file de Bootstrap (file input bootstrap css) */
+.custom-file-input ~ .custom-file-label::after {
+    content: "Seleccionar";
+}
+
+.centrado_vertical {
+    vertical-align: middle !important;
+}
+
+.centrado_vertical_justificado {
+    vertical-align: middle !important;
+    text-align: justify !important;
+}
+
+.centrado_vertical_p {
+    font-size: 12px !important;
+    vertical-align: middle !important;
+}
+
+.centrado_vertical_justificado_p {
+    font-size: 12px !important;
+    text-align: justify !important;
+    vertical-align: middle !important;
+}
+
+.dx-command-edit-with-icons {
+    vertical-align: middle !important;
+}
+
+.centrado_vertical_p_dos {
+    font-size: 11px !important;
+    vertical-align: middle !important;
+}
+
+.centrado_vertical_justificado_p_dos {
+    font-size: 11px !important;
+    text-align: justify !important;
+    vertical-align: middle !important;
+}
+
+/*******************************************/
+/*  CSS ALL ICONOS DEL TBODY DEL DATAGRID  */
+/*******************************************/
+.dx-datagrid-table tbody tr td .dx-link-icon{
+    color: black;
+    font-size: 1.5em !important;
+    height: auto;
+    text-decoration: none !important;
+    vertical-align: middle !important;
+    width: auto;
+}
+
+.dx-icon-trash {
+    color: #E74C3C !important;
+}
+
+
+/****************************************/
+/*            DX TILE VIEW CSS          */
+/****************************************/
+.dx-selectbox {
+    max-width: 400px;
+}
+
+.dx-tile-content {
+    height: 100%;
+}
+
+.dx-tile-content .image {
+    height: 100%;
+    width: 100%;
+    background-position: center;
+    background-size: cover;
+    display: block;
+}
+
+.options {
+    padding: 20px;
+    background-color: rgba(191, 191, 191, 0.15);
+    margin-top: 20px;
+}
+
+.caption {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.option {
+    margin-top: 10px;
+}
+
+.option > span {
+    width: 70px;
+    display: inline-block;
+}
+
+.option > .dx-widget {
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+    max-width: 350px;
+}
+
+
+.thumbnail .image {
+    overflow: hidden
+}
+
+.thumbnail {
+    background-color: #E5E7E9 !important;
+    height: 100%;
+    overflow: hidden;
+}
+
+.view {
+    box-shadow: 1px 1px 2px #e6e6e6;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+}
+
+.view .mask{
+    position: absolute;
+    width: 100%;
+    overflow: hidden;
+    top: 0;
+    left: 0
+}
+
+
+.view .tools {
+    color: #fff;
+    text-align: center;
+    position: relative;
+    font-size: 16px;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.35);
+    margin: 227px 0 0 0;
+}
+
+.view .tools a {
+    color: #FFF;
+    font-weight: 700;
+    text-decoration: none !important;
+}
+.view p {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: #fff;
+    padding-top: 10px;
+    text-align: center
+}
+
+.view-first img {
+    transition: all 0.2s linear
+}
+.view-first .mask {
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease-in-out
+}
+.view-first .tools {
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.2s ease-in-out
+}
+.view-first p {
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.2s linear
+}
+.view-first:hover img {
+    transform: scale(1.05);
+    transition: 1s ease;
+    z-index: 2;
+}
+.view-first:hover .mask {
+    opacity: 1
+}
+
+.view-first:hover .tools,
+.view-first:hover p {
+    opacity: 1;
+    transform: translateY(0px)
+}
+
+.view-first:hover p {
+    transition-delay: 0.1s
+}
+

@@ -1,0 +1,463 @@
+{% extends 'base_empleado.html' %}
+
+{% block title %}Galería de la Empresa{% endblock title %}
+
+{% block contenido %}
+<div class="content-header">
+    <h3 class="text-center"><b>GALERÍA DE LA EMPRESA</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <button id="BtnNuevo" type="button" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nuevo</button> 
+        <div id="frmContainer" class="card card-secondary" style="display: none; margin-top: 10px;">
+            <div class="card-header">
+                <h3 class="card-title m-0">FORMULARIO - <small id="SubtituloFrm"> NUEVO </small></h3>
+            </div>
+            <div class="card-body p-2">
+                <form id="frmGaleria" action="" method="POST" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="row">
+                        <div id="div_pk" style="display: none;"></div>
+                        <div class="col-md-12">
+                            <label for="">Contenido: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            <div id="HtmlEditorContenido"></div>
+                        </div>
+                        <div class="col-md-12">
+                            <label>Imagen: <a class="a_obligatorio fa fa-asterisk"></a> <span id="p_imagen" class="file-upload">Actualmente: <a class="aNubeGC" href="" target="__blank"></a></span></label>
+                            {{form.imagen}}
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-12 text-center">
+                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="DgvCarrusel"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+
+    $(function(){
+        $('#HtmlEditorContenido').dxHtmlEditor({
+            height: 200,
+            toolbar: {
+                items: itemsToolbar(),
+            },
+        })
+
+        //JS de las 
+        var customDataSourceGaleria = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+
+                return $.getJSON("{% url 'ws_administracion:ajax_gestion_galeria_empresa_listar' %}")
+                    .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+
+            },
+            update: function(key, values) {
+
+                $.ajax({
+                        url: "{% url 'ws_administracion:ajax_gestion_galeria_empresa_editar_datagrid' %}",
+                        method: "POST",
+                        data: {
+                            'key':key,
+                            'data': JSON.stringify(values),
+                        },
+                        success: function(data){
+                                            
+                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                mensajeSuccess(data.exito, '¡Exito!');
+                            }
+                            
+                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+        
+                        },
+                })
+            },
+        });
+
+        $("#DgvCarrusel").dxDataGrid({
+            dataSource: customDataSourceGaleria,
+            columns: [
+                {
+                    caption: "CONTENIDO",
+                    dataField: "contenido",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    minWidth: 950,
+                    showEditorAlways: true,
+                    allowEditing: false,
+                    editCellTemplate: function(container, options){
+                        $("<div/>").dxHtmlEditor({
+                            valueType:"html",
+                            value: options.value,
+                            readOnly: true,
+                            //disabled: true,
+                            onValueChanged: function(e) {
+                                options.setValue(e.value);
+                            }
+                        }).appendTo(container);
+                    },
+                }, {
+                    caption: "ORDEN",
+                    dataField: "orden",
+                    dataType: 'number',
+                    alignment: "center",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: true,
+                    format: "#0",
+                    validationRules: [{
+                        type: "required",
+                        message: '¡El campo es Requerido!'
+                    },
+                    {
+                        type: "numeric",
+                        message: '¡El valor debe númerico!'
+                    },
+                    {
+                        type: "range",
+                        min: 1,
+                        message: '¡El valor debe ser mayor a Cero!'
+                    },{
+                        type: "custom",
+                        validationCallback: function(options) {
+                            var DgvCarrusel = $("#DgvCarrusel").dxDataGrid('instance');
+
+                            //{# Obtenemos el indice de la fila #}
+                            var index = DgvCarrusel.getRowIndexByKey(options.validator._validationGroup.key);
+                            
+                            //{# Obtenemos las filas visibles excepto la que intentamos editar #}
+                            rows = DgvCarrusel.getVisibleRows().filter((row) => row.key !== options.validator._validationGroup.key);
+                            
+                            //{# Recorremos las filas #}
+                            (rows || []).forEach(function (fila) {
+                                //{# Verificamos que el dato no sea nullo #}
+                                if(fila.data.orden != null){
+                                    //{# Si hay un dato "orden" en rows que sea igual al "orden" que queremos editar, entonces... #}
+                                    if (parseInt(fila.data.orden) == parseInt(options.value)) {
+                                        DgvCarrusel.cellValue(index, "orden", null);
+                                        //DgvCarrusel.getCellElement(index, "orden").focus();
+                                        mensajeError("¡Ya Existe!, Ingrese otro Orden.", '¡Error!');
+                                    }
+                                }
+                            })
+                            
+                            //{# rows.filter((row) => row.data.orden == options.value) #}
+                            //{# Si en rows existe un "orden" que es igual al valor del "orden" que estamos editando #}
+                            //{# Con .length contamos las filas... Si no hay filas el Valor es "0" #}
+                            //{# (¡) "1" es "true" y "0" es "false". Dando lo contrario si utilizamos (!) #}
+
+                            //{# Por lo tanto, si hay una fila con el dato orden la validacion es falsa #}
+                            return !rows.filter((row) => row.data.orden == options.value).length; //{# Si es true, la validación es correcta y si es false tira el error #}
+                        },
+                        message: "El valor debe ser único"
+                    }],
+                },{
+                    caption: "ESTADO",
+                    dataField: "estado",
+                    dataType: 'boolean',
+                    alignment: "center",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: true,
+                }, {
+                    caption: "IMAGEN",
+                    dataField: "ver_imagen",
+                    type: "buttons",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    buttons: [{
+                        name: "ver_imagen",
+                        hint: "Ver Imagen",
+                        icon: "image",
+                        onClick(e){
+                            var popup = $("#PopupImagen").dxPopup("instance");
+                            popup.show();
+                            var content = popup.content();
+                        
+                            content.css({
+                                "padding": 4
+                            })
+                        
+                            popup.option("position", {
+                                my: "center",
+                                at: "center"
+                            })
+
+                            $("#tituloPopupI").text('Imagen de la Galería');
+                            obtenerImagenNube(e.row.data.imagen, 1);
+
+                            popup.repaint();
+                        }
+                    }],
+                }, {
+                    caption: "ACCIÓN",
+                    dataField: "editar",
+                    type: "buttons",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    buttons: [{
+                        name: "editar",
+                        icon: "rename",
+                        onClick(e){
+                            onClick_Editar_Galeria_Empresa(e);
+                        }
+                    }],
+                }
+            ],
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowAdding: false,
+                allowDeleting: false,
+                selectTextOnEditStart: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            width: "100%",
+            height: "500px",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true, 
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true
+            },
+            columnChooser: {//Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            loadPanel: {
+                enabled: true,
+            },
+            columnFixing: { //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            paging: {
+                enabled: false
+            },
+            filterRow: { visible: false },
+            searchPanel:{ visible: true },
+            export: {
+                enabled: false,
+                fileName: "Galerías de la Empresa",
+                allowExportSelectedData: true,
+                allowExportSelectedData: false
+            },
+            summary: {
+                recalculateWhileEditing: false,
+                totalItems: [{
+                    column: "contenido",
+                    summaryType: "count",
+                    displayFormat: "Galerías de la Empresa: {0}"
+                }]
+            },
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+                    let index = e.component.getRowIndexByKey(e.key);
+                    let el = e.component.getCellElement(index, e.brokenRules[0].columnIndex);
+                    e.component.focus(el);
+
+                    mensajeError('Complete el llenado o la selección del Formulario', '¡Error!');
+                }
+            }
+        });
+
+
+        //{# Función de editar productos y servicios #}
+        function onClick_Editar_Galeria_Empresa(e){
+            $('#BtnGuardar').attr('accion', 'EDITAR');
+            $('#SubtituloFrm').text('EDITAR');
+            $('#frmGaleria').attr('action', '{% url "ws_administracion:ajax_gestion_galeria_empresa_editar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+
+            ////{# Creando el input con el name dato_pk #}
+            $('#div_pk').append(`<input type="number" name="dato_pk" value="${e.row.data.id}">`);
+            
+            ////{# LLENANDO Y ASIGNANDO DATOS AL FORMULARIO PARA EDITAR #}
+            $('#HtmlEditorContenido').dxHtmlEditor('instance').option('value', e.row.data.contenido);
+            
+            if (e.row.data.estado == true){
+                if(!$('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }else{
+                if($('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }
+            
+            //{# Mostrando la imagen en el input #}
+            $('#id_imagen').val(''); //{# reseteando el input imagen #}
+            $("#p_imagen").show();
+            obtenerImagenNube(e.row.data.imagen, 2);
+            $('.aNubeGC').text(e.row.data.imagen);     
+        } 
+
+        //********************************************************** //
+        //                     INICIO FUNCIONES                      //
+        //             {# DATAGRID DETALLE DE PRODUCTOS #}           //
+        //********************************************************** //
+
+        
+        $('#BtnNuevo').on('click', function(){
+            $('#BtnGuardar').attr('accion', 'NUEVO');
+            $('#SubtituloFrm').text('NUEVO');
+            $('#frmGaleria').attr('action', '{% url "ws_administracion:ajax_gestion_galeria_empresa_agregar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+        });
+
+        $('#BtnCancelar').on('click', function(){
+            $('#frmContainer').hide();
+        });
+        
+        $('#BtnGuardar').on('click', function(){
+            var data = new FormData($('#frmGaleria').get(0));
+
+            //{# Añadiendo el valor de contenido al FormData #}
+            data.append('contenido', $('#HtmlEditorContenido').dxHtmlEditor('instance').option('value'));
+            
+            if (validarFrm() == true){
+                DevExpress.ui.dialog.confirm("¿Seguro(a) de Guardar el formulario de Galería Empresa?", "Confirmación").done(function (r) {
+                    if (r) {
+                        $.ajax({
+                            url: $('#frmGaleria').attr('action'),
+                            type: "POST",
+                            data: data,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function(data) {
+
+                                $("#DgvCarrusel").dxDataGrid("instance").refresh();
+                                
+                                if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                    $('#frmContainer').hide();
+                                    mensajeSuccess(data.exito, '¡Exito!');
+                                }
+                                
+                                if (! (jQuery.isEmptyObject(data.error)) ) {
+                                    mensajeError(data.error, '¡Error!');
+                                }
+                            },
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#id_imagen').on('change', function(){
+            var imagen = $(this).val().toLowerCase();
+            var extensiones = imagen.substring(imagen.lastIndexOf("."));
+
+            if ( imagen != '' && imagen != null && imagen != undefined ){
+                if(extensiones.toLowerCase() != ".jpg" && extensiones.toLowerCase() != ".png" && extensiones.toLowerCase() != ".jpeg"){
+                    mensajeError(`El archivo de tipo ${extensiones} no es válido`, '¡Error!');
+                    $(this).val('');
+                }
+            }
+        });
+
+        function validarFrm(action='nuevo'){
+            retorno = false;
+            HtmlEditorContenido = $('#HtmlEditorContenido').dxHtmlEditor('instance');
+            HtmlEditorContenido.blur();
+
+            //{# VALIDANDO CONTENIDO #}
+            if ( HtmlEditorContenido.option('value') == '' || HtmlEditorContenido.option('value') == null || HtmlEditorContenido.getLength() == 0 || HtmlEditorContenido.getLength() ==  null){
+                HtmlEditorContenido.focus();
+                mensajeError('Ingrese el <b>Contenido</b>', '¡Error!');
+                
+            } else if( HtmlEditorContenido.getLength() > 250 ){
+                HtmlEditorContenido.focus();
+                mensajeError(`El Contenido tiene: ${$('#HtmlEditorContenido').dxHtmlEditor('instance').getLength()} caracteres. <br> No puede tener más de "${250}".`, '¡Error!');
+
+            } else {
+                //{# Validando imagen #}
+                var imagen = $('#id_imagen').val().toLowerCase();
+                
+                if ( imagen != '' && imagen != null && imagen != undefined ){
+                    retorno = true;
+                } else {
+                    
+                    //{# Al editar no se necesita seleccionar una imagen #}
+                    if ( $('#BtnGuardar').attr('accion') == 'EDITAR' ) {
+                        retorno = true;
+                    } else {
+                        mensajeError('Seleccione la <b>Imagen</b>', '¡Error!');
+                        $("#id_imagen").focus();
+                    }
+                }  
+            } //fin else contenido
+
+            return retorno;
+        }
+
+        function limpiar_form(){
+            //{# El trigger click se coloca antes que el trigger resest porque sino, no funciona #}
+            if(!$('#id_estado').prop('checked')){
+                $('#id_estado').trigger('click');
+            }
+
+            //{# Limpiando el Formulario de golpe #}
+            $('#frmGaleria').trigger("reset");
+            $('#id_imagen').val('');
+        
+            //{# Limpiando el HtmlEditor #}
+            $('#HtmlEditorContenido').dxHtmlEditor('instance').option('value', '');
+
+            //{# Eliminando el input con el name dato_pk #}
+            if ( $('input[name="dato_pk"]') ) {
+                $('input[name="dato_pk"]').remove(); 
+            }
+
+            $("#p_imagen").hide();
+        }
+
+        //Funcion de los items que llevara el editor de texto, para que no se repita
+        function itemsToolbar(){
+            return [
+                'undo', 'redo', 'separator',
+                {
+                    name: 'size',
+                    acceptedValues: ['11pt', '12pt', '13pt', '14pt', '15pt', '16pt'],
+                },
+                {
+                    name: 'font',
+                    acceptedValues: ['Arial', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Times New Roman', 'Verdana'],
+                },
+                'separator',
+                'bold', 'italic', 'strike', 'underline', 'separator',
+                'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'separator',
+            ]
+        }
+    });
+</script>
+{% endblock script %}

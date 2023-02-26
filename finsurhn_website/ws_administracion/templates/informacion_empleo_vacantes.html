@@ -1,0 +1,32 @@
+{% extends 'base_website_extra.html' %}
+
+{% block title %} Vacantes Disponibles {% endblock title %}
+
+{% block contenido %}
+<div class="color_grisDegradado">
+    <div class="container" id="historia">
+        <div class="row featurette justify-content-center">
+            <div class="col-12 col-md-12 text-center" style="margin-top:25px; margin-bottom: 20px;">
+                <h3>VACANTES DISPONIBLES</h3>
+            </div>
+
+            {% for info in info_empleo %}
+                <div class="col-12 col-md-10 col-lg-6" style="margin-bottom: 20px">
+                    <div class="card text-center">
+                        <h5 class="card-header">
+                            {{info.cargo}}
+                        </h5>
+                        <div class="card-body">
+                            <img src="{{ info.imagen.url }}" class="card-img-top" style="height: 400px;" alt="..."> 
+                        </div>
+                        <div class="card-footer text-muted">
+                            <a href="{% url 'ws_administracion:informacion_empleo_vacante_info' info.id %}" class="btn btn-primary">Ver Más</a>
+                        </div>    
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock contenido %}

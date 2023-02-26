@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}   
+    <nav class="navbar navbar-light navbar-expand-lg navbar-right fixed-top" id="webSiteMenu">
+        <a class="navbar-brand" style="font-size:22px; text-align: center;" href="{% url 'inicio' %}">
+            <img style=" height: 32px; padding-bottom: 4px;" src="{{ctx_empresa.logo.url}}" alt="logo">
+            <span style="padding-left: 8px;">{{ctx_empresa.abreviatura}}</span>
+        </a>        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#toggleWebSiteMenu" aria-controls="toggleWebSiteMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse justify-content-md-center" id="toggleWebSiteMenu">
+            <ul class="navbar-nav mr-auto my-2 my-lg-0 navbar-nav-scroll">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dwnNuestraEmpresa" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Nuestra Empresa
+                    </a>
+                    {% if ctx_empresa.historia or ctx_empresa.objetivo_general or ctx_empresa.mision or ctx_empresa.vision %}
+                        <ul class="dropdown-menu link_menu" aria-labelledby="dwnNuestraEmpresa">
+                            {% if ctx_empresa.historia %} <a class="dropdown-item" href="#historia">Historia</a> {% endif %}
+                            {% if ctx_empresa.mision or ctx_empresa.vision %} <a class="dropdown-item" href="#mision_vision">Misión & Visión</a> {% endif %}
+                            {% if valores %} <a class="dropdown-item" href="#valores">Valores Corporativos</a> {% endif %}
+                        </ul>
+                    {% endif %}
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dwnNuestraEmpresa" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Información Empresarial
+                    </a>
+                    <ul class="dropdown-menu link_menu" aria-labelledby="dwnNuestraEmpresa">
+                        <a class="dropdown-item" href="#sectores_financieros">Sectores Financieros</a>
+                        <a id="menuProductosServicios" class="dropdown-item" href="#div_LProductos_Servicios" style="display: none;">Productos y Servicios</a>
+                        {% if info_empleo %}
+                            <a class="dropdown-item" href="#vacantes_disponibles">Vacantes Disponibles</a>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dwnNuestraEmpresa" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Más
+                    </a>
+                    <ul class="dropdown-menu link_menu" aria-labelledby="dwnNuestraEmpresa">
+                        <a id="a_GaleriaRS" class="dropdown-item" href="#div_GaleriaRS">Responsabilidad Social</a>
+                        <a id="a_SalaVideos" class="dropdown-item" href="#div_SalaVideos">Sala de Vídeos</a>
+                        <a class="dropdown-item" href="#contactanos">Contáctanos</a>
+                    </ul>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <a id="BtnLoginForm" class="nav-link" role="button">Ingresar</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="websiteContenido">
+        {% block contenido %}{% endblock contenido %}
+    </div>
+
+    <footer class="container-fluid" id="footerSitio">
+        <div class="row" style="margin-bottom:20px;" id="footerIcon_arriba">
+            <div class="col-md-12 text-center">
+                {# La flecha hacia arriba #}
+                <a href="#websiteContenido"><i class="bi bi-chevron-double-up"></a></i>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-auto text-center">
+                <h6>UBICACIÓN / CONTACTO</h6>
+                <ul class="list-unstyled text-small">
+                    <li>2782-2223</li>
+                    <li>finsur01@gmail.com</li>
+                    <li>recursoshumanosfinsur@gmail.com</li>
+                    <li style="padding-left: 3%; padding-right: 3%;">{{ctx_empresa.direccion}}</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12 text-center" style="margin-bottom:10px;"><hr>
+                {% if ctx_redes_sociales %}
+                    {% for r in ctx_redes_sociales %}
+                        <a href="{{r.link}}" target="_blank"><img src="{{r.imagen.url}}" style="height: 40px; margin-right:1px; " alt="{{r.nombre}}"></a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="col-12 copyright text-center">
+                <script type="text/javascript">
+                    document.write(`
+                        <strong>Derechos Reservados &copy; ${new Date().getFullYear()} FINSUR</strong>
+                    `) 
+                </script>
+            </div>
+        </div>
+    </footer>
+
+    {# Modal del Cambio de Contraseña #}
+    <div id="PopupLoginForm">
+        <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupLoginForm' }">
+            <h5 class="dx-theme-accent-as-background-color" style="color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Ingreso Sitio Web</h5>
+        </div>
+        <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupLoginForm' }">
+            <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+                <div style="padding: 5px !important; height: 100% !important;">
+                    <div class="row no-gutters" style="margin-bottom: 5px;">
+                        <div class="col-md-12" style="margin-bottom: 5px;">
+                            <label class="margen_bottom negrita dx-theme-accent-as-text-color">Usuario: <a class="a_obligatorio fa fa-asterisk" style="color:red"></a></label>
+                            <div id="TxtUsuario"></div>
+                        </div>
+                        <div class="col-md-12" style="margin-bottom: 5px;">
+                            <label class="margen_bottom negrita dx-theme-accent-as-text-color">Contraseña: <a class="a_obligatorio fa fa-asterisk" style="color:red"></a></label>
+                            <div id="TxtContrasena"></div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-md-12">
+                            <button id="BtnIngresar" style="background-color: #337ab7 !important; width: 100%; font-size: 16px;" class="btn btn-primary">Ingresar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+    
+{% block script %}{% endblock script %}

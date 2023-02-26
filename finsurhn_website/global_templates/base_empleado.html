@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>{% block title %}{% endblock title %}</title>
+    
+    {% load static %}
+    <link rel="icon" href="{% static 'media_finsur/finsur.ico' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/overlayScrollbars/OverlayScrollbars.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/switchery/switchery.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom/apps/base_apps.css' %}"> {# custom apps css (logueado) #}
+    <link rel="stylesheet" href="{% static 'css/custom/project/base.css' %}"> {# all css proyecto (todo el proyecto) #}
+    
+    <link rel="stylesheet" href="{% static 'devextreme/css/dx.common.css' %}">
+    <link rel="stylesheet" href="{% static 'devextreme/css/dx.light.compact.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr/toastr.css' %}">
+    
+    {% block style %}{% endblock style %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed dx-viewpor sidebar-collapse">
+    <div class="wrapper">
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="#" class="nav-link"></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link btn_cambio_contrasena" title="Editar Contraseña" role="button"><i class="fas fa-key"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" title="Cerrar Sesión" href="{% url 'ws_administracion:cerrar_sesion' %}" role="button"><i class="fas fa-door-closed"></i></a>
+                </li>
+            </ul>
+        </nav>
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <a href="{% url 'inicio' %}" class="brand-link">
+                <img src="{{ctx_empresa.logo.url}}" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <span class="brand-text font-weight-light">{{ctx_empresa.abreviatura}}</span>
+            </a>
+            <div class="sidebar">
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <i class="bi bi-person-circle" style="font-size: 32px; color: #A4A4A4;"></i>
+                    </div>
+                    <div class="info">
+                        <a class="d-block" style="padding-top: 6px;">{{user.get_username.upper}}</a>
+                    </div>
+                </div>
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        
+                    {% if perms.ws_administracion.modulo_informacion_empresa %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon bi bi-building"></i>
+                                <p>Información de la Empresa</p>
+                            </a>
+                            <ul class="nav nav-treeview">                
+                            {% if perms.admin.informacion_empleo %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:informacion_empleo' %}" class="nav-link">
+                                        <i class="far nav-icon fas fa-address-card"></i>
+                                        <p>Información del Empleo</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if perms.admin.productos_servicios %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:productos_servicios' %}" class="nav-link">
+                                        <i class="far nav-icon fas fa-clipboard-list"></i>
+                                        <p>Productos y Servicios</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if perms.admin.valores_empresa %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:valores_empresa' %}" class="nav-link">
+                                        <i class="far nav-icon fas fa-fire"></i>
+                                        <p>Valores de la empresa</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                    
+                    {% if perms.ws_administracion.modulo_configuracion_pagina %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Configuración de la Página</p>
+                            </a>
+                            <ul class="nav nav-treeview">
+
+                            {% if perms.admin.gestion_galeria_empresa %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:gestion_galeria_empresa' %}" class="nav-link">
+                                        <i class="far nav-icon bi bi-card-image"></i>
+                                        <p>Galería Empresa</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if perms.admin.redes_sociales_empresa %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:redes_sociales_empresa' %}" class="nav-link">
+                                        <i class="far nav-icon bi bi-link"></i>
+                                        <p>Redes Sociales</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% if perms.admin.responsabilidad_social %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:responsabilidad_social' %}" class="nav-link">
+                                        <i class="far nav-icon fas fa-handshake"></i>
+                                        <p>Responsabilidad Social</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% if perms.admin.sala_videos %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:sala_videos' %}" class="nav-link">
+                                        <i class="far nav-icon bi bi-file-earmark-play-fill"></i>
+                                        <p>Sala de Videos</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
+
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+        <div class="content-wrapper">
+            {# Modal de las Imágenes del Sitio Web #}
+            <div id="PopupImagen" style="display: none;">
+                <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupImagen' }">
+                    <h5 id="tituloPopupI" class="dx-theme-accent-as-background-color" style="color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px"></h5>
+                </div>
+                <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupImagen' }">
+                    <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+                        <div style="padding: 5px !important; height: 100% !important;">
+                            <img class="imagenNubeGC" src="" alt="Imagen" style="width: 100%; height: 320px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Modal del Cambio de Contraseña #}
+            <div id="PopupCambioContrasena" style="display: none;">
+                <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupCambioContrasena' }">
+                    <h5 class="dx-theme-accent-as-background-color" style="color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Editar Contraseña</h5>
+                </div>
+                <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupCambioContrasena' }">
+                    <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+                        <div style="padding: 5px !important; height: 100% !important;">
+                            <div class="row no-gutters" style="margin-bottom: 5px;">
+                                <div class="col-md-12" style="margin-bottom: 5px;">
+                                    <label class="margen_bottom negrita dx-theme-accent-as-text-color">Contraseña Nueva: <a class="a_obligatorio fa fa-asterisk" style="color:red"></a></label>
+                                    <div id="TxtContrasenaNueva"></div>
+                                </div>
+                                <div class="col-md-12" style="margin-bottom: 5px;">
+                                    <label class="margen_bottom negrita dx-theme-accent-as-text-color">Confirmar Contraseña: <a class="a_obligatorio fa fa-asterisk" style="color:red"></a></label>
+                                    <div id="TxtContrasenaConfirmar"></div>
+                                </div>
+                            </div>
+                            <div class="row no-gutters">
+                                <div class="col-md-3 offset-md-6 col-sm-3 offset-sm-6">
+                                    <div id="BtnCancelarCambioContrasena"></div>
+                                </div>
+                                <div class="col-md-3 col-sm-3" style="padding-left: 5px;">
+                                    <div id="BtnGuardarCambioContrasena"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% block contenido %}{% endblock %}
+        </div>
+        <footer class="main-footer">
+            <script type="text/javascript">
+                document.write(`
+                    <strong>Derechos Reservados &copy; ${new Date().getFullYear()} FINSUR</strong>
+                `) 
+            </script>
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.0
+            </div>
+        </footer>
+        <aside class="control-sidebar control-sidebar-dark"></aside>
+    </div>
+
+    <script src="{% static 'js/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/overlayScrollbars/jquery.overlayScrollbars.min.js' %}"></script>
+    <script src="{% static 'dist/js/adminlte.js' %}"></script>
+
+    {# DevExtreme Quill (required by the HtmlEditor UI component) #} {# HTMTL EDITOR #}
+    <script type="text/javascript" src="{% static 'devextreme/js/dx-quill.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/showdown.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/turndown.js' %}"></script>
+
+    {# JS DevExtreme library #}
+    <script type="text/javascript" src="{% static 'devextreme/js/jszip.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/dx.all.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/localization/dx.intl.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/localization/dx.messages.es.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/JQcookies.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/switchery/switchery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/toastr/toastr.min.js' %}"></script>
+
+    {# Momment js #}
+    <script type="text/javascript" src="{% static 'js/moment/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/web_site_in.js' %}"></script>
+
+    {% block script %}{% endblock script %}
+</body>
+</html>

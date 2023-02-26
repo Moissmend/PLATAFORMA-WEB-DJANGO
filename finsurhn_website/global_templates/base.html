@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>{% block title %}{% endblock title %}</title>
+    
+    {% load static %}
+    <link rel="icon" href="{% static 'media_finsur/finsur.ico' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr/toastr.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom/project/base.css' %}"> {# all css proyecto (todo el proyecto) #}
+    <link rel="stylesheet" href="{% static 'css/custom/website/base_website.css' %}"> {# css el sitio web (no logueado) #}
+
+    <link rel="stylesheet" href="{% static 'devextreme/css/dx.common.css' %}">
+    <link rel="stylesheet" href="{% static 'devextreme/css/dx.light.compact.css' %}">
+    
+    {% block style %}{% endblock style %}
+</head>
+<body>
+	{% block content %}
+			
+	{% endblock %}
+	<script type="text/javascript" src="{% static 'js/jquery/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui/jquery-ui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    {# JS Necesario para el HTMTL EDITOR #}
+    <script type="text/javascript" src="{% static 'devextreme/js/dx-quill.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/showdown.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/turndown.js' %}"></script>
+    
+    {# JS DevExtreme library #}
+    <script type="text/javascript" src="{% static 'devextreme/js/jszip.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/dx.all.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/localization/dx.intl.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/js/localization/dx.messages.es.js' %}"></script>
+    <script type="text/javascript" src="{% static 'devextreme/JQcookies.js' %}"></script>
+    
+    <!-- Toastr-->
+    <script type="text/javascript" src="{% static 'js/toastr/toastr.min.js' %}"></script>
+
+    {# Momment js #}
+    <script type="text/javascript" src="{% static 'js/moment/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/web_site_in.js' %}"></script>
+
+    {% block script %}{% endblock %}
+</body>
+</html>

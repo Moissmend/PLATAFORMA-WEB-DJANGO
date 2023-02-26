@@ -1,0 +1,301 @@
+{% extends 'base_empleado.html' %}
+{% load static %}
+
+{% block title %} Responsabilidad Social {% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/custom/apps/ws_administracion/sala_videos.css' %}">
+    
+    <style>
+        .dx-icon-image {
+			font-size: 2em !important;
+			height: auto;
+			text-decoration: none !important;
+            vertical-align: middle !important;
+			width: auto;
+		}
+    </style>
+    
+{% endblock style %}
+
+{% block contenido %}
+<div id="loadPanelVideos"></div>
+
+<div class="content-header">
+    <h3 class="text-center"><b>RESPONSABILIDAD SOCIAL</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <button id="BtnNuevo" type="button" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nuevo</button> 
+        <div id="frmContainer" class="card card-secondary" style="display: none; margin-top: 10px;">
+            <div class="card-header">
+                <h3 class="card-title m-0">FORMULARIO - <small id="SubtituloFrm"> NUEVO </small></h3>
+            </div>
+            <div class="card-body p-2">
+                <form id="frm_responsabilidad" action="" method="POST" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="row">
+                        <div id="div_pk" style="display: none;"></div>
+                        <div class="col-md-7">
+                            <label>Nombre: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.nombre}}
+                        </div>
+                        <div class="col-md-4">
+                            <label>Fecha de Realización: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.fecha_realizacion}}
+                        </div>
+                        <div class="col-md-1">
+                            <label>Estado:</label><br>
+                            {{form.estado}}
+                        </div>     
+                        <div class="col-md-12">
+                            <label>Descripción: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.descripcion}}
+                        </div>
+                        <div class="col-md-12">
+                            <label>Imagen: <a class="a_obligatorio fa fa-asterisk"></a> <span id="p_imagen" class="file-upload">Actualmente: <a class="aNubeGC" href="" target="__blank"></a></span></label>
+                            {{form.imagen}}
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-12 text-center">
+                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="TileVResponsabilidad"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    $(function(){
+
+        var customDataSourceTVResponsabilidad = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            cacheRawData: true,
+            load: function() {
+                return $.getJSON("{% url 'ws_administracion:ajax_responsabilidad_social_listar' %}", {'dxTileVideo': 2})
+                    .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+    
+            },
+        });
+
+        $('#TileVResponsabilidad').dxTileView({
+            dataSource: customDataSourceTVResponsabilidad,
+            height: 300,
+            baseItemHeight: 300,
+            baseItemWidth: 450,
+            hint: 'Click, Editar',
+            itemMargin: 10,
+            showScrollbar: true,
+            tabIndex:0,
+            hoverStateEnabled: true,
+            direction: 'horizontal',
+            onItemClick(e){ 
+                onClick_Editar_Responsabilidad_Social(e.itemData);               
+            },
+            itemTemplate(itemData, itemIndex, itemElement) {
+                itemElement.append(`
+                    <div class="thumbnail">
+                        <div class="image view view-first">
+                            <img style="width: 100%; height: 100%;" src="${itemData.imagen}" alt="${itemData.nombre}"/>
+                            <div class="mask">
+                                <p style="font-size: 14px;">${itemData.nombre}</p>
+                                <div class="tools">
+                                    <a><i class="bi bi-pencil-square"> Editar</i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                `);
+            },
+        });
+
+        $('#loadPanelVideos').dxLoadPanel({
+			shadingColor: 'rgba(0,0,0,0.4)',
+			position: { of: '#content' },
+			visible: false,
+			showIndicator: true,
+			showPane: true,
+			shading: true,
+			closeOnOutsideClick: false,
+			height: "auto",
+			width: "auto",
+			message: "Cargando Video.."
+		}).dxLoadPanel('instance');
+
+        
+        function onClick_Editar_Responsabilidad_Social(e){
+            $('#SubtituloFrm').text('EDITAR');
+            $('#BtnGuardar').attr('accion', 'EDITAR');
+            $('#frm_responsabilidad').attr('action', '{% url "ws_administracion:ajax_responsabilidad_social_editar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+    
+            ////{# Creando el input con el name dato_pk #}
+            $('#div_pk').append(`<input type="number" name="dato_pk" value="${e.id}">`);
+    
+            ////{# LLENANDO Y ASIGNANDO DATOS AL FORMULARIO PARA EDITAR #}
+            $('#id_nombre').val(e.nombre);
+            $('#id_fecha_realizacion').val(e.fecha_realizacion);
+            $('#id_descripcion').val(e.descripcion);
+    
+            if (e.estado == true){
+                if(!$('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }else{
+                if($('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }
+    
+            //{# Mostrando la imagen en el input #}
+            $('#id_imagen').val(''); //{# reseteando el input imagen #}
+            $("#p_imagen").show();
+            $('.aNubeGC').attr("href", e.imagen);
+            $('.aNubeGC').text(e.nombreImagen);    
+        }
+        
+        //********************************************************** //
+        //                           INICIO                          //
+        //                 {# Funciones Principales #}               //
+        //********************************************************** //
+        $('#BtnGuardar').on('click', function(){
+            var data = new FormData($('#frm_responsabilidad').get(0));
+            
+            if (validarFrm() == true){
+                DevExpress.ui.dialog.confirm("¿Seguro(a) de Guardar el Formulario: Responsabilidad Social?", "Confirmación").done(function (r) {
+                    if (r) {
+                        $.ajax({
+                            url: $('#frm_responsabilidad').attr('action'),
+                            type: "POST",
+                            data: data,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            success: function(data) {
+    
+                                $("#loadPanelVideos").dxLoadPanel("instance").show();
+                                
+                                customDataSourceTVResponsabilidad.clearRawDataCache();
+                                $("#TileVResponsabilidad").dxTileView("instance").getDataSource().load();
+    
+                                $("#loadPanelVideos").dxLoadPanel("instance").hide();
+    
+                                if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                    $('#frmContainer').hide();
+                                    mensajeSuccess(data.exito, '¡Exito!');
+                                }
+                                
+                                if (! (jQuery.isEmptyObject(data.error)) ) {
+                                    mensajeError(data.error, '¡Error!');
+                                }
+                            },
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#BtnNuevo').on('click', function(){
+            $('#SubtituloFrm').text('NUEVO');
+            $('#BtnGuardar').attr('accion', 'NUEVO');
+            $('#frm_responsabilidad').attr('action', '{% url "ws_administracion:ajax_responsabilidad_social_agregar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+        });
+    
+        $('#BtnCancelar').on('click', function(){
+            $('#frmContainer').hide();
+        });
+    
+    
+        $('#id_imagen').on('change', function(){
+            var imagen = $(this).val().toLowerCase();
+            var extensiones = imagen.substring(imagen.lastIndexOf("."));
+    
+            if ( imagen != '' && imagen != null && imagen != undefined ){
+                if(extensiones.toLowerCase() != ".jpg" && extensiones.toLowerCase() != ".png" && extensiones.toLowerCase() != ".jpeg"){
+                    mensajeError(`El archivo de tipo ${extensiones} no es válido`, '¡Error!');
+                    $(this).val('');
+                }
+            }
+        });
+    
+        function validarFrm(){
+            retorno = false;
+    
+            //{# VALIDANDO FORMULARIO #}
+            if ( $('#id_nombre').val().length == 0 || $('#id_nombre').val().length ==  undefined ){
+                $('#id_nombre').focus();
+                mensajeError('Ingrese el <b>Nombre</b>', '¡Error!');
+            
+            } else {
+                if ( $('#id_fecha_realizacion').val().length == 0 || $('#id_fecha_realizacion').val().length ==  undefined ){
+                    $('#id_fecha_realizacion').focus();
+                    mensajeError('Ingrese la <b>Fecha</b>', '¡Error!');
+                    
+                }else{
+                    if ( $('#id_descripcion').val().length == 0 || $('#id_descripcion').val().length ==  undefined ){
+                        $('#id_descripcion').focus();
+                        mensajeError('Ingrese la <b>descripción</b>', '¡Error!');
+                        
+                    }else{
+                        //{# Validando imagen #}
+                        var imagen = $('#id_imagen').val().toLowerCase();
+                        
+                        if ( imagen != '' && imagen != null && imagen != undefined ){
+                            retorno = true;
+                        } else {
+                            
+                            //{# Al editar no se necesita seleccionar una imagen #}
+                            if ( $('#BtnGuardar').attr('accion') == 'EDITAR' ) {
+                                retorno = true;
+                            } else {
+                                mensajeError('Seleccione la <b>Imagen</b>', '¡Error!');
+                                $("#id_imagen").focus();
+                            }
+                        }
+                    }
+                    
+                }
+            }
+    
+            return retorno;
+        }
+         
+        function limpiar_form(){
+            //{# El trigger click se coloca antes que el trigger resest porque sino, no funciona #}
+            if(!$('#id_estado').prop('checked')){
+                $('#id_estado').trigger('click');
+            }
+    
+            //{# Limpiando el Formulario #}
+            $('#frm_responsabilidad').trigger("reset");
+            $('#id_imagen').val('');
+    
+            //{# Eliminando el input con el name dato_pk #}
+            if ( $('input[name="dato_pk"]') ) {
+                $('input[name="dato_pk"]').remove(); 
+            }
+    
+            $("#p_imagen").hide();
+            $("#p_video").hide();
+        }
+    });
+    
+
+</script>
+{% endblock script %}

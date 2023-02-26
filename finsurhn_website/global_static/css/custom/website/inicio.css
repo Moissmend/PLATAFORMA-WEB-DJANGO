@@ -1,0 +1,316 @@
+
+/* Carrusel de la página inicio en cliente */
+
+/* Tamaño de iconos, atrás y siguiente */
+#carousel_page i{
+  color: #ffffff;
+  font-size: 40px;
+}
+
+#carousel_page a:hover i{
+  color: #e4b266ad
+}
+
+#carousel_page {
+  padding-bottom: 10px;
+}
+
+#carousel_img {
+  display:block; 
+  height: 470px; 
+  width:100%;
+}
+
+/* Si el maximo width es 1050 y el minimo 992 */
+@media (max-width: 1050px) and (min-width: 992px) { 
+  #carousel_page .carousel-item p {
+    padding-left:50px;
+  }
+  #carousel_page .carousel-item h4 {
+    padding-left:50px;
+  }
+}
+
+@media (max-width: 992px) and (min-width: 768px) { 
+  #carousel_page {
+    height: 750px !important;
+  }
+}
+
+@media (max-width: 767px) and (min-width: 569px){ 
+  #carousel_img {
+    height: 440px !important;
+  }
+  #carousel_page {
+    height: 750px !important;
+  }
+}
+
+@media (max-width: 568px) and (min-width: 468px){ 
+  #carousel_img {
+    height: 440px !important;
+  }
+  #carousel_page {
+    height: 770px !important;
+  }
+}
+@media (max-width: 467px) and (min-width: 421px){ 
+  #carousel_img {
+    height: 390px !important;
+  }
+  #carousel_page {
+    height: 780px !important;
+  }
+}
+
+@media (max-width: 420px) and (min-width: 301px){ 
+  #carousel_img {
+    height: 350px !important;
+  }
+  #carousel_page {
+    height: 850px !important;
+  }
+}
+
+@media (max-width: 300px) and (min-width: 0px){ 
+  #carousel_img {
+    height: 250px !important;
+  }
+  #carousel_page {
+    height: 800px !important;
+  }
+}
+
+
+
+
+/* CSS del popup (modal) detalle del producto */
+@media (max-width: 575px) and (min-width: 0px) { 
+  .dxPopupWidthForDatagrid .dx-overlay-content{
+    width: 340px !important;
+  }
+}
+
+@media (max-width: 767px) and (min-width: 576px) { 
+  .dxPopupWidthForDatagrid .dx-overlay-content{
+    width: 460px !important;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 768px) { 
+  .dxPopupWidthForDatagrid .dx-overlay-content{
+    width: 550px !important;
+  }
+}
+
+@media (min-width: 992px) { 
+  .dxPopupWidthForDatagrid .dx-overlay-content{
+    width: 660px !important;
+  }
+}
+
+
+/* CSS de la Sala de Videos Popup Modal */
+/* CSS del popup (modal) detalle del producto */
+@media (max-width: 374px) and (min-width: 0px) { 
+  .dxPopupWidthVideos .dx-overlay-content{
+    width: 340px !important;
+  }
+  .dxPopupWidthVideos .dx-overlay-content iframe#videoSalaVideo{
+    height: 260px !important;
+  }  
+}
+
+@media (max-width: 575px) and (min-width: 375px) { 
+  .dxPopupWidthVideos .dx-overlay-content{
+    width: 420px !important;
+  }
+  .dxPopupWidthVideos .dx-overlay-content iframe#videoSalaVideo{
+    height: 300px !important;
+  }  
+}
+
+@media (max-width: 767px) and (min-width: 576px) { 
+  .dxPopupWidthVideos .dx-overlay-content{
+    width: 500px !important;
+  }
+  .dxPopupWidthVideos .dx-overlay-content iframe#videoSalaVideo{
+    height: 330px !important;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 768px) { 
+  .dxPopupWidthVideos .dx-overlay-content{
+    width: 580px !important;
+  }
+  .dxPopupWidthVideos .dx-overlay-content iframe#videoSalaVideo{
+    height: 400px !important;
+  }
+}
+
+@media (min-width: 992px) { 
+  .dxPopupWidthVideos .dx-overlay-content{
+    width: 800px !important;
+  }
+  .dxPopupWidthVideos .dx-overlay-content iframe#videoSalaVideo{
+    height: 480px !important;
+  }
+}
+
+
+/***********************************************/  
+/*               CSS DE dxList 
+         Lista de productos y servicios        */
+/***********************************************/
+.listProServ {
+  height: "100%";
+  width: "100%";
+}
+
+.list-container {
+  height: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#div_LProductos_Servicios{
+  padding-top:50px; 
+  padding-bottom:20px; 
+  background-color: #161c1f94;
+}
+
+@media (max-width: 766px) and (min-width: 0px) { 
+  .list-container {
+      min-height: 540px;
+  }
+
+  .listProServ {
+      padding-left: 40px;
+      padding-right:  40px;
+  }
+
+  #div_LProductos_Servicios{
+      height: 760px; 
+  }
+
+  .dxList-titulo{
+      font-size: 15px !important;
+  } 
+
+  .dxList-center{
+      text-align: center;
+  }
+}
+
+@media (max-width: 992px) and (min-width: 767px){ 
+  .list-container {
+      min-height: 560px;
+  }
+
+  #div_LProductos_Servicios{
+      height: 720px; 
+  }
+
+  .dxList-titulo{
+      font-size: 18px !important;
+  } 
+
+  .dxList-center{
+      text-align: center;
+  }
+} 
+
+
+@media (min-width: 992px){ 
+  .list-container {
+      min-height: 480px;
+  }
+
+  #div_LProductos_Servicios{
+      height: 640px; 
+  }
+
+  .dxList-titulo{
+      font-size: 18px !important;
+  } 
+}
+
+
+/***********************************************/
+/* CSS de las imagenes de las VACANTES DISPONIBLES */
+@media (max-width: 374px) and (min-width: 0px) { 
+  #vacantes_disponibles .img_vacantes_disponibles{
+    min-height: 260px !important;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 575px) and (min-width: 375px) { 
+  #vacantes_disponibles .img_vacantes_disponibles{
+    min-height: 290px !important;
+    height: auto !important;
+  }  
+}
+
+
+/***********************************************/
+            /* CSS CONTÁCTANOS */
+/***********************************************/
+              /* CSS IMAGEN */
+@media (max-width: 374px) and (min-width: 0px) { 
+  #contactanos img{
+    min-height: 260px !important;
+    height: auto !important;
+    padding-bottom: 25px;
+  }
+}
+
+@media (max-width: 575px) and (min-width: 375px) { 
+  #contactanos img{
+    min-height: 280px !important;
+    height: auto !important;
+    padding-bottom: 25px;
+  }
+}
+
+@media (max-width: 767px) and (min-width: 576px) { 
+  #contactanos img{
+    min-height: 360px !important;
+    height: auto !important;
+    padding-bottom: 25px;
+  }
+}
+
+@media (max-width: 992px) and (min-width: 768px) { 
+  #contactanos img{
+    min-height: 450px !important;
+    height: auto !important;
+    border-radius: 5px !important;
+    padding-bottom: 25px;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 993px) { 
+  #contactanos img{
+    min-height: 520px !important;
+    height: auto !important;
+    border-radius: 5px !important;
+    padding-bottom: 25px;
+  }  
+}
+
+@media (min-width: 1200px) { 
+  #contactanos img{
+    min-height: 520px !important;
+    height: auto !important;
+    border-radius: 5px !important;
+  }  
+}
+
+div#contactanos{
+  padding-top: 30px;
+  padding-bottom: 30px;
+}

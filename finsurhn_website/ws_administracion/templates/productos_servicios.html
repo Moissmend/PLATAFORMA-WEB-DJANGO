@@ -1,0 +1,1027 @@
+{% extends 'base_empleado.html' %}
+{% load static %}
+
+{% block title %} Productos y Servicios {% endblock title %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/custom/apps/ws_administracion/productos_servicios.css' %}">
+    <style type="text/css">
+        .dx-datagrid-rowsview .dx-data-row .dx-cell-modified .dx-highlight-outline::after {
+			border-color: transparent !important;
+		}
+
+		.dx-datagrid-rowsview .dx-data-row .dx-validator.dx-datagrid-invalid .dx-highlight-outline::after {
+			background: rgba(255, 35, 35, 0.08) !important;
+			border-color: red !important;
+		}
+        
+        #DgvDetalleFrm .dx-row-removed{
+			display: none !important; 
+		}
+    </style>
+{% endblock style %}
+
+{% block contenido %}
+<div class="content-header">
+    <h3 class="text-center"><b>PRODUCTOS Y SERVICIOS</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <button id="BtnNuevo" type="button" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nuevo</button> 
+        <div id="frmContainer" class="card card-secondary" style="display: none; margin-top: 10px;">
+            <div class="card-header">
+                <h3 class="card-title m-0">FORMULARIO - <small id="SubtituloFrm"> NUEVO </small></h3>
+            </div>
+            <div class="card-body">
+                <form id="frmProdServ" action="" method="POST" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="row">
+                        <div id="div_pk" style="display: none;"></div>
+                        <div class="col-md-12">
+                            <label>Producto/Servicio: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.nombre}}
+                        </div>
+                        <div class="col-md-12">
+                            <label>Descripción: <a class="a_obligatorio fa fa-asterisk"></a></label>
+                            {{form.descripcion}}
+                        </div>
+                        <div class="col-md-2">
+                            <label>Es Producto:</label><br>
+                            {{form.es_producto}}
+                        </div>
+                        <div class="col-md-10">
+                            <label>Imagen: <a class="a_obligatorio fa fa-asterisk"></a> <span id="p_imagen" class="file-upload">Actualmente: <a class="aNubeGC" href="" target="__blank"></a></span></label>
+                            {{form.imagen}}
+                        </div>
+                    </div><br>
+                    <div class="row" id="id_detalle_producto">
+                        <div class="col-md-12">
+                            <fieldset class="dx-theme-accent-as-border-color fondo_panel">
+                                <legend class="dx-theme-accent-as-text-color">Detalle del Producto</legend>
+                                <div id="DgvDetalleFrm"></div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-12 text-center">
+                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="DgvProdServ"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Modal de Detalles del Producto #}
+<div id="PopupDetalleProducto" style="display: none;">
+    <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupDetalleProducto' }">
+        <h5 class="dx-theme-accent-as-background-color" style="color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Detalle del Producto</h5>
+    </div>
+    <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupDetalleProducto' }">
+        <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+            <div style="padding: 5px !important; height: 100% !important;">
+                <div class="container text-center">
+                    <h4><b id="popup_producto"></b></h4>
+                    <small id="popup_producto_descripcion"></small>
+                </div>
+                <div id="DgvPopupDetalle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    $(function(){
+        var id_producto = 0;
+        
+        //{# customDataSource DataGrid  - DETALLE DEL PRODUCTO #}
+        var customDataSourceDetalleProducto = new DevExpress.data.CustomStore({
+            key: 'id',
+            loadMode: "raw",
+            cacheRawData: true,
+            load: function() {
+                return $.getJSON("{% url 'ws_administracion:ajax_detalle_producto_obtener' %}", { id_producto })
+                        .fail( function(){ 
+                            mensajeError("¡Error al Cargar los Datos, Actualice la Página Web!");
+                        });
+            },
+        });
+
+        //{# customDataSource CBO (Frecuencia de Pago) - DETALLE DEL PRODUCTO #}
+        var customDataSourceCboFrecuenciaPago = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+                return $.getJSON("{% url 'ws_administracion:ajax_frecuencia_pagos_listar' %}")
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+            },
+        });
+
+        //{# Modal del Detalle del producto #}
+        $('#PopupDetalleProducto').dxPopup({
+            contentTemplate: "contenidoPopupDetalleProducto",
+            height: "auto",
+            showTitle: true,
+            titleTemplate: "tituloPopupDetalleProducto",
+            visible: false,
+            dragEnabled: true,
+            closeOnOutsideClick: true,
+            shading: true,
+            wrapperAttr: {
+				class: "dxPopupWidthForDatagrid"
+			}
+            //resizeEnabled : true 
+        })
+        
+        $("#DgvProdServ").dxDataGrid({
+            dataSource: new DevExpress.data.CustomStore({
+                key: "id",
+                loadMode: "raw",
+                load: function() {
+                    return $.getJSON("{% url 'ws_administracion:ajax_productos_servicios_listar' %}")
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+
+                },
+                update: function(key, values) {
+                    $.ajax({
+                        url: "{% url 'ws_administracion:ajax_producto_servicio_editar_datagrid' %}",
+                        method: "POST",
+                        data: {
+                            'key':key,
+                            'data': JSON.stringify(values),
+                        },
+                        success: function(data){
+                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                mensajeSuccess(data.exito, '¡Exito!');
+                            }
+                            
+                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+                        },
+                    })
+                },
+            }),
+            columns: [
+                {
+                    caption: 'PRODUCTO/SERVICIO',
+                    dataField: "nombre",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    minWidth: 400,
+                    allowEditing: false,
+                },{
+                    caption: "ESTADO",
+                    dataField: "estado",
+                    dataType: 'boolean',
+                    alignment: "center",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: true,
+                },{
+                    caption: "ES PRODUCTO",
+                    dataField: "es_producto",
+                    dataType: 'boolean',
+                    alignment: "center",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    allowEditing: false,
+                },{
+                    caption: "IMAGEN",
+                    dataField: "ver_imagen",
+                    type: "buttons",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    buttons: [{
+                        name: "ver_imagen",
+                        hint: "Ver Imagen",
+                        icon: "image",
+                        onClick(e){
+                            var popup = $("#PopupImagen").dxPopup("instance");
+                            popup.show();
+                            var content = popup.content();
+                        
+                            content.css({
+                                "padding": 4
+                            })
+                        
+                            popup.option("position", {
+                                my: "center",
+                                at: "center"
+                            })
+
+                            $("#tituloPopupI").text('Producto / Servicio');
+                            obtenerImagenNube(e.row.data.imagen, 1);
+
+                            popup.repaint();
+                        }
+                    }],
+                }, {
+                    caption: "DETALLE",
+                    dataField: "detalle_producto",
+                    type: "buttons",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    buttons: [{
+                        name: "detalle_producto",
+                        hint: "Ver Detalle del Producto",
+                        icon: "increaseindent",
+                        disabled(e){
+                            return !e.row.data.es_producto;
+                        },
+                        onClick(e){
+                            onClick_Ver_Detalle_Productos(e);
+                        }
+                    }],
+                }, {
+                    caption: "ACCIÓN",
+                    dataField: "editar",
+                    type: "buttons",
+                    cssClass: "centrado_vertical",
+                    width: 100,
+                    buttons: [{
+                        name: "editar",
+                        icon: "rename",
+                        onClick(e){
+                            onClick_Editar_ProductosServicios(e);
+                        }
+                    }],
+                },
+            ],
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowAdding: false,
+                allowDeleting: false,
+                selectTextOnEditStart: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            width: "100%",
+            height: "500px",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true,
+            columnAutoWidth: true, //Especifica si las columnas deben ajustar sus anchos al contenido.
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true,
+            },
+            columnChooser: { enabled: false }, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            columnFixing: { enabled: false },
+            paging: { enabled: false },
+            searchPanel: { visible: true },
+            export: {
+                enabled: false,
+                fileName: "Productos y Servicios",
+                allowExportSelectedData: true,
+            },
+            summary: {
+                recalculateWhileEditing: false,
+                totalItems: [{
+                    column: "nombre",
+                    summaryType: "count",
+                    displayFormat: "Productos / Servicios: {0}"
+                }]
+            },
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+                    let index = e.component.getRowIndexByKey(e.key);
+                    let el = e.component.getCellElement(index, e.brokenRules[0].columnIndex);
+                    e.component.focus(el);
+
+                    mensajeError('Complete el llenado o la selección del Formulario', '¡Error!');
+                }
+            }
+        });
+
+        function onClick_Ver_Detalle_Productos(e){
+            var popup = $("#PopupDetalleProducto").dxPopup("instance");
+            popup.show();
+            var content = popup.content();
+        
+            content.css({
+                "padding": 4
+            })
+        
+            popup.option("position", {
+                my: "center",
+                at: "center"
+            })
+
+            $('#popup_producto').text( e.row.data.nombre.toString().toUpperCase() );
+            $('#popup_producto_descripcion').text( e.row.data.descripcion.toString().toUpperCase() );
+
+            $("#DgvPopupDetalle").dxDataGrid({
+                dataSource: new DevExpress.data.CustomStore({
+                    key: "id",
+                    loadMode: "raw",
+                    load: function() {
+                        return $.getJSON("{% url 'ws_administracion:ajax_detalle_producto_obtener' %}", { id_producto: parseInt( e.row.data.id ) })
+                                .fail(
+                                function() { 
+                                    mensajeError("¡Error al Cargar los Datos, Actualice la Página Web!");
+                                });
+                    }
+                }),
+                columns: [
+                    {
+                        caption: "DESCRIPCIÓN",
+                        dataField: "descripcion_frecuencia",
+                        dataType: 'string',
+                        alignment: "left",
+                        cssClass: "centrado_vertical negrita_titulo",
+                        width: 150
+                    }, {
+                        caption: "REQUISITOS",
+                        dataField: "requisitos",
+                        dataType: 'string',
+                        alignment: "left",
+                        cssClass: "centrado_vertical negrita_titulo",
+                        minWidth: 360,
+                        showEditorAlways: false,
+                        cellTemplate: function(container, options){
+                            $('<div/>').dxHtmlEditor({
+                                valueType:"html",
+                                value: options.value,
+                                readOnly: true,
+                            }).appendTo(container); 
+                        }
+                    }
+                ],
+                height: 400,
+                width: "100%",
+                scrolling: {
+                    showScrollbar: "always",
+                },
+                remoteOperations: false,
+                allowColumnReordering: false, //{# Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta #}
+                allowColumnResizing: true, 
+                showBorders: true,
+                showRowLines: true,
+                showColumnLines: true,
+                rowAlternationEnabled: true,
+                wordWrapEnabled: true,
+                keyboardNavigation: {
+                    enterKeyAction: "startEdit",
+                    enterKeyDirection: "column",
+                    editOnKeyPress: true
+                },
+                columnChooser: {//{# Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta #}
+                    enabled: false
+                },
+                columnFixing: { 
+                    enabled: false
+                },
+                paging: {
+                    enabled: false
+                },
+                searchPanel:{
+                    visible: true
+                },
+                summary: {
+                    recalculateWhileEditing: false,
+                    totalItems: [{
+                        column: "descripcion_frecuencia",
+                        summaryType: "count",
+                        displayFormat: "Detalles: {0}",
+                    }]
+                },
+            });
+            
+            popup.repaint();
+        }
+
+        function onClick_Editar_ProductosServicios(e){
+            $('#SubtituloFrm').text('EDITAR');
+            $('#BtnGuardar').attr('accion', 'EDITAR');
+            $('#frmProdServ').attr('action', '{% url "ws_administracion:ajax_productos_servicios_editar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+    
+            ////{# Creando el input con el name dato_pk #}
+            $('#div_pk').append(`<input type="number" name="dato_pk" value="${e.row.data.id}">`);
+    
+            
+            ////{# LLENANDO Y ASIGNANDO DATOS AL FORMULARIO PARA EDITAR #}
+            $('#id_nombre').val(e.row.data.nombre);
+            $('#id_link').val(e.row.data.link);
+            $('#id_descripcion').val(e.row.data.descripcion);
+            
+            if (e.row.data.estado == true){
+                if(!$('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }else{
+                if($('#id_estado').prop('checked')){
+                    $('#id_estado').trigger('click');
+                }
+            }
+    
+            if (e.row.data.es_producto == true){
+                if(!$('#id_es_producto').prop('checked')){
+                    $('#id_es_producto').trigger('click');
+                }
+            }else{
+                if($('#id_es_producto').prop('checked')){
+                    $('#id_es_producto').trigger('click');
+                }
+            }
+            
+            //{# Mostrando la imagen en el input #}
+            $('#id_imagen').val(''); //{# reseteando el input imagen #}
+            $("#p_imagen").show();
+            obtenerImagenNube(e.row.data.imagen, 2);
+            $('.aNubeGC').text(e.row.data.imagen);     
+
+            id_producto = parseInt(e.row.data.id); //{# Se restablece el id del customDataSourceDetalleProducto #}
+            customDataSourceDetalleProducto.clearRawDataCache(); //{# Se borra la cache que tenia el customDataSourceDetalleProducto #}
+            var dgvDetalleFrm = $("#DgvDetalleFrm").dxDataGrid('instance'); //{# Se refresca la instancia para que vuelvan a cargar los datos #}
+
+            if (dgvDetalleFrm.hasEditData()) {
+                dgvDetalleFrm.cancelEditData();
+            }
+
+            dgvDetalleFrm.refresh();
+        } 
+        
+        $("#DgvDetalleFrm").dxDataGrid({ 
+            dataSource: customDataSourceDetalleProducto,
+            columns: [
+                {
+                    columnIndex: 0,
+                    caption: "FRECUENCIA DE PAGO",
+                    dataField: "frecuencia_pago",
+                    dataType: "number",
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    lookup: {
+                        dataSource: customDataSourceCboFrecuenciaPago,
+                        valueExpr: "id",
+                        displayExpr: "descripcion_frecuencia"
+                    },
+                    showEditorAlways: true,
+                    allowSorting: false,
+                    editCellTemplate: editCellTemplate_CboFrecuenciaPago,
+                    validationRules: [{
+                        type: "required",
+                        message: '¡Seleccione la Frecuencia de Pago!'
+                    }, {
+                        type: "custom",
+                        validationCallback: function(options) {
+                            //{# Esta es otra forma de realizar el callback, queda de ejemplo. #}
+                            var DgvDetalleFrm = $("#DgvDetalleFrm").dxDataGrid('instance');
+
+                            //{# Obtenemos el indice de la fila #}
+                            var index = DgvDetalleFrm.getRowIndexByKey(options.validator._validationGroup.key);
+
+
+                            filas = DgvDetalleFrm.getVisibleRows().filter(
+                                (row) => row.key !== options.validator._validationGroup.key &&
+                                row.data.frecuencia_pago != null && parseInt(row.data.frecuencia_pago) == parseInt(options.value)
+                            )
+
+                            if (!filas.length == false) {
+                                DgvDetalleFrm.cellValue(index, "frecuencia_pago", null);
+                                DgvDetalleFrm.focus( DgvDetalleFrm.getCellElement(index, "frecuencia_pago") );
+                                mensajeError("¡Ya Existe!, Seleccione otra Frecuencia de Pago.", '¡Error!');                                
+                            }
+
+                            return !filas.length;
+                        },
+                        message: "Frecuencia de Pago Repetida"
+                    },],
+                    width: 200
+                }, {
+                    columnIndex: 1,
+                    caption: "REQUISITOS",
+                    dataField: "requisitos",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    validationRules: [{
+                        type: "required",
+                        trim: true,
+                        message: '¡Ingrese los Requisitos!'
+                    },
+                    {
+                        type: "stringLength",
+                        trim: true,
+                        min: 1,
+                        message: '¡El campo de los requisitos está vacío!'
+                        
+                    }],
+                    minWidth: 360,
+                    showEditorAlways: true,
+                    editCellTemplate: function(container, options){
+                        return $('<div>').dxHtmlEditor({
+                            height: 200,
+                            valueType:"html",
+                            toolbar: {
+                                items: itemsToolbar(),
+                            },
+                            value: options.value,
+                            onValueChanged: function(e) {
+                                options.setValue(e.value);
+                            }
+                        })            
+                    }
+                },{
+                    caption: "ACCIÓN",
+                    cssClass: "centrado_vertical",
+                    type: "buttons",
+                    buttons: [{
+                        name: "eliminar",
+                        icon: "trash",
+                        onClick: onClick_Eliminar_DetalleProducto
+                    }],
+                    width: 100,
+                    //fixed: true,
+                    //fixedPosition: "left"
+                }, 
+            ],
+            toolbar: {
+                items: [
+                {
+                    location: "after",
+                    widget: "dxButton",
+                    options: {
+                        icon: "add",
+                        text: "Detalle de producto",
+                        hint: "Agregar Detalle de producto",
+                        width: "100%",
+                        elementAttr: {"class": "negrita"},
+                        onClick: function () { $("#DgvDetalleFrm").dxDataGrid("instance").addRow(); }
+                    }
+                },
+                'revertButton'
+                ]
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowAdding: true,
+                allowDeleting: false,
+                selectTextOnEditStart: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            height: "auto",
+            width: "100%",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            //errorRowEnabled: true, {# se ha quitado, no se sabe que hace #}
+            focusStateEnabled: true,
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true, 
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true
+            },
+            columnChooser: { enabled: false },
+            columnFixing: { enabled: false },
+            paging: {
+                enabled: false
+            },
+            searchPanel:{ visible: true },
+            export: {
+                enabled: false,
+                fileName: "Detalles",
+                allowExportSelectedData: true,
+                allowExportSelectedData: false
+            },
+            summary: {
+                recalculateWhileEditing: false,
+                totalItems: [{
+                    column: "frecuencia_pago",
+                    summaryType: "count",
+                    displayFormat: "Detalles del producto: {0}"
+                }]
+            },
+            sorting: {
+                mode: "none" 
+            },
+            onInitNewRow: function(e) {
+                let llaveUnica = uniqueId();
+
+                e.data["id"] = llaveUnica;
+                e.data["frecuencia_pago"] = null;
+                e.data["requisitos"] = null;
+            }, //{# InitNewRow Se genera antes de que se agregue una nueva fila al componente de interfaz de usuario. #}
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+                    let index = e.component.getRowIndexByKey(e.key);
+                    var processedArray = DevExpress.data.query(e.brokenRules)
+                        .sortBy("columnIndex")
+                        .select("columnIndex")
+                        .toArray();
+                    
+                    e.component.focus( e.component.getCellElement(index, processedArray[0].columnIndex) );
+                    mensajeError('Complete el llenado o la selección del Formulario', '¡Error!');
+                }
+            }
+        });
+        
+        //********************************************************** //
+        //                     INICIO FUNCIONES                      //
+        //             {# DATAGRID DETALLE DE PRODUCTOS #}           //
+        //********************************************************** //
+        
+        function uniqueId() {
+            var idStrLen = 32;
+            var idStr = (Math.floor((Math.random() * 25)) + 10).toString(36) + "_";
+            idStr += (new Date()).getTime().toString(36) + "_";
+            do {
+                idStr += (Math.floor((Math.random() * 35))).toString(36);
+            } while (idStr.length < idStrLen);
+            
+            return (idStr);
+        }
+        
+        function editCellTemplate_CboFrecuenciaPago(cellElement, cellInfo) {
+            return $('<div>').dxLookup({
+                dataSource: customDataSourceCboFrecuenciaPago,
+                valueExpr: 'id',
+                displayExpr: 'descripcion_frecuencia',
+                placeholder: '---- SELECCIONE ----',
+                dropDownOptions: {
+                    closeOnOutsideClick: true,
+                    showTitle: false,
+                    height: 300,
+                    width: 300
+                },
+                value: cellInfo.value,
+                onValueChanged(e) {
+                    cellInfo.setValue(e.value); 
+                }
+            });
+        }
+
+        function EliminarDetalleProductoDB(idDetalle) {
+            $.ajax({
+                url: "{% url 'ws_administracion:ajax_detalle_producto_eliminar' %}",
+                method: "POST",
+                data: {
+                    'key': idDetalle,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data){
+                    if (! (jQuery.isEmptyObject(data.exito)) ) {
+                        $('#DgvDetalleFrm').dxDataGrid('instance').refresh();
+                        mensajeSuccess(data.exito, '¡Exito! - Detalle de Productos');
+                    }
+                    
+                    if (! (jQuery.isEmptyObject(data.error)) ) {
+                        mensajeWarning(data.error, '¡Error! - Detalle de Productos');
+                    }                    
+                },
+            })
+        }
+
+        function onClick_Eliminar_DetalleProducto(e) {
+            
+            let acumDetProducto = 0;
+            ($("#DgvDetalleFrm").dxDataGrid("instance").getVisibleRows() || []).forEach(function (fila) {
+                if (!fila.removed) {
+                    acumDetProducto += 1;
+                }
+            })
+
+            if (acumDetProducto > 1) {
+                DevExpress.ui.dialog.confirm("¿Esta Seguro(a) que desea Eliminar el Detalle de Producto?", "Confirmación").done(function (r) {
+                    if (r) {
+
+                        let DgvD = $("#DgvDetalleFrm").dxDataGrid("instance");
+                        var index = DgvD.getRowIndexByKey(e.row.key);
+
+                        if (parseInt(e.row.data.id) > 0) {
+                            EliminarDetalleProductoDB(parseInt(e.row.data.id));
+                        } else {
+                            $("#DgvDetalleFrm").dxDataGrid("instance").deleteRow(index);
+                        }
+
+                    }
+                });
+            } else {
+                mensajeError('¡No puedes Eliminar todos las Detalles!', '¡Error!');
+            }
+            
+        }
+
+        //********************************************************** //
+        //                           INICIO                          //
+        //                 {# Funciones Principales #}               //
+        //********************************************************** //
+
+        $('#BtnNuevo').on('click', function(){
+            $('#SubtituloFrm').text('NUEVO');
+            $('#BtnGuardar').attr('accion', 'NUEVO');
+            $('#frmProdServ').attr('action', '{% url "ws_administracion:ajax_productos_servicios_agregar" %}');
+            $('#frmContainer').show();
+            limpiar_form();
+
+
+            //{# Datagrid Detalle del Producto  #}
+            id_producto = 0; //{# Se restablece el id del customDataSourceDetalleProducto #}
+            customDataSourceDetalleProducto.clearRawDataCache(); //{# Se borra la cache que tenia el customDataSourceDetalleProducto #}
+            var dgvDetalleFrm = $("#DgvDetalleFrm").dxDataGrid('instance'); //{# Se refresca la instancia para que vuelvan a cargar los datos #}
+
+            if (dgvDetalleFrm.hasEditData()) {
+                dgvDetalleFrm.cancelEditData();
+            }
+
+            dgvDetalleFrm.refresh();
+        });
+    
+    
+        $('#BtnCancelar').on('click', function(){
+            $('#frmContainer').hide();
+        });
+    
+        $('#id_es_producto').on('change', function(){
+            //{# Se verifica si es_producto es true #}
+            if( $(this).prop('checked') ){
+                $('#id_detalle_producto').show();
+                
+            }else{
+                //{# Verifica si está editando datos #}
+                if ( $('#BtnGuardar').attr('accion') == 'EDITAR' ){
+                    
+                    //{# Si existe el input dato pk #}
+                    if ( $('input[name="dato_pk"]') ) {
+                        
+                        //{# obteniendo datos del producto por el id #}
+                        $('#DgvProdServ').dxDataGrid('instance').byKey(id = parseInt($('input[name="dato_pk"]').val()) ).done(function(dataObject) {
+                            
+                            //{# Si trata de convertir un producto a un servicio #} 
+                            if(dataObject.es_producto == true && !$(this).prop('checked')){
+
+                                //{# Le pedirá confirmación ya que se borrarán todos los detalles al convertirlo a servicio #}
+                                DevExpress.ui.dialog.confirm("¿Seguro(a) que desea cambiar este Producto a un Servicio? <br> Se eliminarán todos los Detalles del Producto al guardar el formulario", "Confirmación").done(function (r) {
+                                    
+                                    //{# Si la confirmación es verdadera #}
+                                    if (r){
+                                        $('#id_detalle_producto').hide();
+                                        
+                                        //{# A continuación si habían datos en edición en el formulario de Detalle de productos, se cancelan #}
+                                        var DgvDetalleFrm = $("#DgvDetalleFrm").dxDataGrid("instance");
+                                        if (DgvDetalleFrm.hasEditData()) {
+                                            DgvDetalleFrm.cancelEditData();
+                                        }
+                                        DgvDetalleFrm.refresh();
+                                    
+                                    //Cancelando... El Producto no cambiará a ser un Servicio de la Empresa
+                                    }else{ 
+                                        //{# Verifica si el id_es_producto es distinto de true #}
+                                        if(!$('#id_es_producto').prop('checked')){
+                                            //Lo vuelve a poner true
+                                            $('#id_es_producto').trigger('click');
+                                        }
+                                    }
+                                })   
+                            } else {
+                                //{# Cancela los datos en edición del formulario detalle #}
+                                $('#id_detalle_producto').hide();
+                                var DgvDetalleFrm = $("#DgvDetalleFrm").dxDataGrid("instance");
+                                if (DgvDetalleFrm.hasEditData()) {
+                                    DgvDetalleFrm.cancelEditData();
+                                }
+                                DgvDetalleFrm.refresh();
+                            }
+                        
+                        }).fail(function(error) {
+                            mensajeWarning('Por favor actualice la página', '¡Error! Algo anda mal...')
+                        });
+                    }
+                    
+                    
+                //{# Como no está editando, entonces está agregando #}
+                } else {
+                    //{# Cancela los datos en edición del formulario detalle #}
+                    $('#id_detalle_producto').hide();
+                    var DgvDetalleFrm = $("#DgvDetalleFrm").dxDataGrid("instance");
+                    if (DgvDetalleFrm.hasEditData()) {
+                        DgvDetalleFrm.cancelEditData();
+                    }
+                    DgvDetalleFrm.refresh();
+                }
+            }
+        });
+    
+        
+        $('#BtnGuardar').on('click', function(){
+            datagridDetalle = $("#DgvDetalleFrm").dxDataGrid("instance");
+            var data = new FormData($('#frmProdServ').get(0))
+
+            //{# Primero pasa a la valicón para luego pasar al dialogo de confimación #}
+            if (validarFrm(datagridDetalle) == true){
+                
+                //{# Si se está editando añadirá nuevos datos para el POST #}
+                if(datagridDetalle.hasEditData()) { 
+                    datagridDetalle.getVisibleRows().forEach(function (fila) {
+                        let dataNuevoDetalle = [], dataEditarDetalle = []
+
+                        if ( !fila.removed ) {
+                            if ( !jQuery.isEmptyObject(fila.oldData) ){
+                                
+                                dataEditarDetalle.push({
+                                    'id': parseInt(fila.data.id) > 0 ? parseInt(fila.data.id) : 0,
+                                    'frecuencia_pago': fila.data.frecuencia_pago,
+                                    'requisitos': fila.data.requisitos,
+                                })
+                                data.append('dataEditarDetalle', JSON.stringify(dataEditarDetalle));
+                            }
+
+                            if ( fila.isNewRow == true ){
+                                dataNuevoDetalle.push({
+                                    'id': parseInt(fila.data.id) > 0 ? parseInt(fila.data.id) : 0,
+                                    'frecuencia_pago': fila.data.frecuencia_pago,
+                                    'requisitos': fila.data.requisitos,
+                                })
+                                data.append('dataNuevoDetalle', JSON.stringify(dataNuevoDetalle));
+                            }
+                        }
+                    });
+                }
+                
+                
+                //{# Dialogo de confimación #}
+                DevExpress.ui.dialog.confirm("¿Seguro(a) de Guardar el formulario de Galería Empresa?", "Confirmación").done(function (r) {
+                    //{# Al confirmar los datos hace la petición #}
+                    if (r){
+                        $.ajax({
+                            url: $('#frmProdServ').attr('action'),
+                            data: data,
+                            type: 'POST',
+                            contentType: false,
+                            processData: false,
+                            success: function(data) {
+                                //{# Refrescando los datos de los datagrid #}
+                                $('#frmContainer').hide();
+                                $('#DgvProdServ').dxDataGrid('instance').refresh();
+                                $('#DgvDetalleFrm').dxDataGrid('instance').refresh();
+                                                                
+                                if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                    mensajeSuccess(data.exito, '¡Exito!');
+                                }
+                                
+                                if (! (jQuery.isEmptyObject(data.error)) ) {
+                                    mensajeError(data.error, '¡Error!');
+                                }
+                            },
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#id_imagen').on('change', function(){
+            var imagen = $(this).val().toLowerCase();
+            var extensiones = imagen.substring(imagen.lastIndexOf("."));
+
+            if ( imagen != '' && imagen != null && imagen != undefined ){
+                if(extensiones.toLowerCase() != ".jpg" && extensiones.toLowerCase() != ".png" && extensiones.toLowerCase() != ".jpeg"){
+                    mensajeError(`El archivo de tipo ${extensiones} no es válido`, '¡Error!');
+                    $(this).val('');
+                }
+            }
+        });
+
+
+        function validarFrm(datagridDetalle){
+            var retorno = false;
+        
+            //{# Validando nombre #}
+            if ( $('#id_nombre').val().length == 0 || $('#id_nombre').val().length ==  undefined ){
+                $('#id_nombre').focus();
+                mensajeError('Ingrese el <b>Producto/Servicio</b>', '¡Error!');
+            
+            } else {
+                if ( $('#id_descripcion').val().length == 0 || $('#id_descripcion').val().length ==  undefined ){
+                    $('#id_descripcion').focus();
+                    mensajeError('Ingrese la <b>Descripción</b>', '¡Error!');
+                
+                } else {
+                    //{# Validando imagen #}
+                    var imagen = $('#id_imagen').val().toLowerCase();
+                    var validarImagen = false;
+                    
+                    if ( imagen != '' && imagen != null && imagen != undefined ){
+                        validarImagen = true;
+                    } else {
+                        
+                        //{# Al editar no se necesita seleccionar una imagen #}
+                        if ( $('#BtnGuardar').attr('accion') == 'EDITAR' ) {
+                            validarImagen = true;
+                        } else {
+                            mensajeError('Seleccione la <b>Imagen</b>', '¡Error!');
+                            $("#id_imagen").focus();
+                        }
+                    }      
+
+                    //Si la validacion de imagen es true
+                    if (validarImagen == true){
+                        //{# Verficando si el formulario Detalle es válido #}
+                        
+                        //{# Si es_producto es true validará los detalles del producto #}
+                        if( $('#id_es_producto').prop('checked') ){
+                            $('#id_detalle_producto').show();
+                            
+                            //{# Obteniendo los datos y comprobando que haya uno o más #}
+                            if (datagridDetalle.getVisibleRows().length > 0) {
+
+                                //{# Validando los datos del Detalle del Producto #}
+                                datagridDetalle.getController("validating").validate(true).done(function(valido) {
+                                    if (valido == true){
+                                        retorno = true;
+                                    }
+                                });
+        
+                            } else {
+                                mensajeError('Ingrese un <b>Detalle de Producto</b>', '¡Error!');
+                            }
+                            
+                        //{# Si es_producto es false (es un servicio) #}
+                        }else{
+                            retorno = true;
+                        }
+
+                    } 
+                }
+            }
+
+            return retorno;
+        }
+        
+        function limpiar_form(){
+            //{# El trigger click se coloca antes que el trigger resest porque sino, no funciona #}
+            if(!$('#id_estado').prop('checked')){
+                $('#id_estado').trigger('click');
+            }
+
+            if(!$('#id_es_producto').prop('checked')){
+                $('#id_es_producto').trigger('click');
+            }
+
+            //{# Limpiando el Formulario de golpe #}
+            $('#frmProdServ').trigger("reset");
+            $('#id_imagen').val('');
+
+            //{# Eliminando el input con el name dato_pk #}
+            if ( $('input[name="dato_pk"]') ) {
+                $('input[name="dato_pk"]').remove(); 
+            }
+
+            $("#p_imagen").hide();
+        }
+
+        function itemsToolbar(){
+            return [
+                'undo', 'redo', 'separator',
+                {
+                    name: 'size',
+                    acceptedValues: ['11pt', '12pt', '13pt', '14pt', '15pt', '16pt', '17pt', '18pt'],
+                },
+                {
+                    name: 'font',
+                    acceptedValues: ['Arial', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Times New Roman', 'Verdana'],
+                },
+                'separator',
+                'bold', 'italic', 'strike', 'underline', 'separator',
+                'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'separator',
+                "separator",
+                "orderedList", "bulletList",
+                "separator",
+            ]
+        }
+    });
+</script>
+{% endblock script %}
