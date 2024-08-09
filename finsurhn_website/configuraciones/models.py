@@ -60,7 +60,6 @@ class Sucursal(models.Model):
 	ancho_pie_pagina = models.IntegerField(default = 1, verbose_name = 'Ancho del Pie de Página')
 	color = models.CharField(max_length = 10, verbose_name = 'Color de la Sucursal')
 	empresa = models.ForeignKey(Empresa, on_delete = models.CASCADE)
-	organigrama = models.FileField(upload_to = 'organigrama_sucursal', max_length = 250, verbose_name = 'Imagen del Organigrama')
 	class Meta:
 		verbose_name_plural = 'Sucursales'
 	def __str__(self):
