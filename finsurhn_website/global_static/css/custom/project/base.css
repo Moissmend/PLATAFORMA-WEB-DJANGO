@@ -10,7 +10,6 @@
     }
 }
 
-
 /****************************************/
 /*             CSS BOOTSTRAP          */
 /****************************************/
@@ -213,7 +212,7 @@
     z-index: 2;
 }
 .view-first:hover .mask {
-    opacity: 1
+    opacity: 1;
 }
 
 .view-first:hover .tools,

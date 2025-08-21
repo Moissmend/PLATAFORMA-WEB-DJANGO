@@ -1,0 +1,108 @@
+{% extends 'web/base_website.html' %}
+{% load static %}
+
+{% block title %} Acerca de {% endblock title %}
+
+
+    {% block extra_css %}
+
+    <link rel="stylesheet" href="{% static 'css/web/acerca.css' %}" />
+
+    {% endblock %}
+
+{% block contenido %}
+
+    <section class="seccionInicio">
+      <div class="panelIzquierdo">
+        <div class="contenido">
+          <p>Quiénes somos</p>
+        </div>
+      </div>
+
+      <div class="panelDerecho">
+        <div class="logoInicio">
+          <img src="{% static 'img/acercade.jpg' %}" alt="Logo" />
+        </div>
+      </div>
+    </section>
+
+    {% if ctx_empresa.mision or ctx_empresa.vision %}
+    <section class="seccionMision">
+      <div class="container">
+        <div class="bloque">
+          <svg
+            width="150"
+            height="150"
+            viewBox="0 0 150 150"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M75 150C94.8912 150 113.968 142.098 128.033 128.033C142.098 113.968 150 94.8912 150 75C150 55.1088 142.098 36.0322 128.033 21.967C113.968 7.90176 94.8912 0 75 0C55.1088 0 36.0322 7.90176 21.967 21.967C7.90176 36.0322 0 55.1088 0 75C0 94.8912 7.90176 113.968 21.967 128.033C36.0322 142.098 55.1088 150 75 150ZM89.8535 95.2441L47.5781 111.504C41.8945 113.701 36.2988 108.105 38.4961 102.422L54.7559 60.1465C55.7227 57.6562 57.6562 55.7227 60.1465 54.7559L102.422 38.4961C108.105 36.2988 113.701 41.8945 111.504 47.5781L95.2441 89.8535C94.3066 92.3438 92.3438 94.2773 89.8535 95.2441ZM84.375 75C84.375 72.5136 83.3873 70.129 81.6291 68.3709C79.871 66.6127 77.4864 65.625 75 65.625C72.5136 65.625 70.129 66.6127 68.3709 68.3709C66.6127 70.129 65.625 72.5136 65.625 75C65.625 77.4864 66.6127 79.871 68.3709 81.6291C70.129 83.3873 72.5136 84.375 75 84.375C77.4864 84.375 79.871 83.3873 81.6291 81.6291C83.3873 79.871 84.375 77.4864 84.375 75Z"
+              fill="#F0910C"
+            />
+          </svg>
+          <div>
+            {{ctx_empresa.mision|safe|linebreaks}}
+          </div>
+        </div>
+
+        <div class="bloque">
+          <svg
+            width="150"
+            height="150"
+            viewBox="0 0 150 132"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M75 0.375C53.9584 0.375 37.1094 11.1562 24.8438 23.9883C12.6563 36.7031 4.50523 51.9375 0.651062 62.3965C-0.208313 64.7109 -0.208313 67.2891 0.651062 69.6035C4.50523 80.0625 12.6563 95.2969 24.8438 108.012C37.1094 120.844 53.9584 131.625 75 131.625C96.0417 131.625 112.891 120.844 125.156 108.012C137.344 95.2676 145.495 80.0625 149.375 69.6035C150.234 67.2891 150.234 64.7109 149.375 62.3965C145.495 51.9375 137.344 36.7031 125.156 23.9883C112.891 11.1562 96.0417 0.375 75 0.375ZM37.5 66C37.5 54.8112 41.4509 44.0806 48.4835 36.1689C55.5161 28.2572 65.0544 23.8125 75 23.8125C84.9456 23.8125 94.4839 28.2572 101.517 36.1689C108.549 44.0806 112.5 54.8112 112.5 66C112.5 77.1888 108.549 87.9194 101.517 95.8311C94.4839 103.743 84.9456 108.188 75 108.188C65.0544 108.188 55.5161 103.743 48.4835 95.8311C41.4509 87.9194 37.5 77.1888 37.5 66ZM75 47.25C75 57.5918 67.5261 66 58.3334 66C56.4844 66 54.7136 65.6484 53.0469 65.0332C51.6146 64.5059 49.9479 65.502 50 67.2012C50.0781 69.2227 50.3386 71.2441 50.8334 73.2656C54.4011 88.2656 68.125 97.1719 81.4584 93.1582C94.7917 89.1445 102.708 73.7051 99.1406 58.7051C96.25 46.5469 86.6927 38.373 76.0677 37.875C74.5573 37.8164 73.6719 39.6621 74.1406 41.3027C74.6875 43.1777 75 45.1699 75 47.25Z"
+              fill="#F0910C"
+            />
+          </svg>
+          <div>
+          {{ctx_empresa.vision|safe|linebreaks}}
+          </div>
+        </div>
+      </div>
+    </section>
+{% endif %}
+
+{% if ctx_empresa.historia %}
+    <section class="seccionHistoria">
+      <div class="historiaContainer">
+        <div class="historiaContent">
+          {{ctx_empresa.historia|safe|linebreaks}}
+        </div>
+      </div>
+    </section>
+{% endif %}
+
+{% if valores %}
+    <section class="seccionValores">
+      <div class="containerValores">
+
+        <h1>Nuestros Valores</h1>
+        {% for valor, svg in valores %}
+        <div class="valorInfo">
+          <img 
+            src="{% static svg.src %}" 
+            alt="{{ svg.alt }}"
+            width="120"
+            height="120"
+            style="display: block;"
+            >
+          <div class="valor">
+            {{valor.descripcion|safe|linebreaks}}
+          </div>
+        </div>
+        {% endfor %}
+        </div>
+      </div>
+    </section>
+{% endif %}
+
+    <div class="fondoFinal"></div>
+
+{% endblock %}
+

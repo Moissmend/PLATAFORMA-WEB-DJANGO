@@ -29,8 +29,9 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-12 text-center">
-                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
-                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                            <button id="BtnCancelar" type="button" class="btn btn-secondary mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary mr-2"><i class="bi bi-check-lg"></i> Guardar</button> 
+                            <button id="BtnEliminar" type="button" class="btn btn-danger"><i class="bi bi-trash"></i> Eliminar</button>
                         </div>
                     </div>
                 </form>
@@ -295,6 +296,7 @@
             $('#SubtituloFrm').text('EDITAR');
             $('#frmGaleria').attr('action', '{% url "ws_administracion:ajax_gestion_galeria_empresa_editar" %}');
             $('#frmContainer').show();
+            $('#BtnEliminar').show();
             limpiar_form();
 
             ////{# Creando el input con el name dato_pk #}
@@ -331,6 +333,7 @@
             $('#SubtituloFrm').text('NUEVO');
             $('#frmGaleria').attr('action', '{% url "ws_administracion:ajax_gestion_galeria_empresa_agregar" %}');
             $('#frmContainer').show();
+            $('#BtnEliminar').hide();
             limpiar_form();
         });
 
@@ -338,6 +341,33 @@
             $('#frmContainer').hide();
         });
         
+        $('#BtnEliminar').on('click', function(){
+            DevExpress.ui.dialog.confirm("¿Seguro(a) de Eliminar el registro de la Galería Empresa?", "Confirmación").done(function (r) {
+                if (r) {
+                    var dato_pk = $('input[name="dato_pk"]').val();
+                    $.ajax({
+                        url: "{% url 'ws_administracion:ajax_gestion_galeria_empresa_eliminar' %}",
+                        type: "POST",
+                        data: {
+                            'dato_pk': dato_pk,
+                        },
+                        success: function(data) {
+                            $("#DgvCarrusel").dxDataGrid("instance").refresh();
+                            
+                            if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                $('#frmContainer').hide();
+                                mensajeSuccess(data.exito, '¡Exito!');
+                            }
+                            
+                            if (! (jQuery.isEmptyObject(data.error)) ) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+                        },
+                    });
+                }
+            });
+        });
+
         $('#BtnGuardar').on('click', function(){
             var data = new FormData($('#frmGaleria').get(0));
 
@@ -451,7 +481,7 @@
                 },
                 {
                     name: 'font',
-                    acceptedValues: ['Arial', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Times New Roman', 'Verdana'],
+                    acceptedValues: ['Arial', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Times New Roman', 'Verdana', 'Montserrat'],
                 },
                 'separator',
                 'bold', 'italic', 'strike', 'underline', 'separator',

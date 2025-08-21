@@ -15,12 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from ws_administracion.views import inicio
+from ws_administracion.views import index, solicitud, aplicar, contacto, acercade, servicios, social
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls import handler404
+
 
 urlpatterns = [
-    path('', inicio, name = 'inicio'),
+    path('', index, name = 'inicio'),
+    path('acercade', acercade, name='acercade'),
+    path('servicios', servicios, name='servicios'),
+    path('social', social, name='social'),
+    path('contacto', contacto, name='contacto'),
+    path('solicitud-credito', solicitud, name='solicitud-credito'),
+    path('aplicar-solicitud', aplicar, name='aplicar-solicitud'),
+    
+    # path('inicio', inicio, name = 'prueba'),
     
     path('admin/', admin.site.urls),
 

@@ -1,0 +1,313 @@
+/* Sección inicio */
+
+.custom-bg {
+  background-color: var(--color-orange-50);
+}
+
+.text-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.text-container strong {
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .image-container {
+    min-height: 30vh;
+  }
+
+  .text-container {
+    padding: 4rem;
+  }
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 50px;
+  height: 50px;
+  background: rgba(0,0,0,0.3) !important;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 767.98px) {
+  .image-container {
+    height: auto !important; 
+  }
+
+  .image-container img{
+    height: 100% !important;
+    object-fit: cover;
+  }
+
+  .text-container {
+    order: 2;
+    min-height: 50vh;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    top: 35%;
+  }
+}
+
+/* Sección stats */
+
+.seccionStats {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 30vh 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+.containerStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 10px auto;
+  width: 100%;
+}
+
+.itemStat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+}
+
+.itemStat svg {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 1rem;
+}
+
+.dato {
+  color: var(--color-gray-50);
+}
+
+.numero {
+  font-size: 3rem;
+  margin-left: 0.5rem;
+}
+
+.ctaContainer {
+  background-image: url("/static/img/curva.svg");
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.ctaContent {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  color: var(--color-white-50);
+  margin-bottom: 15px;
+  z-index: 1;
+  max-width: 550px;
+}
+
+.ctaContent h1 {
+  font-size: 40px;
+}
+
+.ctaButton {
+  font-size: 15px;
+  background-color: var(--color-orange-75);
+  text-decoration: none;
+  color: var(--color-white-50);
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 10px;
+  transition: all 0.3s ease-in;
+  align-self: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ctaButton:hover {
+  background-color: var(--color-white-50);
+  color: var(--color-orange-50);
+  transform: scale(1.05);
+}
+
+.ctaButton:active {
+  transform: scale(0.9);
+}
+
+/* Responsividad */
+
+@media (max-width: 800px) {
+  .seccionStats {
+    grid-template-rows: auto 1fr;
+    min-height: 100dvh;
+  }
+
+  .containerStats {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  .ctaContainer {
+    height: auto;
+    min-height: 60vh;
+    padding-top: 3rem;
+    padding-top: 3rem;
+  }
+
+  .dato {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .itemStat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+  }
+
+  .ctaContainer svg {
+    width: 100%;
+    height: 100%;
+    padding-top: 40px;
+  }
+
+  .numero {
+    font-size: 2.5rem;
+  }
+}
+
+/* Sección formulario contacto */
+
+.seccionContact {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerContact {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+.containerForm {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+}
+
+.containerForm h2 {
+  color: var(--color-orange-50);
+  font-size: 40px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 320px;
+  max-width: 600px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.containerForm input,
+.containerForm textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--color-gray-100);
+  font-size: 14px;
+  resize: vertical;
+}
+
+.form .inputGroup textarea {
+  resize: none;
+  min-height: 100px;
+}
+
+.containerForm button {
+  align-self: start;
+  border: none;
+  background-color: var(--color-orange-50);
+  color: var(--color-white-50);
+  border-radius: 10px;
+  padding: 15px 40px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+}
+
+.containerForm button:hover {
+  background-color: var(--color-orange-75);
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.2);
+}
+
+.logoContainer {
+  min-width: 280px;
+}
+
+.logoContainer img {
+  max-width: 500px;
+  height: auto;
+}
+
+/* Responsividad */
+
+@media (max-width: 900px) {
+  .containerContact {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .containerForm h2 {
+    text-align: center;
+  }
+
+  .containerForm {
+    padding: 0 20px;
+  }
+
+  .containerForm button {
+    align-self: center;
+  }
+
+  .logoContainer img {
+    max-width: 300px;
+  }
+}

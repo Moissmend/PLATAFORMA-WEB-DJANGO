@@ -1,0 +1,39 @@
+.galeria {
+    column-count: 3;
+    column-gap: 10px;
+    padding: 20px;
+  }
+  
+  .itemImg {
+    margin-bottom: 10px;
+    break-inside: avoid;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .itemImg:hover {
+    transform: scale(1.02);
+  }
+  
+  .img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .galeria {
+      column-count: 2;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .galeria {
+      column-count: 1;
+    }
+  }
+  

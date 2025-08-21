@@ -1,0 +1,375 @@
+{% extends 'base_empleado.html' %}
+
+{% block title %} Consultas {% endblock title %}
+
+{% block style %}
+    <style>
+        .dx-icon-image {
+			font-size: 2em !important;
+			height: auto;
+			text-decoration: none !important;
+            vertical-align: middle !important;
+			width: auto;
+		}
+
+        .btn-accion-margin{
+            margin-right: 12px !important;
+        }
+    </style>
+{% endblock style %}
+
+{% block contenido %}
+<div class="content-header">
+    <h3 class="text-center"><b>CONSULTAS</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="DgvContactanos"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para responder -->
+<div class="modal fade" id="modalResponder" tabindex="-1" role="dialog" aria-labelledby="modalResponderLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Responder consulta</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formRespuesta">
+          {% csrf_token %}
+          <input type="hidden" name="id" id="consulta_id">
+          <div class="form-group">
+            <label>Nombre:</label>
+            {{ form.nombre }}
+          </div>
+          <div class="form-group">
+            <label>Apellido:</label>
+            {{ form.apellido }}
+          </div>
+          <div class="form-group">
+            <label>Correo:</label>
+            {{ form.email }}
+          </div>
+          <div class="form-group">
+            <label>Respuesta:</label>
+            {{ form.respuesta }}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnEnviarRespuesta" class="btn btn-primary">Enviar Respuesta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</section>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    
+    $(function(){
+        //JS 
+        // $("#modalResponder").modal("show");
+
+        var customDataSource = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+
+                return $.getJSON("{% url 'ws_administracion:ajax_consultas_listar' %}")
+                    .done(function(data) {
+                        console.log(data);
+                    })
+                    .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+
+            },
+            // remove: function(key) {
+
+            //     return $.ajax({
+            //             url: "{% url 'ws_administracion:ajax_consultas_eliminar' %}",
+            //             method: "POST",
+            //             data: {
+            //                 'key':key,
+            //             },
+            //             success: function(data){
+                                            
+            //                 if (! (jQuery.isEmptyObject(data.exito)) ) {
+            //                     mensajeSuccess(data.exito, '¡Exito!');
+            //                 }
+                            
+            //                 if (! (jQuery.isEmptyObject(data.error)) ) {
+            //                     mensajeError(data.error, '¡Error!');
+            //                 }
+        
+            //             },
+            //     })
+            // },
+        });
+
+        $("#DgvContactanos").dxDataGrid({
+            dataSource: customDataSource,
+            columns: [
+                {
+                    caption: "Nombre",
+                    dataField: "nombre",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Apellido",
+                    dataField: "apellido",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Correo",
+                    dataField: "correo",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Mensaje",
+                    dataField: "mensaje",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Fecha de Envio",
+                    dataField: "fecha_envio",
+                    dataType: 'datetime',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                    format: {
+                        type: "longDateShortTime", 
+                        formatter: function(date) {
+                            return DevExpress.localization.formatDate(date, "MM/dd/yyyy hh:mm a");
+                        }
+                    }
+                },{
+                    caption: "Fecha de Respuesta",
+                    dataField: "fecha_respuesta",
+                    dataType: 'datetime',
+                    alignment: "left",
+                    cssClass: "centrado_vertical",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                    format: {
+                        type: "longDateShortTime", 
+                        formatter: function(date) {
+                            return DevExpress.localization.formatDate(date, "MM/dd/yyyy hh:mm a");
+                        }
+                    }
+                },{
+                    caption: "Estado",
+                    dataField: "respondido",
+                    dataType: "boolean",
+                    alignment: "center",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 50,
+                    maxWidth: 100,
+                    allowEditing: true,
+                },{
+                    caption: "Acciones",
+                    type: "buttons",
+                    width: 100,
+                    buttons: [
+                        {
+                            name: "responder",
+                            hint: "Responder",
+                            icon: "email",
+                            cssClass: "btn-accion-margin",
+                            visible: function(e) {
+                                return !e.row.data.respondido;
+                        },
+                            onClick: function(e) {
+                                console.log(e.row.data);
+                                // Lógica para abrir modal de respuesta
+                                $("#consulta_id").val(e.row.data.id);
+                                $("#id_nombre").val(e.row.data.nombre);
+                                $("#id_apellido").val(e.row.data.apellido);
+                                $("#id_email").val(e.row.data.correo);
+                                $("#id_respuesta").val("");
+                                $("#modalResponder").modal("show");
+                        }
+                        },
+                        {
+                            name: "respuesta",
+                            hint: "Ya se respondió",
+                            icon: "check",
+                            cssClass: "btn-accion-margin",
+                            visible: function(e) {
+                                return e.row.data.respondido;
+                            },
+                            // onClick: function(e) {
+                            //     // Lógica para mostrar respuesta existente
+                            //     $("#consulta_id").val(e.row.data.id);
+                            //     $("#respuestaExistente").text(e.row.data.respuesta);
+                            //     $("#modalVerRespuesta").modal("show");
+                            // }
+                        },
+                        {
+                            hint: "Eliminar",
+                            icon: "trash",
+                            cssClass: "btn-eliminar-margin",
+                            onClick: function(e){
+                                eliminarConsulta(e.row.data.id);
+                                e.component.refresh();
+                            }
+                        }
+                    ]
+                }
+            ],
+            editing: {
+                mode: "cell",
+                allowUpdating: true,
+                allowAdding: false,
+                allowDeleting: true,
+                selectTextOnEditStart: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            width: "100%",
+            height: "500px",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true, 
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            filterRow: {visible: false },
+            headerFilter: {visible: false},
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true
+            },
+            columnChooser: {//Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            columnFixing: { //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            paging: {
+                enabled: true
+            },
+            searchPanel:{
+                visible: true
+            },
+            export: {
+                enabled: false,
+                fileName: "Consultas",
+                allowExportSelectedData: true,
+                allowExportSelectedData: false
+            },
+            summary: {
+                recalculateWhileEditing: true,
+                totalItems: [{
+                    column: "nombre",
+                    summaryType: "count",
+                    displayFormat: "Consultas: {0}"
+                }]
+            },
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+                    let index = e.component.getRowIndexByKey(e.key);
+                    let el = e.component.getCellElement(index, e.brokenRules[0].columnIndex);
+                    e.component.focus(el);
+
+                    mensajeError('Complete el llenado o la selección', '¡Error!');
+                }
+            }
+        });
+
+    function eliminarConsulta(key){
+        $.ajax({
+                url: "{% url 'ws_administracion:ajax_consultas_eliminar' %}",
+                method: "POST",
+                data: {
+                    'key':key,
+                },
+                success: function(data){
+                                    
+                    if (! (jQuery.isEmptyObject(data.exito)) ) {
+                        mensajeSuccess(data.exito, '¡Exito!');
+                    }
+                    
+                    if (! (jQuery.isEmptyObject(data.error)) ) {
+                        mensajeError(data.error, '¡Error!');
+                    }
+                },
+        })
+    }
+
+    // Enviar respuesta
+    $("#btnEnviarRespuesta").click(function() {
+        // Obtener todos los campos que necesita el formulario
+        var formData = {
+            csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
+            key: $("#consulta_id").val(),  // Cambiado de 'key' a 'id'
+            respuesta: $("#id_respuesta").val(),
+            email: $("#id_email").val(),  // Asegúrate que estos IDs existen
+            nombre: $("#id_nombre").val(),
+            apellido: $("#id_apellido").val()
+        };
+
+        // console.log("Datos del formulario:", formData);
+
+        $.ajax({
+            url: "{% url 'ws_administracion:ajax_consultas_responder' %}",
+            method: "POST",
+            data: formData,
+            success: function(data) {
+                if (data.exito) {
+                    mensajeSuccess(data.exito, "¡Éxito!");
+                    $("#modalResponder").modal("hide");
+                    $("#id_respuesta").val(""); 
+                    $("#DgvContactanos").dxDataGrid("instance").refresh();
+                }
+                if (data.error) {
+                    mensajeError(data.error, "¡Error!");
+                }
+            },
+            error: function(xhr) {
+                mensajeError("Error al enviar la respuesta", "¡Error!");
+            }
+        });
+    });
+});
+
+
+</script>
+{% endblock script %}

@@ -1,0 +1,50 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 115vh;
+    background-color: var(--color-orange-50);
+}
+
+.contentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 45px;
+    padding: 30px 10px;
+    width: 500px;
+}
+
+.contentContainer p {
+    color: var(--color-white-50);
+}
+
+.socialIcons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.socialIcons img{
+    transition: all 0.3s ease-in-out;
+}
+
+.socialIcons img:hover{
+    transform: scale(1.2);
+}
+
+.btnAplicar {
+    width: 250px;
+    height: 50px;
+    font-size: 15px;
+    color: var(--color-orange-50);
+    border: none;
+    cursor: pointer;
+    transition: all ease-in-out 0.1s;
+}
+
+.btnAplicar:hover {
+    color: var(--color-white-50);
+    background-color: var(--color-orange-100);
+    box-shadow: 0px 8px 5px rgba(0, 0, 0, 0.1);
+}

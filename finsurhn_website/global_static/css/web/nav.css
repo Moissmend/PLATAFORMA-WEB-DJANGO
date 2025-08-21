@@ -1,0 +1,220 @@
+/* navbar */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 90px;
+  background-color: var(--color-white-50);
+  padding-left: 40px;
+  padding-right: 40px;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  box-shadow: 0 10px 5px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  transition: top 0.5s ease-in-out, height 0.5s ease-in-out;
+  overflow: hidden;
+}
+
+.infobarHidden + .navbar {
+  top: 0;
+  height: 60px;
+}
+
+.navbar .logo img {
+  height: 55px;
+  transition: height 0.5s ease-in-out;
+}
+
+.infobarHidden + .navbar .logo img {
+  height: 40px;
+}
+
+.navLinks ul {
+  list-style: none;
+  display: flex;
+  gap: 40px;
+  margin: 0;
+  padding: 0;
+}
+
+.navLinks a {
+  color: var(--color-black-50);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.5s;
+}
+
+.navLinks a:hover {
+  color: var(--color-orange-50);
+}
+
+.activeLink a {
+  color: var(--color-orange-50);
+}
+
+.navbar .navLinks .BtnLogin{
+  background-color: var(--color-orange-50); 
+  color: var(--color-white-50); 
+  padding: 8px 8px; 
+  border-radius: 12px;
+  text-decoration: none; 
+  cursor: pointer;
+}
+
+/* Infobar */
+
+.infobar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--color-orange-50);
+  height: 50px;
+  padding-left: 40px;
+  padding-right: 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  transition: transform 0.5s ease-in-out;
+  overflow: hidden;
+}
+
+.infobarHidden {
+  transform: translateY(-100%);
+}
+
+.contactinfo {
+  display: flex;
+  gap: 18px;
+}
+
+.socialsnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.socialsnav img {
+  height: 30px;
+  transition: all 0.3s ease;
+}
+
+.socialsnav img:hover {
+  transform: scale(1.1);
+}
+
+.phone,
+.email {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.phone p,
+.email p{
+  margin: 0;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--color-white-50);
+}
+
+.phone svg,
+.email svg{
+  flex-shrink: 0;
+}
+
+/* hambuger menu */
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: none;
+}
+
+.hamburger svg {
+  width: 30px;
+  height: 30px;
+  stroke: var(--color-black-50);
+}
+
+@media (max-width: 968px) {
+  .hamburger {
+    display: block;
+    z-index: 200;
+  }
+
+  .navLinks {
+    position: fixed;
+    top: 138px;
+    left: 0;
+    right: 0;
+    background: var(--color-white-50);
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 20px;
+    clip-path: circle(0% at 100% 0);
+    transition: clip-path 0.5s ease-in-out;
+    z-index: 10;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .infobarHidden + .navbar .navLinks {
+    top: 56px;
+  }
+
+  .navLinks.active {
+    clip-path: circle(150% at top right);
+  }
+
+  .navLinks ul {
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .navLinks a {
+    display: block;
+    padding: 10px;
+    font-size: 18px;
+  }
+
+    .navbar {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .infobar {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .contactinfo {
+    gap: 8px;
+  }
+
+  .socialsnav{
+    gap: 8px;
+  }
+
+  .socialsnav img{
+    height: 30px;
+  }
+
+  .phone p,
+  .email p{
+    font-size: 10px;
+  }
+
+}
+
+
+

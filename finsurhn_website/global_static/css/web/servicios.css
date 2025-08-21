@@ -1,0 +1,267 @@
+.seccionInicio {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.panelIzquierdo {
+    background-color: var(--color-orange-50);
+    padding: 2rem 1rem;
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 600px;
+    width: 100%;
+    padding: 1rem;
+    color: var(--color-white-50);
+}
+
+.contenido p {
+    font-size: 3.4rem;
+    text-align: justify;
+    line-height: 1.6;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.panelDerecho {
+    flex: 3;
+    overflow: hidden;
+}
+
+.logoInicio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.logoInicio img {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+/* Responsividad */
+
+@media (min-width: 910px) {
+    .seccionInicio {
+        flex-direction: row;
+    }
+
+    .panelIzquierdo {
+        flex: 3;
+    }
+
+    .panelDerecho {
+        flex: 2;
+        overflow: hidden;
+    }
+
+    .contenido p {
+        font-size: 3.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    .logoInicio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logoInicio img {
+        max-width: 100%;
+        height: 100vh;
+        object-fit: cover;
+
+    }
+}
+
+@media (max-width: 600px) {
+    .contenido p {
+        font-size: 3rem;
+    }
+
+    .contenido button {
+        align-self: center;
+    }
+
+    .panelIzquierdo {
+        flex: 1;
+    }
+
+    .panelDerecho {
+        flex: 3;
+    }
+
+    .logoInicio img {
+        max-width: 100%;
+        height: 65vh;
+        object-fit: cover;
+
+    }
+}
+
+.seccionSectores{
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+
+.sectoresContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    padding-top: 40px;
+    max-width: 1200px;
+}
+
+.sectoresContainer h1{
+    color: var(--color-orange-50);
+    font-size: 45px;
+}
+
+.sectores{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sector{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    width: 300px;
+}
+
+.sector img{
+    border-radius: 30%;
+    border: var(--color-orange-50) solid 3px;
+}
+
+.sector h2{
+    color: var(--color-orange-50);
+}
+
+@media (max-width: 600px) {
+    .sectoresContainer h1{
+        color: var(--color-orange-50);
+        text-align: center;
+        font-size: 45px;
+    }
+
+    .sectoresContainer p {
+        width: 360px;
+        text-align: center;
+    }
+
+    .sectores{
+        gap: 10px;
+    }
+
+    .sector{
+        display: flex;
+        gap: 15px;
+        width: auto;
+    }
+}
+
+
+/* CTA */
+
+.seccionCTA{
+    height: 90vh;
+}
+
+.ctaContainer {
+    background-image: url('/static/img/ctaServicio.svg');
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+    background-position: center top;    
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    position: relative;
+    /* border-bottom: #FFFFFF solid 2px; */
+}
+
+
+.ctaContent {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    text-align: center;
+    color: var(--color-white-50);
+    padding: 2rem;
+    margin-top: -50px;
+    z-index: 1;
+    max-width: 550px;
+}
+
+.ctaContent h1{
+    font-size: 40px;
+}
+
+.ctaButton {
+    font-size: 15px;
+    background-color: var(--color-orange-75);
+    text-decoration: none;
+    color: var(--color-white-50);
+    border: none;
+    padding: 20px 25px;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 20px;
+    transition: all 0.3s ease-in;
+    align-self: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ctaButton:hover {
+    background-color: var(--color-white-50);
+    color: var(--color-orange-50);
+    transform: scale(1.05)
+}
+
+.ctaButton:active {
+    transform: scale(0.9);
+}
+
+@media (max-width: 800px) {
+    .seccionCTA{
+        height: 80vh;
+    }
+
+    .ctaContainer {
+        height: 100%;
+        min-height: 20vh;
+        padding-top: 3rem;
+        padding-top: 3rem;
+    }
+
+    .ctaContent{
+        margin-top: 20px;
+    }
+
+}

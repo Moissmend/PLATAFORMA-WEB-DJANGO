@@ -1,0 +1,27 @@
+<div class="footer">
+    <div class="copy">
+        <p>Inversiones Financieras del Sur © 20{% now "y" %}</p>
+        <script type="text/javascript">
+        </script>
+    </div>
+
+      <div class="socials">
+        {% if ctx_redes_sociales %}
+          {% for r in ctx_redes_sociales %}
+            <a 
+              href="{{r.link}}" 
+              target="_blank">
+                <img 
+                  src="{{ r.imagen.url }}" 
+                  alt="{{ r.nombre }}"
+                  style="height: 35px;">
+            </a>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+    <div class="contacto">
+        <p>Tel: (+504) 2782-2223</p>
+        <p>E-mail: finsur01@gmail.com</p>
+    </div>
+</div>

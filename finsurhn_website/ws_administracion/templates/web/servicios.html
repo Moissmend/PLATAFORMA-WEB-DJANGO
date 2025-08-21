@@ -1,0 +1,66 @@
+{% extends 'web/base_website.html' %}
+{% load static %}
+
+{% block title %} Servicios {% endblock title %}
+
+    {% block extra_css %}
+
+    <link rel="stylesheet" href="{% static 'css/web/servicios.css' %}" />
+
+    {% endblock %}
+
+{% block contenido %}
+
+    <section class="seccionInicio">
+      <div class="panelIzquierdo">
+        <div class="contenido">
+          <p>Servicios</p>
+        </div>
+      </div>
+
+      <div class="panelDerecho">
+        <div class="logoInicio">
+          <img src="{% static 'img/servicios.jpg' %}" alt="Logo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICIOS -->
+{% if sectores %}
+    <section class="seccionSectores">
+      <div class="sectoresContainer">
+        <h1>Sectores Financieros</h1>
+        <p>
+          Brindamos financiamiento a los emprendedores de los siguientes
+          sectores
+        </p>
+        <div class="sectores">
+        {% for s in sectores %}
+          <div class="sector">
+            <h2>{{s.descripcion_sector}}</h2>
+            <img
+              style="width: 200px; height: 150px"
+              src="{{ s.imagen }}"
+              alt="consumo.png"
+            />
+          </div>
+        {% endfor %}
+        </div>
+      </div>
+    </section>
+{% endif %}
+
+    <section class="seccionCTA">
+      <div class="ctaContainer">
+        <div class="ctaContent">
+          <h1>¿Interesado en nuestros servicios?</h1>
+          <a href="{% url 'solicitud-credito' %}">
+            <button class="ctaButton">Solicitar Crédito</button>
+          </a>
+        </div>
+      </div>
+    </section>
+
+{% endblock %}
+
+

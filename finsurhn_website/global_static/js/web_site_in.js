@@ -165,7 +165,8 @@ $(function(){
 					icon: 'fa fa-eye',
 					stylingMode: 'text',
 					onClick() {
-						$('#TxtContrasena').dxTextBox("instance").option('mode', $('#TxtContrasena').dxTextBox("instance").option('mode') === 'text' ? 'password' : 'text');
+						$('#TxtContrasena').dxTextBox("instance").option('mode',
+							$('#TxtContrasena').dxTextBox("instance").option('mode') === 'text' ? 'password' : 'text');
 					},
 				},
 			}]
@@ -181,10 +182,12 @@ $(function(){
             var resultadoFormulario = DevExpress.validationEngine.validateGroup("validationGroup_FormularioIngresar")
             if (resultadoFormulario.isValid) {
         
-                let txtUsuario = $('#TxtUsuario').dxTextBox("instance").option("value");
-                let txtContrasena = $('#TxtContrasena').dxTextBox("instance").option("value");
+                let txtUsuario = $('#TxtUsuario').dxTextBox("instance").option("value").trim();
+                let txtContrasena = $('#TxtContrasena').dxTextBox("instance").option("value").trim();
             
                 $.post("/ajax/iniciar/sesion/", { txtUsuario, txtContrasena }, function (data) {
+					
+					console.error(data)
     
                     if (data.resultado == "true") {
                         $(location).attr('href', data.url);

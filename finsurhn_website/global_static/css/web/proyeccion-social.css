@@ -1,0 +1,221 @@
+.seccionInicio {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.panelIzquierdo {
+    background-color: var(--color-orange-50);
+    padding: 2rem 1rem;
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 600px;
+    width: 100%;
+    padding: 1rem;
+    color: var(--color-white-50);
+}
+
+.contenido p {
+    font-size: 3.4rem;
+    text-align: justify;
+    line-height: 1.6;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.panelDerecho {
+    flex: 3;
+    overflow: hidden;
+}
+
+.logoInicio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.logoInicio img {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+@media (min-width: 910px) {
+    .seccionInicio {
+        flex-direction: row;
+    }
+
+    .panelIzquierdo {
+        flex: 3;
+    }
+
+    .panelDerecho {
+        flex: 2;
+        overflow: hidden;
+    }
+
+    .contenido p {
+        font-size: 3.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    .logoInicio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logoInicio img {
+        max-width: 100%;
+        height: 100vh;
+        object-fit: cover;
+
+    }
+}
+
+@media (max-width: 600px) {
+    .contenido p {
+        font-size: 3rem;
+        text-align: center;
+    }
+
+    .panelIzquierdo {
+        flex: 1;
+    }
+
+    .panelDerecho {
+        flex: 3;
+    }
+
+    .logoInicio img {
+        max-width: 100%;
+        height: 65vh;
+        object-fit: cover;
+
+    }
+}
+
+/* Responsabilidades */
+
+.seccionResponsabilidad{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.containerResponsabilidad{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px 20px;
+}
+
+.containerResponsabilidad .item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    width: 300px;
+}
+
+.item h1{
+    color: var(--color-orange-50);
+    font-size: 1.8rem;
+}
+
+@media (max-width: 980px){
+    .seccionResponsabilidad{
+        height: auto; 
+    }
+
+    .containerResponsabilidad{
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 60px;
+        padding: 20px 40px;
+    }
+
+    .containerResponsabilidad .item{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 300px;
+    }
+}
+
+/* Galeria Imagenes */
+
+.seccionImagenes {
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.containerImagenes {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    max-width: 1200px;
+    width: 100%;
+    gap: 20px;
+    padding: 20px;
+}
+
+.containerImagenes h1 {
+    color: var(--color-orange-50);
+    text-align: center;
+    font-size: 3rem;
+}
+
+
+/* --- Responsividad --- */
+
+@media (max-width: 1024px) {
+    .seccionImagenes {
+        height: auto; 
+        padding: 40px 20px;
+    }
+
+    .containerImagenes h1 {
+        font-size: 2.5rem; 
+    }
+}
+
+@media (max-width: 600px) {
+    .seccionImagenes {
+        height: auto; 
+        padding: 30px 15px;
+    }
+
+    .containerImagenes {
+        padding: 10px;
+        gap: 15px;
+    }
+
+    .containerImagenes h1 {
+        font-size: 2rem; 
+    }
+}

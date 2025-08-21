@@ -1,5 +1,6 @@
 from email.policy import default
 from django.db import models
+from django.utils import timezone
 
 
 #Modelo Valores de la Empresa
@@ -116,6 +117,54 @@ class Detalle_Productos_Servicios(models.Model):
     def __str__(self):
         return 'Detalle: {} | Producto: {} -> {}' .format(self.id, self.producto_servicio.id , self.producto_servicio.nombre)
     
+class Sucursal(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
+
+class FormaPago(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
+
+class EstadoSolicitud(models.Model):
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.nombre
+
+class Solicitud(models.Model):
+    identificacion = models.CharField(max_length=20, unique=True)
+    primerNombre = models.CharField(max_length=50)
+    segundoNombre = models.CharField(max_length=50, blank=True, null=True)
+    primerApellido = models.CharField(max_length=50)
+    segundoApellido = models.CharField(max_length=50, blank=True, null=True)
+    correo = models.EmailField(blank=True, null=True)
+    sucursal = models.ForeignKey(Sucursal, on_delete=models.PROTECT)
+    celular = models.CharField(max_length=20)
+    direccion = models.TextField()
+    formaPago = models.ForeignKey(FormaPago, on_delete=models.PROTECT)
+    estado = models.ForeignKey(EstadoSolicitud, on_delete=models.PROTECT, default=1)
+    fecha_envio = models.DateTimeField(default=timezone.now)
+    montoSolicitado = models.DecimalField(max_digits=12, decimal_places=2)
+    descripcionTipoIngreso = models.TextField()
+
+    def __str__(self):
+        return f"{self.primerNombre} {self.primerApellido} ({self.identificacion})"
+    
+class Consulta(models.Model):
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    correo = models.EmailField()
+    mensaje = models.TextField()
+    respondido = models.BooleanField(default=False)
+    fecha_envio = models.DateTimeField(default=timezone.now)
+    fecha_respuesta = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido} - {self.estado}"
     
 # Empresa y Sectores van a ir a la DB Principal # Las imagenes irán en Base 64    
 # Empresa -> Movido

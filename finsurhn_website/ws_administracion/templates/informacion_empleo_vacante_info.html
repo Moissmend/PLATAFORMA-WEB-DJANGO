@@ -153,7 +153,7 @@
             $('#id_nombre_completo').focus();
             mensajeError('Ingrese el <b> Nombre completo </b>', '¡Error!');
         } else {
-            if ( $('#id_num_identidad').val().length == 0 || $('#id_num_identidad').val().length < 15 || $('#id_num_identidad').val().length ==  undefined ){
+            if ( $('#id_num_identidad').val().length == 0 || $('#id_num_identidad').val().length < 13 || $('#id_num_identidad').val().length ==  undefined ){
                 $('#id_num_identidad').focus();
                 mensajeError('Ingrese el <b> Número de Identidad </b>', '¡Error!');
             
@@ -173,11 +173,11 @@
                             mensajeError('Ingrese el <b> Asunto (comentario) </b>', '¡Error!');
                         
                         } else {
-                            {# VALIDACIÓN DE ARCHIVOS #}
+                            // {# VALIDACIÓN DE ARCHIVOS #}
                             var archivo = $("#{{form.curriculum.id_for_label}}").val();
                             var extensiones = archivo.substring(archivo.lastIndexOf("."));
                             
-                            {# Validando el tipo de archivo #}
+                            // {# Validando el tipo de archivo #}
                             if ( archivo != '' && archivo != null && archivo != undefined ){
                                 DevExpress.ui.dialog.confirm("¿Seguro(a) que desea Contactarse con Nosotros?", "Confirmación").done(function (r) {
                                     if (r){

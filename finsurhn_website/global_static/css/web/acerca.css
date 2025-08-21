@@ -1,0 +1,328 @@
+.seccionInicio {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.panelIzquierdo {
+    background-color: var(--color-orange-50);
+    padding: 2rem 1rem;
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 600px;
+    width: 100%;
+    padding: 1rem;
+    color: var(--color-white-50);
+}
+
+.contenido p {
+    font-size: 3.4rem;
+    text-align: justify;
+    line-height: 1.6;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.panelDerecho {
+    flex: 3;
+    overflow: hidden;
+}
+
+.logoInicio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.logoInicio img {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+/* Responsividad */
+
+@media (min-width: 910px) {
+    .seccionInicio {
+        flex-direction: row;
+    }
+
+    .panelIzquierdo {
+        flex: 3;
+    }
+
+    .panelDerecho {
+        flex: 2;
+        overflow: hidden;
+    }
+
+    .contenido p {
+        font-size: 3.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    .logoInicio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logoInicio img {
+        max-width: 100%;
+        height: 100vh;
+        object-fit: cover;
+
+    }
+}
+
+@media (max-width: 600px) {
+    .contenido p {
+        font-size: 2.5rem;
+    }
+
+    .contenido button {
+        align-self: center;
+    }
+
+    .panelIzquierdo {
+        flex: 1;
+    }
+
+    .panelDerecho {
+        flex: 3;
+    }
+
+    .logoInicio img {
+        max-width: 100%;
+        height: 65vh;
+        object-fit: cover;
+
+    }
+}
+
+/* MisionVision */
+
+.seccionMision {
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    padding: 60px 60px;
+    text-align: center;
+}
+
+.container h1 {
+    color: var(--color-orange-50);
+    font-size: 2rem;
+}
+
+.container p {
+    font-size: 20px;
+    max-width: 500px;
+    text-align: justify;
+}
+
+.bloque {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Responsividad */
+
+@media (min-width: 910px) {
+    .container {
+        flex-direction: row;
+        padding: 40px 60px;
+    }
+
+    .container p {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 880px) {
+    .container svg {
+        height: 120px;
+    }
+
+    .container h1 {
+        font-size: 1.8rem;
+    }
+
+    .container p {
+        font-size: 16px;
+    }
+}
+
+/* Historia */
+
+.seccionHistoria {
+    height: auto;
+}
+
+.historiaContainer {
+    background-image: url('/static/img/historia.svg');
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px;
+    z-index: 1;
+}
+
+.historiaContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5rem;
+    gap: 30px;
+    margin-top: -100px;
+    max-width: 540px;
+}
+
+.historiaContent h1 {
+    color: var(--color-white-50);
+    font-size: 3rem;
+}
+
+.historiaContent p {
+    color: var(--color-white-50);
+    text-align: justify;
+    font-size: 20px;
+    width: 450px;
+}
+
+/* Responsividad */
+
+@media (max-width: 480px) {
+    .historiaContent{
+        max-width: 400px;
+    }
+
+    .historiaContent h1 {
+        color: var(--color-white-50);
+        font-size: 35px;
+    }
+
+    .historiaContent p {
+        color: var(--color-white-50);
+        font-size: 16px;
+        width: 300px;
+    }
+
+}
+
+/* Valores */
+
+.seccionValores{
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.containerValores{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    max-width: 1200px;
+}
+
+.containerValores h1{
+    color: var(--color-orange-50);
+    text-align: center;
+    font-size: 3rem;
+}
+
+.valorInfo{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 20px;
+}
+
+.valorInfo h2{
+    color: var(--color-orange-50);
+}
+
+.valorInfo p{
+    font-size: 18px;
+    text-align: justify;
+}
+
+.valor{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: auto;
+    max-width: 800px;
+    padding: 20px 20px;
+}
+
+/* Responsividad */
+
+@media (max-width: 980px){
+    .valorInfo{
+        flex-direction: column;
+        max-width: 350px;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        min-height: 550px;
+    }
+
+    .valorInfo svg{
+        width: 100%;
+        max-width:150px;
+    }
+
+    .valorInfo p{
+        font-size: 14px;
+    }
+    
+    .valor{
+        align-items: center;
+    }
+}
+
+/* Background */
+
+.fondoFinal{
+    background-image: url('/static/img/finsur.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 70vh;
+    min-height: 300px;
+}
+
+@media (max-width: 768px) {
+    .fondoFinal {
+        height: 50vh;
+    }
+}
+

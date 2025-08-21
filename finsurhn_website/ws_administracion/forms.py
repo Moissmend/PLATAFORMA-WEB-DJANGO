@@ -69,7 +69,7 @@ class Redes_SocialesForm(ModelForm):
         for campo in self.fields:
             if 'imagen' in campo:
                 self.fields[campo].widget.attrs['class'] = 'form-control-file'
-                self.fields['imagen'].widget.attrs['accept'] = '.jpg, .jpeg, .png'
+                self.fields['imagen'].widget.attrs['accept'] = '.jpg, .jpeg, .png, .svg'
             elif 'estado' in campo:
                 self.fields[campo].widget.attrs['class'] = 'form-control js-switch'
                 self.fields[campo].widget.attrs['checked'] = "checked"    
@@ -99,8 +99,6 @@ class Sala_VideosForm(ModelForm):
                 self.fields[campo].widget.attrs['checked'] = "checked"    
             else:
                 self.fields[campo].widget.attrs['class'] = 'form-control'
-
-
 
 # Responsabilidad_SocialForm
 class R_SocialForm(ModelForm):
@@ -203,8 +201,135 @@ class ContactanosForm(forms.Form):
     asunto = forms.CharField(
         label = 'Asunto', required = True, 
         widget = forms.Textarea(attrs = {'class': 'form-control text-left', 'rows': '3'}))
+
+class SolicitudForm(forms.Form):
     
+    SUCURSALES = [
+        ('', 'Seleccione un sucursal'),
+        ('1', 'Choluteca'),
+        ('2', 'Valle'),
+    ]
     
+    FORMAS_PAGO = [
+        ('', 'Seleccione una forma de pago'),
+        ('1', 'Diario'),
+        ('2', 'Semanal'),
+        ('3', 'Quincenal'),
+        ('4', 'Mensual'),
+    ]
+    
+    identificacion = forms.CharField(
+        max_length=13,
+        required=True,
+        widget = forms.TextInput(attrs={'placeholder': '9999-9999-99999'})
+        )
+    correo = forms.EmailField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'ejemplo@correo.com'})
+    )
+    primerNombre = forms.CharField(
+        max_length=100, 
+        required=True,
+        )
+    segundoNombre = forms.CharField(
+        max_length=100, 
+        required=True,
+        )
+    primerApellido = forms.CharField(
+        max_length=100, 
+        required=True,
+        )
+    segundoApellido = forms.CharField(
+        max_length=100, 
+        required=True,
+        )
+    sucursal = forms.ChoiceField(
+        choices=SUCURSALES,
+        required=True,
+        )   
+    celular = forms.CharField(
+        max_length=8,
+        required=True,
+        widget = forms.TextInput(attrs={'placeholder': '9999-9999'})
+        )    
+    direccion = forms.CharField(
+        max_length=150, 
+        required=True,
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+        })
+        )     
+    formaDePago = forms.ChoiceField(
+        choices=FORMAS_PAGO,
+        required=True,
+        )
+    montoSolicitado = forms.CharField(
+        max_length=15,
+        required=True,
+        )
+    descripcionTipoIngreso = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Escribe la descripción del tipo de ingreso...',
+            'rows': 4
+        }))
+    
+    # def clean_identificacion(self):
+    #     identificacion = self.cleaned_data['identificacion']
+    #     if SolicitudCredito.objects.filter(identificacion=identificacion).exists():
+    #         raise forms.ValidationError("Ese número de identidad ya está registrado.")
+    #     return identificacion  
+    
+class ContactForm(forms.Form):
+    nombre = forms.CharField(
+        max_length=100, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'Nombre'
+        }))
+    apellido = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'Apellido'
+        }))
+    email = forms.EmailField(
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'ejemplo@correo.com'
+        }))
+    mensaje = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={
+        'placeholder': 'Escribe tu mensaje...',
+        'rows': 4
+        }))
+    
+class RespuestaConsultaForm(forms.Form):
+    nombre = forms.CharField(
+        max_length=100, 
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'Nombre'
+        }))
+    apellido = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'Apellido'
+        }))
+    email = forms.EmailField(
+        required=True,
+        widget=forms.TextInput(attrs={
+        'placeholder': 'ejemplo@correo.com'
+        }))
+    respuesta = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={
+        'placeholder': 'Escribe tu respuesta...',
+        'rows': 4
+        }))
     
 class empleo_contactoForm(forms.Form):
     nombre_completo = forms.CharField(
@@ -212,7 +337,7 @@ class empleo_contactoForm(forms.Form):
         widget= forms.TextInput(attrs = {'class': 'form-control'}))
     
     num_identidad = forms.CharField(
-        label = 'Número de Identidad', max_length = 15, required = True,
+        label = 'Número de Identidad', max_length = 13, required = True,
         widget = forms.TextInput(attrs = {'class': 'form-control', 'placeholder': '9999-9999-99999'}))
         
     correo = forms.EmailField(

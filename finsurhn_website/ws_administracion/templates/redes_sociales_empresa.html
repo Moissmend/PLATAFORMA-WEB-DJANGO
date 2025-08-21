@@ -45,8 +45,9 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-12 text-center">
-                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
-                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                            <button id="BtnCancelar" type="button" class="btn btn-secondary mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary mr-2"><i class="bi bi-check-lg"></i> Guardar</button> 
+                            <button id="BtnEliminar" type="button" class="btn btn-danger"><i class="bi bi-trash"></i> Eliminar</button>
                         </div>
                     </div>
                 </form>
@@ -217,7 +218,7 @@
                             onClick_Editar_Redes_Sociales(e);
                         }
                     }],
-                },
+                }
             ],
             editing: {
                 mode: "batch",
@@ -289,6 +290,7 @@
         $('#SubtituloFrm').text('EDITAR');
         $('#frmRedes').attr('action', '{% url "ws_administracion:ajax_redes_sociales_empresa_editar" %}');
         $('#frmContainer').show();
+        $('#BtnEliminar').show();
         limpiar_form();
 
         //{# Creando el input con el name dato_pk #}
@@ -325,6 +327,7 @@
         $('#SubtituloFrm').text('NUEVO');
         $('#frmRedes').attr('action', '{% url "ws_administracion:ajax_redes_sociales_empresa_agregar" %}');
         $('#frmContainer').show();
+        $('#BtnEliminar').hide();
         limpiar_form();
     });
 
@@ -332,6 +335,36 @@
         $('#frmContainer').hide();
     });
 
+    $('#BtnEliminar').on('click', function(){
+        var dato_pk = $('input[name="dato_pk"]').val();
+        if (dato_pk == undefined || dato_pk == null || dato_pk == '') {
+            mensajeError('Seleccione un Registro para Eliminar', '¡Error!');
+            return false;
+        }
+        DevExpress.ui.dialog.confirm("¿Seguro(a) de Eliminar el Registro?", "Confirmación").done(function (r) {
+            if (r) {
+                $.ajax({
+                    url: "{% url 'ws_administracion:ajax_redes_sociales_empresa_eliminar' %}",
+                    type: "POST",
+                    data: {
+                        'dato_pk': dato_pk,
+                    },
+                    success: function(data) {
+                        $("#DgvRedesSociales").dxDataGrid("instance").refresh();
+
+                        if (! (jQuery.isEmptyObject(data.exito)) ) {
+                            $('#frmContainer').hide();
+                            mensajeSuccess(data.exito, '¡Exito!');
+                        }
+                        
+                        if (! (jQuery.isEmptyObject(data.error)) ) {
+                            mensajeError(data.error, '¡Error!');
+                        }
+                    },
+                });
+            }
+        });
+    });
     
     $('#BtnGuardar').on('click', function(){
         var data = new FormData($('#frmRedes').get(0));
@@ -371,7 +404,7 @@
         var extensiones = imagen.substring(imagen.lastIndexOf("."));
 
         if ( imagen != '' && imagen != null && imagen != undefined ){
-            if(extensiones.toLowerCase() != ".jpg" && extensiones.toLowerCase() != ".png" && extensiones.toLowerCase() != ".jpeg"){
+            if(extensiones.toLowerCase() != ".jpg" && extensiones.toLowerCase() != ".png" && extensiones.toLowerCase() != ".jpeg" && extensiones.toLowerCase() != ".svg"){
                 mensajeError(`El archivo de tipo ${extensiones} no es válido`, '¡Error!');
                 $(this).val('');
             }

@@ -1,0 +1,43 @@
+{% extends 'web/base_website.html' %}
+{% load static %}
+
+{% block title %} Contacto {% endblock title %}
+
+    {% block extra_css %}
+
+    <link rel="stylesheet" href="{% static 'css/web/contacto.css' %}" />
+
+    {% endblock %}
+
+{% block contenido %}
+
+    <section class="seccionInicio">
+      <div class="panelIzquierdo">
+        <div class="contenido">
+          <p>Contacto</p>
+        </div>
+      </div>
+
+      <div class="panelDerecho">
+        <div class="logoInicio">
+          <img src="{% static 'img/contactanos.jpg' %}" alt="Logo" />
+        </div>
+      </div>
+    </section>
+
+    <section class="seccionContact">
+      <div class="containerContact">
+        <div class="containerForm">
+          <h2>RECIBE MÁS INFORMACIÓN DE NUESTROS SERVICIOS</h2>
+
+          {% include 'components/formulario-contacto.html' %}
+          
+        </div>
+
+        <div class="logoContainer">
+          <img src="{% static 'img/Logo.png' %}" alt="Logo">
+        </div>
+      </div>
+    </section>
+
+{% endblock %}

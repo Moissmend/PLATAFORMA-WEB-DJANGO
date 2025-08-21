@@ -2,35 +2,20 @@
 
 {% block content %}
 {% load static %}   
-    <nav class="navbar navbar-light navbar-expand-lg navbar-right fixed-top" id="webSiteMenu">
-        <a class="navbar-brand" style="font-size:22px; text-align: center;" href="{% url 'inicio' %}">
-            <img style=" height: 32px; padding-bottom: 4px;" src="{{ctx_empresa.logo.url}}" alt="logo">
-            <span style="padding-left: 8px;">{{ctx_empresa.abreviatura}}</span>
-        </a>        
-    </nav>
+  <nav class="navbar" style="top: 0; height: 60px;">
+    <div class="logo">
+      <a href="{% url 'inicio' %}">
+        <img src="{% static 'img/Logo.png' %}" alt="Logo" style="height: 40px;"/>
+      </a>
+    </div>
+  </nav>
 
-    <div id="websiteContenido">
+    <div id="websiteContenido" >
         {% block contenido %}{% endblock contenido %}
     </div>
 
-    <footer class="container-fluid" id="footerSitio">
-        <div class="row">
-            <div class="col-md-12 text-center" style="margin-bottom:10px;"><hr>
-                {% if ctx_redes_sociales %}
-                    {% for r in ctx_redes_sociales %}
-                        <a href="{{r.link}}" target="_blank"><img src="{{r.imagen.url}}" style="height: 40px; margin-right:1px; " alt="{{r.nombre}}"></a>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <div class="col-12 copyright text-center">
-                <script type="text/javascript">
-                    document.write(`
-                        <strong>Derechos Reservados &copy; ${new Date().getFullYear()} FINSUR</strong>
-                    `) 
-                </script>
-            </div>
-        </div>
-    </footer>
+    {% include 'components/footer.html' %}
+
 {% endblock %}
     
 {% block scripts %}

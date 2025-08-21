@@ -2,7 +2,7 @@
 
 {% block content %}
 {% load static %}   
-    <nav class="navbar navbar-light navbar-expand-lg navbar-right fixed-top" id="webSiteMenu">
+    <nav class="navbar navbar-light navbar-expand-lg navbar-right fixed-top" id="webSiteMenu" style="top: 0;">
         <a class="navbar-brand" style="font-size:22px; text-align: center;" href="{% url 'inicio' %}">
             <img style=" height: 32px; padding-bottom: 4px;" src="{{ctx_empresa.logo.url}}" alt="logo">
             <span style="padding-left: 8px;">{{ctx_empresa.abreviatura}}</span>
@@ -122,6 +122,7 @@
             </div>
         </div>
     </div>
+    
 {% endblock %}
     
 {% block script %}{% endblock script %}

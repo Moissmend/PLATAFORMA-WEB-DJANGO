@@ -1,0 +1,194 @@
+{% load static %}
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="{% static 'css/web/modals.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/dist/sweetalert2.all.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <form method="POST" id="formularioContacto" class="form" novalidate>
+      {% csrf_token %}
+
+      <div class="inputRow">
+        <div class="inputGroup">
+          <label>Nombre</label>
+          {{ form.nombre }}
+        </div>
+        <div class="inputGroup">
+          <label>Apellido</label>
+          {{ form.apellido }}
+        </div>
+      </div>
+
+      <div class="inputGroup">
+        <label>Correo Electronico</label>
+        {{ form.email }}
+      </div>
+
+      <div class="inputGroup">
+        <label>Comentario o mensaje</label>
+        {{ form.mensaje }}
+      </div>
+
+      <p id="success"></p>
+
+      <button id="btnEnviar" type="button">Enviar</button>
+    </form>
+    <script type="text/javascript">
+      $(document).ready(function () {
+
+        //Modal mensaje de exito
+        function mensajeSuccess(mensaje, titulo = '¡Éxito!'){
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            iconColor: 'white',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            customClass: {
+              popup: 'swal2-toast',
+              title: 'swal2-title-white',
+              content: 'swal2-content-white'
+            }
+          });
+
+          Toast.fire({
+            icon: 'success',
+            title: titulo,
+            text: mensaje,
+            didOpen: (toast) => {
+              toast.querySelector('.swal2-title').style.color = 'white';
+              toast.querySelector('.swal2-html-container').style.color = 'white';
+            }            
+          })
+        }
+
+        //Modal mensaje de error
+        function mensajeError(mensaje, titulo = 'Error') {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            iconColor: 'white',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            customClass: {
+              popup: 'swal2-toast',
+              title: 'swal2-title-white',
+              content: 'swal2-content-white'
+            }
+          });
+
+          Toast.fire({
+            icon: 'error',
+            title: titulo,
+            text: mensaje,
+            didOpen: (toast) => {
+              toast.querySelector('.swal2-title').style.color = 'white';
+              toast.querySelector('.swal2-html-container').style.color = 'white';
+            }            
+          })
+        }
+
+        function validarEmail(email){
+          const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return regex.test(email);
+        }
+  
+        function soloAlfabeticos(cadena) {
+          const regex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/; 
+          return regex.test(cadena);
+        }
+
+        //Enviar los datos
+        $("#btnEnviar").on("click", function (event) {
+          event.preventDefault();
+
+          const $form = $("#formularioContacto");
+          const formData = $form.serialize();
+
+          const campos = [
+            {id: '#id_nombre', mensaje: 'Ingrese su nombre.', tipo: 'alfabetico'},
+            {id: '#id_apellido', mensaje: 'Ingrese su apellido.', tipo: 'alfabetico'},
+            {id: '#id_email', mensaje: 'Ingrese el correo.', tipo: 'email'},
+            {id: '#id_mensaje', mensaje: 'Ingrese el mensaje.'},
+          ]
+
+          //Validar campos
+          for (const campo of campos){
+            const $elemento = $(campo.id);
+            const valor = $elemento.val().trim();
+
+            if(!valor){
+              $elemento.focus()
+              mensajeError(campo.mensaje);
+              return;
+            }
+
+            if(campo.tipo === 'alfabetico' && !soloAlfabeticos(valor)){
+              $elemento.focus();
+              mensajeError('Solo se permiten caracteres alfanuméricos.')
+              return;
+            }
+
+            if(campo.tipo === 'email' && !validarEmail(valor)){
+              $elemento.focus();
+              mensajeError('Ingrese un correo electrónico válido.')
+              return;
+            }
+            
+          }
+
+          //Modal de confirmación antes de enviar
+          Swal.fire({
+            title: '¿Seguro(a) que desea contactarse con nosotros?',
+            text: "Verifica que los datos sean correctos.",
+            icon: "question",
+            showCancelButton: "Enviar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: `var(--color-orange-50)`,
+            cancelButtonColor: `var(--color-gray-50)`
+          }).then((result) => {
+            if(result.isConfirmed){
+
+              //Modal de carga
+              Swal.fire({
+                title: "Enviando datos.",
+                html: "Por favor espere mientras procesamos su solicitud de contacto...",
+                allowOutsideClick: false,
+                aloowEscapeKey: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                }
+              })
+
+              $.ajax({
+                url: "{% url 'ws_administracion:ajax_contactanos' %}",
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                headers: { "X-CSRFToken": '{% csrf_token %}'},
+                success: function (respuesta) {
+                  Swal.close();
+                  mensajeSuccess("¡Formulario enviado correctamente!");
+                  $($form)[0].reset();
+                },
+                error: function (xhr) {
+                  mensajeError("¡Error al enviar el formulario!");
+                },
+              });                       
+            }else{
+              $btnEnviar.prop('disabled', false).text('Enviar')
+            }
+          })
+        });
+
+      });
+    </script>
+  </body>
+</html>

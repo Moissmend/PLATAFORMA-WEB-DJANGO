@@ -47,8 +47,9 @@
                 </li>
             </ul>
         </nav>
+
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="{% url 'inicio' %}" class="brand-link">
+            <a href="{% url 'ws_administracion:inicio_administracion' %}" class="brand-link">
                 <img src="{{ctx_empresa.logo.url}}" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">{{ctx_empresa.abreviatura}}</span>
             </a>
@@ -80,20 +81,21 @@
                                 </li>
                             {% endif %}
 
-                            {% if perms.admin.productos_servicios %}
-                                <li class="nav-item">
-                                    <a href="{% url 'ws_administracion:productos_servicios' %}" class="nav-link">
-                                        <i class="far nav-icon fas fa-clipboard-list"></i>
-                                        <p>Productos y Servicios</p>
-                                    </a>
-                                </li>
-                            {% endif %}
 
                             {% if perms.admin.valores_empresa %}
                                 <li class="nav-item">
                                     <a href="{% url 'ws_administracion:valores_empresa' %}" class="nav-link">
                                         <i class="far nav-icon fas fa-fire"></i>
                                         <p>Valores de la empresa</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if perms.admin.mision_vision_historia %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:informacion_mvh' %}" class="nav-link">
+                                        <i class="far nav-icon bi bi-book-fill"></i>
+                                        <p>Filosofía de la empresa</p>
                                     </a>
                                 </li>
                             {% endif %}
@@ -148,10 +150,40 @@
                         </li>
                     {% endif %}
 
+                    {% if perms.ws_administracion.solicitudes %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas bi-calendar-check-fill"></i>
+                                <p>Solicitudes</p>
+                            </a>
+                            <ul class="nav nav-treeview">
+
+                            {% if perms.admin.solicitud_credito %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:solicitudes_credito' %}" class="nav-link">
+                                        <i class="far nav-icon bi-credit-card-fill"></i>
+                                        <p>Solicitudes de Crédito</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if perms.admin.solicitud_consulta %}
+                                <li class="nav-item">
+                                    <a href="{% url 'ws_administracion:consultas' %}" class="nav-link">
+                                        <i class="far nav-icon bi-chat-left-text-fill"></i>
+                                        <p>Solicitudes de Consulta</p>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                        </li>
+                    {% endif %}
+
                     </ul>
                 </nav>
             </div>
         </aside>
+
         <div class="content-wrapper">
             {# Modal de las Imágenes del Sitio Web #}
             <div id="PopupImagen" style="display: none;">

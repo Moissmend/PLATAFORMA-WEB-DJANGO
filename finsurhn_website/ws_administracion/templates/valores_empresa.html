@@ -50,7 +50,7 @@
                 },
                 {
                     name: 'font',
-                    acceptedValues: ['Arial', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Times New Roman', 'Verdana'],
+                    acceptedValues: ['Arial', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Times New Roman', 'Verdana', 'Montserrat'],
                 },
                 'separator',
                 'bold', 'italic', 'strike', 'underline', 'separator',
@@ -66,7 +66,7 @@
             load: function() {
                 retorno = $.getJSON("{% url 'ws_administracion:ajax_valores_empresa_listar' %}")
                         .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
-
+                // console.log(retorno);
                 //Si el objeto no viene vacio, retorna los datos.
                 //Asi muestra el datagrid "Sin datos" y no se muestra como cargando.
                 if (! (jQuery.isEmptyObject(retorno)) ) {
@@ -99,7 +99,6 @@
                 })
             },
             update: function(key, values) {
-                
                 $.ajax({
                         url: "{% url 'ws_administracion:ajax_valores_empresa_editar' %}",
                         method: "POST",
@@ -121,24 +120,28 @@
                 })
             },
             remove: function(key) {
-                $.ajax({
-                    url: "{% url 'ws_administracion:ajax_valores_empresa_eliminar' %}",
-                    method: "POST",
-                    data: {
-                        'key':key,
-                    },
-                    success: function(data) {
-                        
-                        if (! (jQuery.isEmptyObject(data.exito)) ) {
-                            mensajeSuccess(data.exito, '¡Exito!');
-                        }
-                        
-                        if (! (jQuery.isEmptyObject(data.error)) ) {
-                            mensajeError(data.error, '¡Error!');
-                        }
-                    },
-                })
-            },
+                DevExpress.ui.dialog.confirm("¿Está seguro de eliminar el Valor?", "Confirmación").done(function(r) {
+                    if (r) {
+                        $.ajax({
+                            url: "{% url 'ws_administracion:ajax_valores_empresa_eliminar' %}",
+                            method: "POST",
+                            data: {
+                                'key':key,
+                            },
+                            success: function(data) {
+                                
+                                if (! (jQuery.isEmptyObject(data.exito)) ) {
+                                    mensajeSuccess(data.exito, '¡Exito!');
+                                }
+                                
+                                if (! (jQuery.isEmptyObject(data.error)) ) {
+                                    mensajeError(data.error, '¡Error!');
+                                }
+                            },
+                        })
+                    }
+                });
+             }
         });
 
         //

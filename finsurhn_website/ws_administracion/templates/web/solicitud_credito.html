@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="padding-top: 0px" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solicitud Crédito</title>
+    <link rel="stylesheet" href="{% static 'css/web/global.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/web/solicitud.css' %}" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'img/finsur.ico' %}"
+    />
+  </head>
+  <body style="padding-top: 0px">
+    <div class="container">
+      <div class="contentContainer">
+        <img
+          style="width: 389px; height: 98px"
+          src="{% static 'img/Logo-blanco.png' %}"
+          alt="logo"
+        />
+
+        <p style="font-size: 1.4rem">Dale a seguir a nuestras redes</p>
+        <div class="socialIcons">
+
+        {% if ctx_redes_sociales %}
+          {% for r in ctx_redes_sociales %}
+            <a 
+              href="{{r.link}}" 
+              target="_blank">
+                <img 
+                  src="{{ r.imagen.url }}" 
+                  alt="{{ r.nombre }}"
+                  style="height: 50px;">
+            </a>
+          {% endfor %}
+        {% endif %}
+
+        </div>
+        <a href="{% url 'inicio' %}" style="text-decoration: none;">
+          <p style="font-size: 1.8rem;">www.finsurhn.com</p>
+        </a>
+        <a href="{% url 'aplicar-solicitud' %}" target="_blank">
+          <button class="btnAplicar">Aplicar a un crédito</button>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

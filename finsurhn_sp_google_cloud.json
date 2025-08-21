@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "finsurhn-sp",
+  "private_key_id": "fb3f8378337809c785ed34d51126f4ed96e834eb",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQC/SAuhyCnpzFoJ\nuf1OI9io8Ps6ULT+4ZAfZ1XLJTgNmf60HcgtcUxahJ7lzhLO3SXCtoa4frA+UGMC\nq5fuv2/81A5nzPosFIJDjkdx+uNdKyW8ARAY6aXMLhMpdFodqIbzpSnXUbuYelTP\n6foiq55Ddz1eLpxu5sqoRe1ABSPooZAUuHJRvXyWUYXqdoLYbIEXu54oDceiWGZC\nxS1043319MyfxutvEhK0m6bWC2PpDxHhIclH5UvRTpZXb6WqigERywRSqkLmwt49\nO0G9KaDBH8lNrVGzMzg3UKcqfZz2ivfyxNRPe2k7OpFKDknOLUlQjEBG3sZui+OL\nDwsDUBwPAgMBAAECgf92xCylg+wgxMFsJA9ULBJCKLO8LEgEpJtqUfv/SwReMK1i\nxwLAoiquCWEyEeZeu+T/Yp69dUFOY3a09MoL7WPMEcZmGq7A4KW39xmJ3J7t5Rlw\nfbJccDyBrvVz1AeN0GtP0HpCpPbh/vp5WuY93aaXejUB4+8MvEAkzY9dVVnR2WvT\n22RcT0zs2KFBfRhHpGEwAH5r9Gbz930ymogYLL7pdQy7FHvN915sLfPXuUsssB60\nw4pp+W8SfXQz0RIiDyvDxuksxxIC0mho4LMlnHGeNPhh3lhlhibnC9CtfAnZz+un\nRRSQCqWyt1+D3/JIQFprnBOrjsU5XL7dks1j9bECgYEA0t7T/Z/6xG1pISKvVLO6\n035+1KTq0E+38xHqy/5ccIwv32lSD7KAeDiXGAfqCpVwjksQtg0AeH0tSA2HgFbp\nGD5cDjjld8dXe1GQY5a5dWZzxWVdidohl9AZYvBzt3VwCmu6L0CxUcYd5k50UNA9\nbAmIABCP7MTaSOq7EWOCV10CgYEA6Df5px1NxamrJIBDUVWqBTnUsQ4l7xynj4hJ\naFCTz4kxboU9rYYBhogYgeKXd1LhwmBWxlPo57sFTyre4taj3vxk+hblYFLS3EJA\n7q0R4gzuZ20E++Dy1T9mbVGPkZltW3Hzh2ras96XpRaU25iJm1BHjZrAGyBah7Mk\nClMcZlsCgYAjMM6d/+nAiCXIQtqRvyDJlM2jvRX2x6cCKJZPjtZsbei7Vv874WUx\nKviEKSX0uDW9eWeDii3u7az13lQjpd1mj1mbggFBeQHvcZAwHoI6xmtBoQX4MG/0\nvuTNryUQk8er5Yh/xEMTS4XH3oXoyqfFdN2+bQUn1T48dvfbEgk5fQKBgEtI8nBC\naNdfZXPE/Y4d5qwhDpqESroVoSFAfwQJs5ICGXuKSO+71TzHXKKnUpHF1hlNYHSV\n+Zk/Ib6D2JTUH3aIfzgxOhYbY+8yr5hxla2ioZv4VThPuop2Ln/chF4gzrpp3BkY\nBGVyEdnc00/KSTqIMVpwRD3HJHKAGnwaa8enAoGBAL8X8Ejnhy4NFeoXDHUjFHGs\ncEpQKC65KsHFJvlitXU6HhtMmju/z3kpcvnAbrjUna8CBlmbUpFaLx6UqqS4hlP6\nwJwiW8Qso9FNaNYn03lXaPraYUBqcOc98MqjolO0TixgAwtggh+R9/DKbxxTRUI3\nefHypKJStWFgIReYVYHB\n-----END PRIVATE KEY-----\n",
+  "client_email": "itfinsur201501@finsurhn-sp.iam.gserviceaccount.com",
+  "client_id": "102938996650428046764",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/itfinsur201501%40finsurhn-sp.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

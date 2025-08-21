@@ -1,0 +1,322 @@
+{% extends 'base_empleado.html' %}
+
+{% block title %} Solicitudes de Crédito {% endblock title %}
+
+{% block style %}
+    <style>
+        .dx-icon-image {
+			font-size: 2em !important;
+			height: auto;
+			text-decoration: none !important;
+            vertical-align: middle !important;
+			width: auto;
+		}
+    </style>
+{% endblock style %}
+
+{% block contenido %}
+<div class="content-header">
+    <h3 class="text-center"><b>SOLICITUDES DE CRÉDITO</b></h3>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-light" style="margin-top: 10px !important;">
+            <div class="card-header"><h3 class="card-title m-0">LISTADO</h3></div>
+            <div class="card-body padding_dgv">
+                <div id="DgvSolicitudesCredito"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock contenido %}
+
+{% block script %}
+<script type="text/javascript">
+    
+    $(function(){
+        //JS 
+        var customDataSource = new DevExpress.data.CustomStore({
+            key: "id",
+            loadMode: "raw",
+            load: function() {
+
+                return $.getJSON("{% url 'ws_administracion:ajax_solicitudes_credito_listar' %}")
+                    .done(function(data) {
+                        console.log(data);
+                    })
+                    .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+
+            },
+            update: function(key, values) {
+                return $.ajax({
+                    url: "{% url 'ws_administracion:ajax_solicitud_credito_actualizar' %}",
+                    method: "POST",
+                    data: {
+                        'key': key,
+                        'data': JSON.stringify(values),
+                    },
+                    success: function(data) {
+                        if (! (jQuery.isEmptyObject(data.exito)) ) {
+                            mensajeSuccess(data.exito, '¡Exito!');
+                        }
+                        
+                        if (! (jQuery.isEmptyObject(data.error)) ) {
+                            mensajeError(data.error, '¡Error!');
+                        }
+                    },
+                });
+            }
+        });
+
+        $("#DgvSolicitudesCredito").dxDataGrid({
+            dataSource: customDataSource,
+            columns: [
+                {
+                    caption: "No IDENTIDAD",
+                    dataField: "identificacion",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 120,
+                    allowEditing: false,
+                },{
+                    caption: "Primer Nombre",
+                    dataField: "primerNombre",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Segundo Nombre",
+                    dataField: "segundoNombre",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Primer Apellido",
+                    dataField: "primerApellido",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Segundo Apellido",
+                    dataField: "segundoApellido",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Correo",
+                    dataField: "correo",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 180,
+                    allowEditing: false,
+                },{
+                    caption: "No Celular",
+                    dataField: "celular",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Dirección",
+                    dataField: "direccion",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    maxWidth: 160,
+                    allowEditing: false,
+                },{
+                    caption: "Monto Solicitudo",
+                    dataField: "montoSolicitado",
+                    dataType: 'number',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    maxWidth: 160,
+                    allowEditing: false,
+                },{
+                    caption: "Descripción Ingreso",
+                    dataField: "descripcionTipoIngreso",
+                    dataType: 'string',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 200,
+                    maxWidth: 450,
+                    allowEditing: false,
+                },{
+                    caption: "Forma de Pago",
+                    dataField: "formaPago",
+                    dataType: 'string',
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Sucursal",
+                    dataField: "sucursal",
+                    dataType: 'string',
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: false,
+                },{
+                    caption: "Fecha de Envio",
+                    dataField: "fechaEnvio",
+                    dataType: 'datetime',
+                    alignment: "left",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    autoWidth: true,
+                    minWidth: 100,
+                    allowEditing: false,
+                    format: {
+                        type: "longDateShortTime", 
+                        formatter: function(date) {
+                            return DevExpress.localization.formatDate(date, "MM/dd/yyyy hh:mm a");
+                        }
+                    }
+                },{
+                    caption: "ESTADO",
+                    dataField: "estado_id",
+                    cssClass: "centrado_vertical negrita_titulo",
+                    width: 100,
+                    allowEditing: true,
+                    lookup: {
+                        dataSource: [
+                            { id: 1, nombre: "PENDIENTE" },
+                            { id: 2, nombre: "EN REVISIÓN" },
+                            { id: 3, nombre: "FINALIZADO" }
+                        ],
+                        valueExpr: "id",
+                        displayExpr: "nombre"
+                    },
+                    cellTemplate: function(container, options) {
+                        const estado = options.value;
+                        let color = '';
+                        let texto = '';
+                        
+                        // Asignar colores según el estado
+                        switch(estado) {
+                            case 1: 
+                                color = '#FFF3CD';
+                                texto = 'PENDIENTE';
+                                break;
+                            case 2: 
+                                color = '#CCE5FF';
+                                texto = 'EN REVISIÓN';
+                                break;
+                            case 3: 
+                                color = '#D4EDDA';
+                                texto = 'FINALIZADO';
+                                break;
+                            default:
+                                color = '#F8D7DA';
+                                texto = 'DESCONOCIDO';
+                        }
+                        
+                        // Crear el elemento con el estilo
+                        $('<div>')
+                            .text(texto)
+                            .css({
+                                'background-color': color,
+                                'padding': '5px',
+                                'border-radius': '3px',
+                                'text-align': 'center',
+                                'font-weight': 'bold',
+                                'opacity': estado === 3 ? '0.5' : '1', // Deshabilitar si es FINALIZADO
+                            })
+                            .appendTo(container);
+                    }
+                }
+            ],
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowAdding: false,
+                allowDeleting: false,
+                selectTextOnEditStart: true,
+                startEditAction: "click",
+                useIcons: true
+            },
+            width: "100%",
+            height: "500px",
+            scrolling: {
+                showScrollbar: "always"
+            },
+            selection: {
+                mode: "multiple",
+                showCheckBoxesMode: "always"
+            },
+            remoteOperations: false,
+            allowColumnReordering: false, //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+            allowColumnResizing: true, 
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            rowAlternationEnabled: true,
+            wordWrapEnabled: true,
+            filterRow: {visible: false },
+            headerFilter: {visible: false},
+            keyboardNavigation: {
+                enterKeyAction: "startEdit",
+                enterKeyDirection: "column",
+                editOnKeyPress: true
+            },
+            columnChooser: {//Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            columnFixing: { //Necesario para ocultar las columnas, si la columna es visible: false, aparece como oculta
+                enabled: false
+            },
+            paging: {
+                enabled: true
+            },
+            searchPanel:{
+                visible: true
+            },
+            export: {
+                enabled: true,
+                fileName: "Solicitudes de crédito",
+                allowExportSelectedData: true,
+            },
+            summary: {
+                recalculateWhileEditing: true,
+                totalItems: [{
+                    column: "nombre",
+                    summaryType: "count",
+                    displayFormat: "Solicitudes de crédito: {0}"
+                }]
+            },
+            onRowValidating: function(e){
+                if(e.brokenRules.length > 0) {
+                    let index = e.component.getRowIndexByKey(e.key);
+                    let el = e.component.getCellElement(index, e.brokenRules[0].columnIndex);
+                    e.component.focus(el);
+
+                    mensajeError('Complete el llenado o la selección', '¡Error!');
+                }
+            }
+        });
+    });
+
+
+</script>
+{% endblock script %}

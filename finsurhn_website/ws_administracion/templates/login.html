@@ -1,0 +1,249 @@
+{% extends 'web/base.html' %}
+{% load static %}
+
+{% block title %}
+    Sistema de Autenticación
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/web/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<body style="margin-top: -70px;">
+    <div class="main-container">
+        <div class="login-section">
+            <div class="logo">
+                <i class="fas fa-lock"></i>
+                <h1>Sistema de Autenticación</h1>
+            </div>
+            
+            <div class="form-container">
+                <h2 class="form-title">Iniciar Sesión</h2>
+                
+                <div class="form-group">
+                    <div id="TxtUsuario"></div>
+                </div>
+                
+                <div class="form-group">
+                    <div id="TxtContrasena"></div>
+                </div>
+                
+                <div class="form-group">
+                    <div id="BtnIngresar"></div>
+                </div>
+                
+                <div id="LoadingIndicator" class="loading-indicator">
+                    <i class="fas fa-spinner fa-spin"></i> Verificando credenciales...
+                </div>
+                
+                <div class="error-details" id="ErrorDetails">
+                    <h3><i class="fas fa-bug"></i> Detalles del Error</h3>
+                    <pre id="ErrorContent"></pre>
+                </div>
+                
+                <p class="debug-toggle" onclick="toggleDebug()">
+                    <i class="fas fa-code"></i> Mostrar/Ocultar información de depuración
+                </p>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2025 Sistema de Autenticación. Todos los derechos reservados.</p>
+            </div>
+        </div>
+        
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h2 class="welcome-title">Bienvenido al Login para Acceder al Panel Admin</h2>
+                <p class="welcome-text">Acceda a su cuenta para gestionar todos los recursos del sistema de manera segura y eficiente.</p>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+
+{% block extra_script %}
+      <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    function mensajeError(titulo, mensaje) {
+        DevExpress.ui.notify({
+            message: mensaje,
+            type: "error",
+            displayTime: 6000,
+            width: "100%"
+        });
+        
+        $("#ErrorContent").text("Error: " + mensaje + "\nURL: /ajax/iniciar/sesion/");
+        $("#ErrorDetails").show();
+    }
+    
+    function toggleDebug() {
+        $("#ErrorDetails").toggle();
+    }
+    
+    $(function() {
+        const csrftoken = getCookie('csrftoken');
+        
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        
+        $("#TxtUsuario").dxTextBox({
+            value: "",
+            showClearButton: true,
+            placeholder: "Ingrese su usuario",
+            maxLength: 150,
+            buttons: [{
+                name: 'username',
+                location: 'before',
+                options: {
+                    icon: 'fas fa-user',
+                    stylingMode: 'text'
+                }
+            }]
+        }).dxValidator({
+            validationGroup: "validationGroup_FormularioIngresar",
+            validationRules: [{
+                type: 'required',
+                message: 'El usuario es requerido'
+            }]
+        });
+
+        $("#TxtContrasena").dxTextBox({
+            value: "",
+            mode: 'password',
+            showClearButton: true,
+            placeholder: "Ingrese su contraseña",
+            maxLength: 100,
+            buttons: [{
+                name: 'key',
+                location: 'before',
+                options: {
+                    icon: 'fas fa-key',
+                    stylingMode: 'text'
+                }
+            }, {
+                name: 'password',
+                location: 'after',
+                options: {
+                    icon: 'fas fa-eye',
+                    stylingMode: 'text',
+                    onClick: function() {
+                        const textBox = $("#TxtContrasena").dxTextBox("instance");
+                        textBox.option('mode', textBox.option('mode') === 'text' ? 'password' : 'text');
+                    }
+                }
+            }]
+        }).dxValidator({
+            validationGroup: "validationGroup_FormularioIngresar",
+            validationRules: [{
+                type: 'required',
+                message: 'La contraseña es requerida'
+            }]
+        });
+
+        $("#BtnIngresar").dxButton({
+            text: "Ingresar al Sistema",
+            type: "default",
+            width: "100%",
+            onClick: function() {
+                const resultadoFormulario = DevExpress.validationEngine.validateGroup("validationGroup_FormularioIngresar");
+                if (resultadoFormulario.isValid) {
+                    $("#LoadingIndicator").show();
+                    
+                    const txtUsuario = $("#TxtUsuario").dxTextBox("instance").option("value").trim();
+                    const txtContrasena = $("#TxtContrasena").dxTextBox("instance").option("value").trim();
+                    
+                    $.ajax({
+                        url: "/ajax/iniciar/sesion/",
+                        type: "POST",
+                        data: {
+                            txtUsuario: txtUsuario,
+                            txtContrasena: txtContrasena
+                        },
+                        dataType: 'json',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        success: function(data) {
+                            $("#LoadingIndicator").hide();
+                            
+                            if(data.resultado == "true") {
+                                DevExpress.ui.notify({
+                                    message: "¡Inicio de sesión exitoso! Redirigiendo...",
+                                    type: "success",
+                                    displayTime: 2000
+                                });
+                                
+                                setTimeout(function() {
+                                    window.location.href = data.url;
+                                }, 2000);
+                            } else if(data.resultado == "false") {
+                                mensajeError('Error de autenticación', data.error || 'Credenciales incorrectas');
+                            } else if(data.resultado == "error") {
+                                mensajeError('Error del sistema', 'Ocurrió un error al iniciar sesión');
+                            } else {
+                                mensajeError('Error inesperado', 'Respuesta del servidor no reconocida');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            $("#LoadingIndicator").hide();
+                            
+                            let errorMsg = "Error en la comunicación con el servidor: ";
+                            
+                            if (xhr.status === 0) {
+                                errorMsg += "No se pudo conectar al servidor";
+                            } else if (xhr.status === 404) {
+                                errorMsg += "El endpoint no fue encontrado (404)";
+                            } else if (xhr.status === 500) {
+                                errorMsg += "Error interno del servidor (500)";
+                            } else {
+                                errorMsg += "Código de error: " + xhr.status;
+                            }
+                            
+                            mensajeError('Error de conexión', errorMsg);
+                            
+                            $("#ErrorContent").text(
+                                "Status: " + status + "\n" +
+                                "Error: " + error + "\n" +
+                                "Response: " + xhr.responseText + "\n" +
+                                "URL: /ajax/iniciar/sesion/\n" +
+                                "Método: POST\n" +
+                                "Datos enviados: " + JSON.stringify({txtUsuario: txtUsuario, txtContrasena: txtContrasena})
+                            );
+                            $("#ErrorDetails").show();
+                        }
+                    });
+                } else {
+                    const control = resultadoFormulario.brokenRules[0].validator.option("adapter").editor;  
+                    control.focus();  
+                    
+                    DevExpress.ui.notify({
+                        message: 'Complete todos los campos obligatorios',
+                        type: 'error',
+                        displayTime: 3000
+                    });
+                }
+            }
+        });
+    });
+    </script>
+{% endblock %}

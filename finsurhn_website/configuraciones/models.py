@@ -11,6 +11,7 @@ id		rol					es_admin	es_cliente		es_empleado		es_rrhh
 3		CLIENTE				0			1				0				0
 4		RECURSOS HUMANOS	0			0				0				1
 """
+
 class Rol(models.Model):
 	rol = models.CharField(max_length = 60, verbose_name = 'Nombre del Rol')
 	es_admin = models.BooleanField(default = False)

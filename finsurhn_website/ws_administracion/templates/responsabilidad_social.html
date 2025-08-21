@@ -59,8 +59,9 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-12 text-center">
-                            <button id="BtnCancelar" type="button" class="btn btn-danger mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
-                            <button id="BtnGuardar" type="button" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Guardar</button> 
+                            <button id="BtnCancelar" type="button" class="btn btn-secondary mr-2"><i class="bi bi-x-lg"></i> Cancelar</button> 
+                            <button id="BtnGuardar" type="button" class="btn btn-primary mr-2"><i class="bi bi-check-lg"></i> Guardar</button> 
+                            <button id="BtnEliminar" type="button" class="btn btn-danger"><i class="bi bi-trash"></i> Eliminar</button>
                         </div>
                     </div>
                 </form>
@@ -141,6 +142,7 @@
             $('#BtnGuardar').attr('accion', 'EDITAR');
             $('#frm_responsabilidad').attr('action', '{% url "ws_administracion:ajax_responsabilidad_social_editar" %}');
             $('#frmContainer').show();
+            $('#BtnEliminar').show();
             limpiar_form();
     
             ////{# Creando el input con el name dato_pk #}
@@ -214,13 +216,42 @@
             $('#BtnGuardar').attr('accion', 'NUEVO');
             $('#frm_responsabilidad').attr('action', '{% url "ws_administracion:ajax_responsabilidad_social_agregar" %}');
             $('#frmContainer').show();
+            $('#BtnEliminar').hide();
             limpiar_form();
         });
     
         $('#BtnCancelar').on('click', function(){
             $('#frmContainer').hide();
         });
-    
+
+        $('#BtnEliminar').on('click', function(){
+            var dato_pk = $('input[name="dato_pk"]').val();
+            if (dato_pk == undefined || dato_pk == null || dato_pk == '') {
+                mensajeError('Seleccione un registro para eliminar', '¡Error!');
+                return false;
+            }
+            DevExpress.ui.dialog.confirm("¿Seguro(a) de eliminar este registro?", "Confirmación").done(function(r){
+                if (r) {
+                    $.ajax({
+                        url: "{% url 'ws_administracion:ajax_responsabilidad_social_eliminar' %}",
+                        type: "POST",
+                        data: {
+                            'dato_pk': dato_pk,
+                        },
+                        success: function(data) {
+                            if (data.exito) {
+                                $('#frmContainer').hide();
+                                customDataSourceTVResponsabilidad.clearRawDataCache();
+                                $("#TileVResponsabilidad").dxTileView("instance").getDataSource().load();
+                                mensajeSuccess(data.exito, '¡Éxito!');
+                            } else if (data.error) {
+                                mensajeError(data.error, '¡Error!');
+                            }
+                        }
+                    });
+                }
+            });
+        });
     
         $('#id_imagen').on('change', function(){
             var imagen = $(this).val().toLowerCase();

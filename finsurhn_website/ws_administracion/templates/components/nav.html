@@ -1,0 +1,117 @@
+{% load static %}
+<div>
+  <div id="infobar" class="infobar">
+    <div class="contactinfo">
+      <div class="phone">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          fill="#ffffff"
+          viewBox="0 0 512 512">
+          <path
+            d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z" />
+        </svg>
+        <p>2782-2223</p>
+      </div>
+      <div class="email">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="28"
+          height="28"
+          fill="#ffffff"
+          viewBox="0 0 512 512">
+          <path
+            d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48L48 64zM0 176L0 384c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-208L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z" />
+        </svg>
+        <p>finsur01@gmail.com</p>
+      </div>
+    </div>
+
+    <div class="socialsnav">
+          {% if ctx_redes_sociales %}
+          {% for r in ctx_redes_sociales %}
+          <div>
+            <a 
+              href="{{r.link}}" 
+              target="_blank">
+                <img 
+                  src="{{ r.imagen.url }}" 
+                  alt="{{ r.nombre }}">
+            </a>
+          </div>
+          {% endfor %}
+        {% endif %}
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="logo">
+      <a href="{% url 'inicio' %}">
+        <img src="{% static 'img/Logo.png' %}" alt="Logo" />
+      </a>
+    </div>
+
+    <button id="hamburger" class="hamburger" aria-label="Menú">
+      <!-- SVG hamburguesa -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor"
+          stroke-width="2" />
+      </svg>
+    </button>
+
+    <div id="navLinks" class="navLinks">
+      <ul>
+        <li class="{% if request.path == '/' %}activeLink{% endif %}">
+          <a href="{% url 'inicio' %}">Inicio</a>
+        </li>
+        <li class="{% if request.path == '/acercade' %}activeLink{% endif %}">
+          <a href="{% url 'acercade' %}">Acerca de</a>
+        </li>
+        <li class="{% if request.path == '/servicios' %}activeLink{% endif %}">
+          <a href="{% url 'servicios' %}">Servicios</a>
+        </li>
+        <li class="{% if request.path == '/social' %}activeLink{% endif %}">
+          <a href="{% url 'social' %}">Social</a>
+        </li>
+        <li class="{% if request.path == '/contacto' %}activeLink{% endif %}">
+          <a href="{% url 'contacto' %}">Contacto</a>
+        </li>
+        <!-- <li>
+          <a class="BtnLogin" id="BtnLoginForm">Ingresar</a>
+        </li> -->
+      </ul>
+    </div>
+  </nav>
+
+      {# Modal de Ingreso #}
+    <div id="PopupLoginForm" style="display: none;">
+        <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupLoginForm' }">
+            <h5 style="background-color: var(--color-orange-50); color: white; padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Ingreso Sitio Web</h5>
+        </div>
+        <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupLoginForm' }">
+            <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+                <div style="padding: 5px !important; height: 100% !important;">
+                    <div class="row no-gutters" style="margin-bottom: 5px;">
+                        <div class="col-md-12" style="margin-bottom: 5px;">
+                            <label class="margen_bottom negrita dx-theme-accent-as-text-color">Usuario: <a class="a_obligatorio fa fa-asterisk" style="color:red"></a></label>
+                            <div id="TxtUsuario"></div>
+                        </div>
+                        <div class="col-md-12" style="margin-bottom: 5px;">
+                            <label class="margen_bottom negrita dx-theme-accent-as-text-color">Contraseña: <a class="a_obligatorio fa fa-asterisk" style="color:red"></a></label>
+                            <div id="TxtContrasena"></div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-md-12">
+                            <button id="BtnIngresar" style="background-color: var(--color-orange-50) !important; width: 100%; font-size: 16px;" class="btn btn-primary">Ingresar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <script src="{% static 'js/navbar.js' %}"></script>
+
+</div>

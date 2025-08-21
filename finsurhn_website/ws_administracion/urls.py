@@ -5,13 +5,13 @@ app_name = 'ws_administracion'
 
 urlpatterns = [
     path('ajax/iniciar/sesion/', ajax_inicio_session, name = 'ajax_inicio_session'),
+    path('login/administracion', inicio_sesion, name = 'login'),
     path('cerrar/sesion/', cerrar_sesion, name = 'cerrar_sesion'),
     path('editar/contrasena/actual/ajax/', ajax_editar_contrasena_actual, name = 'ajax_editar_contrasena_actual'),
     path('inicio/administracion/', inicio_administracion, name = 'inicio_administracion'),
 
     path('obtener/imagen/google/cloud/ajax/', ajax_obtener_imagen_google_cloud, name = 'ajax_obtener_imagen_google_cloud'),
         
-
     # Valores de la empresa -- Sesión Iniciada
     path('valores/empresa/', valores_empresa, name = 'valores_empresa'),
     path('ajax/valores/empresa/listar/', ajax_valores_empresa_listar, name = 'ajax_valores_empresa_listar'),
@@ -19,13 +19,19 @@ urlpatterns = [
     path('ajax/valores/empresa/editar/', ajax_valores_empresa_editar, name = 'ajax_valores_empresa_editar'), 
     path('ajax/valores/empresa/eliminar/', ajax_valores_empresa_eliminar, name = 'ajax_valores_empresa_eliminar'),
     
+    # Objetivos de la empresa -- Sesión Iniciada
+    path('informacion/mvh/', mision_vision_historia, name = 'informacion_mvh'),
+    path('ajax/mvh/listar/', ajax_mvh_listar, name = 'ajax_mvh_listar'),
+    path('ajax/mvh/editar/', ajax_mvh_editar, name = 'ajax_mvh_editar'), 
+    
     # Gestion galeria empresa -- Sesion NO Iniciada -- Carousel
     path('gestion/galeria/empresa/', gestion_galeria_empresa, name = 'gestion_galeria_empresa'),
     path('gestion/galeria/empresa/listar/', ajax_gestion_galeria_empresa_listar, name = 'ajax_gestion_galeria_empresa_listar'),
     path('gestion/galeria/empresa/agregar/', ajax_gestion_galeria_empresa_agregar, name = 'ajax_gestion_galeria_empresa_agregar'),
     path('gestion/galeria/empresa/editar/', ajax_gestion_galeria_empresa_editar, name = 'ajax_gestion_galeria_empresa_editar'),
     path('gestion/galeria/empresa/editar/datagrid/', ajax_gestion_galeria_empresa_editar_datagrid, name = 'ajax_gestion_galeria_empresa_editar_datagrid'),
-    
+    path('gestion/galeria/empresa/eliminar/', ajax_gestion_galeria_empresa_eliminar, name = 'ajax_gestion_galeria_empresa_eliminar'),
+
     # Redes Sociales -- Pagina de inicio -- Sesion NO Iniciada
     path('redes/sociales/empresa/', redes_sociales_empresa, name = 'redes_sociales_empresa'),
     path('ajax/redes_sociales/empresa/listar/', ajax_redes_sociales_empresa_listar, name = 'ajax_redes_sociales_empresa_listar'),
@@ -37,12 +43,16 @@ urlpatterns = [
     # Contactanos -- Pagina de inicio -- Sesion NO Iniciada
     path('ajax/contactanos/', ajax_contactanos, name = 'ajax_contactanos'),
     
+    # Solicitud de Crédito -- Sesión no iniciada
+    path('ajax/solicitud-credito', ajax_solicitud_credito, name='ajax_solicitud_credito'),
+    
     # CRUD Información de Empleo
     path('informacion/empleo/', informacion_empleo, name = 'informacion_empleo'),
     path('ajax/informacion/empleo/listar/', ajax_informacion_empleo_listar, name = 'ajax_informacion_empleo_listar'),
     path('ajax/informacion/empleo/agregar/', ajax_informacion_empleo_agregar, name = 'ajax_informacion_empleo_agregar'),
     path('ajax/informacion/empleo/editar/', ajax_informacion_empleo_editar, name = 'ajax_informacion_empleo_editar'),
     path('ajax/informacion/empleo/editar/datagrid/', ajax_informacion_empleo_editar_datagrid, name = 'ajax_informacion_empleo_editar_datagrid'),
+    path('ajax/informacion/empleo/eliminar/', ajax_informacion_empleo_eliminar, name = 'ajax_informacion_empleo_eliminar'),
     path('informacion/empleo/vacantes/', informacion_empleo_vacantes, name = 'informacion_empleo_vacantes'),
     path('informacion/empleo/vacante/<int:dato_pk>/info/', informacion_empleo_vacante_info, name = 'informacion_empleo_vacante_info'),
     path('informacion/empleo/vacante/correo/<int:dato_pk>/', ajax_informacion_empleo_vacante_correo, name = 'ajax_informacion_empleo_vacante_correo'),
@@ -52,12 +62,14 @@ urlpatterns = [
     path('ajax/sala/videos/listar/', ajax_sala_videos_listar, name = 'ajax_sala_videos_listar'),
     path('ajax/sala/videos/agregar/', ajax_sala_videos_agregar, name = 'ajax_sala_videos_agregar'),
     path('ajax/sala/videos/editar/', ajax_sala_videos_editar, name = 'ajax_sala_videos_editar'),
+    path('ajax/sala/videos/eliminar/', ajax_sala_videos_eliminar, name = 'ajax_sala_videos_eliminar'),
     
     # CRUD Responsabilidad Social
     path('responsabilidad/social/', responsabilidad_social, name = 'responsabilidad_social'),
     path('ajax/responsabilidad/social/listar/', ajax_responsabilidad_social_listar, name = 'ajax_responsabilidad_social_listar'),
     path('ajax/responsabilidad/social/agregar/', ajax_responsabilidad_social_agregar, name = 'ajax_responsabilidad_social_agregar'),
     path('ajax/responsabilidad/social/editar/', ajax_responsabilidad_social_editar, name = 'ajax_responsabilidad_social_editar'),
+    path('ajax/responsabilidad/social/eliminar/', ajax_responsabilidad_social_eliminar, name = 'ajax_responsabilidad_social_eliminar'),
     
     # CRUD Productos y Servicios
     path('productos/servicios/', productos_servicios, name = 'productos_servicios'),
@@ -73,4 +85,15 @@ urlpatterns = [
 
     path('ajax/frecuencia/pagos/listar', ajax_frecuencia_pagos_listar, name = "ajax_frecuencia_pagos_listar"),
     path('ajax/cargo/listar', ajax_cargo_listar, name = "ajax_cargo_listar"),
+    
+    #GESTION solicitudes de credito
+    path('solicitudes/credito/', solicitudes_credito, name = 'solicitudes_credito'),
+    path('ajax/solicitudes/credito/listar/', ajax_solicitudes_credito_listar, name = 'ajax_solicitudes_credito_listar'),
+    path('ajax/solicitudes/credito/actualizar/', ajax_solicitud_credito_actualizar_estado, name = 'ajax_solicitud_credito_actualizar'),
+    
+    #GESTION consultas
+    path('consultas/', consultas, name = 'consultas'),
+    path('ajax/consultas/listar/', ajax_consultas_listar, name = 'ajax_consultas_listar'),
+    path('ajax/consultas/eliminar/', ajax_consultas_eliminar, name = 'ajax_consultas_eliminar'),
+    path('ajax/consultas/responder/', ajax_consultas_responder, name='ajax_consultas_responder')
 ]

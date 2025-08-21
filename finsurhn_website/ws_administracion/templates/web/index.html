@@ -1,0 +1,202 @@
+{% extends 'web/base_website.html' %}
+{% load static %}
+
+{% block title %} Inicio {% endblock title %}
+
+
+  {% block extra_css %} 
+
+    <link rel="stylesheet" href="{% static 'css/web/inicio.css' %}" />
+
+    <link rel="stylesheet" href="{% static 'bootstrap/icons/bootstrap-icons.css' %}">
+
+  {% endblock %}
+
+  {% block contenido %}
+
+{% if galeria_empresa %}
+<section class="position-relative custom-bg vh-100">
+  <div class="container-fluid h-100">
+    <div class="row h-100">
+      <div class="col-12 h-100 p-0">
+        <!-- Carrusel Bootstrap -->
+        <div id="mainCarousel" class="carousel slide h-100" data-bs-ride="carousel">
+          <div class="carousel-inner h-100">
+            {% for g in galeria_empresa %}
+              {% if g.estado %}
+              <div class="carousel-item h-100 {% if forloop.first %}active{% endif %}">
+                <div class="d-flex flex-column flex-md-row h-100">
+                  <div class="col-md-6 order-1 order-md-2 h-100 image-container">
+                    <img src="{{ g.imagen.url }}"
+                        class="h-100 w-100"
+                        alt="{{ g.titulo|default:'Imagen FINSUR' }}"
+                        style="object-fit: cover;"/>
+                  </div>
+                  <div class="col-md-6 order-2 order-md-1 d-flex justify-content-center align-items-center">
+                    <div class="text-white text-center px-3 text-container">
+                      <div class="lead fs-6 mb-4 mx-auto" style="max-height: 600px;">
+                        {{g.contenido|safe|linebreaksbr}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon p-3" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon p-3" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+    <section class="seccionStats">
+      <div class="containerStats">
+        <div class="itemStat">
+          <svg
+            width="150"
+            height="150"
+            viewBox="0 0 150 150"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clipPath="url(#clip0_62_60)">
+              <path
+                d="M53.9062 15H96.0938C97.3828 15 98.4375 16.125 98.4375 17.5V30H51.5625V17.5C51.5625 16.125 52.6172 15 53.9062 15ZM37.5 17.5V30H18.75C8.4082 30 0 38.9688 0 50V80H56.25H93.75H150V50C150 38.9688 141.592 30 131.25 30H112.5V17.5C112.5 7.84375 105.146 0 96.0938 0H53.9062C44.8535 0 37.5 7.84375 37.5 17.5ZM150 90H93.75V100C93.75 105.531 89.5605 110 84.375 110H65.625C60.4395 110 56.25 105.531 56.25 100V90H0V130C0 141.031 8.4082 150 18.75 150H131.25C141.592 150 150 141.031 150 130V90Z"
+                fill="#F0910C"
+              />
+            </g>
+            <defs>
+              <clippath id="clip0_62_60">
+                <rect width="150" height="150" fill="white" />
+              </clippath>
+            </defs>
+          </svg>
+          <div class="dato">
+            <p>
+              <strong>+</strong>
+              <strong class="numero">6</strong>
+            </p>
+            <p style="font-size: 24px">Productos/Servicios</p>
+          </div>
+        </div>
+
+        <div class="itemStat">
+          <svg
+            width="150"
+            height="150"
+            viewBox="0 0 150 150"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clipPath="url(#clip0_63_62)">
+              <path
+                d="M32.1429 9.375V18.75H16.0714C7.19866 18.75 0 25.0488 0 32.8125V46.875H150V32.8125C150 25.0488 142.801 18.75 133.929 18.75H117.857V9.375C117.857 4.18945 113.069 0 107.143 0C101.217 0 96.4286 4.18945 96.4286 9.375V18.75H53.5714V9.375C53.5714 4.18945 48.7835 0 42.8571 0C36.9308 0 32.1429 4.18945 32.1429 9.375ZM150 56.25H0V135.938C0 143.701 7.19866 150 16.0714 150H133.929C142.801 150 150 143.701 150 135.938V56.25Z"
+                fill="#F0910C"
+              />
+            </g>
+            <defs>
+              <clippath id="clip0_63_62">
+                <rect width="150" height="150" fill="white" />
+              </clippath>
+            </defs>
+          </svg>
+          <div class="dato">
+            <p>
+              <strong>+</strong>
+              <strong class="numero">9</strong>
+            </p>
+            <p style="font-size: 24px">Años de experiencia</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ctaContainer">
+        <div class="ctaContent">
+          <h1>¿Necesitás un crédito rápido y seguro?</h1>
+        </div>
+        <a href="{% url 'solicitud-credito' %}">
+          <button class="ctaButton">Solicitar Crédito</button>
+        </a>
+      </div>
+    </section>
+
+{% if info_empleo %}
+    <div class="text-dark color_grisDegradado">
+        <div class="container" id="vacantes_disponibles">
+            <div class="row featurette justify-content-center">
+                <div class="col-12 col-md-12 text-center" style="padding-top: 50px; margin-bottom: 20px;">
+                    <h3><b>VACANTES DISPONIBLES</b></h3>
+                </div>
+
+                {% for info in info_empleo %}
+                    {% if forloop.counter <= 2 %}
+                        <div class="col-12 col-md-10 col-lg-6" style="margin-bottom: 20px">
+                            <div class="card text-center">
+                                <h5 class="card-header text-secondary">
+                                    {{info.cargo}}
+                                </h5>
+                                <div class="card-body">
+                                    <img src="{{ info.imagen.url }}" class="card-img-top img_vacantes_disponibles" style="height: 400px;" alt="..."> 
+                                </div>
+                                <div class="card-footer text-muted">
+                                    <a href="{% url 'ws_administracion:informacion_empleo_vacante_info' info.id %}" class="btn btn-primary btn-sm text-light">
+                                        <i class="bi bi-eye-fill"></i> Ver Más
+                                    </a>
+                                </div>    
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if forloop.counter == 3 %}
+                        <div class="col-12 col-md-12 text-center" style="margin-bottom: 20px;"><br>
+                            <a href="{% url 'ws_administracion:informacion_empleo_vacantes' %}" class="btn btn-info btn-md text-light">
+                                <i class="bi bi-eye-fill"></i> Ver Más Vacantes Disponibles
+                            </a><br><br>
+                        </div>
+                    {% endif %}
+                
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+    <section class="seccionContact">
+      <div class="containerContact">
+        <div class="containerForm">
+          <h2>CONTACTO</h2>
+
+          {% include 'components/formulario-contacto.html' %}
+
+        </div>
+
+        <div class="logoContainer">
+          <img src="{% static 'img/Logo.png' %}" alt="Logo" />
+        </div>
+      </div>
+    </section>
+
+    {% endblock %}
+
+  {% block extra_script %} 
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+    crossorigin="anonymous"
+  ></script>
+
+  {% endblock %}
+

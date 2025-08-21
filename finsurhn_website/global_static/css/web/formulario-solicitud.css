@@ -1,0 +1,190 @@
+/* Formulario Solicitud de Crédito */
+
+.formContainer {
+  background-color: var(--color-white-50);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 700px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.formContainer h2 {
+  color: var(--color-orange-50);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  width: 100%;
+}
+
+form .fila {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 17px;
+}
+
+form .fila2 {
+  display: flex;
+  margin-bottom: 17px;
+  gap: 10px;
+}
+
+form .fila2 div {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 17px;
+}
+
+form .fila input,
+form .fila textarea {
+  border-radius: 0.4rem;
+  width: 100%;
+  height: 36px;
+  padding: 10px 15px;
+  border: var(--color-gray-75) solid 1px;
+  font-size: medium;
+}
+
+form .fila textarea {
+  resize: none;
+  height: 120px;
+}
+
+#id_direccion{
+  resize: none;
+  height: 60px;
+}
+
+form .fila2 div input,
+form .fila2 div select {
+  width: 100%;
+  height: 36px;
+  border-radius: 0.4rem;
+  padding: 10px 15px;
+  border: var(--color-gray-75) solid 1px;
+  font-size: medium;
+}
+
+form .fila2 div select {
+  color: var(--color-gray-75);
+  background-color: #ffffff;
+  font-size: medium;
+  padding: 5px 15px;
+}
+
+form .fila label,
+form .fila2 label {
+  color: var(--color-gray-75);
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+}
+
+.btnSubmit {
+  background-color: var(--color-orange-100);
+  border-radius: 10px;
+  color: var(--color-white-50);
+  border: none;
+  height: 40px;
+  width: 200px;
+  margin-top: 27px;
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  align-self: center;
+  transition: all ease-in-out 0.3s;
+}
+
+.btnSubmit:hover {
+  background-color: var(--color-white-50);
+  color: var(--color-orange-50);
+  border: var(--color-orange-50) solid 1px;
+}
+
+.btnSubmit:active {
+  background-color: var(--color-orange-50);
+  color: var(--color-white-50);
+  border: var(--color-orange-50) solid 1px;
+  transform: scale(1.03);
+}
+
+.btnContainer {
+  width: 100%;
+  align-self: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsividad */
+
+@media (max-width: 900px) {
+  .formContainer {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+@media (max-width: 498px) {
+  .formContainer {
+    width: 100%;
+    padding: 0 0;
+  }
+
+  .formContainer h2 {
+    font-size: 1.2rem;
+  }
+
+  form .fila label,
+  form .fila2 label {
+    font-size: 1.1rem;
+    color: var(--color-gray-75);
+  }
+
+  form .fila2 {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 17px;
+    gap: 10px;
+  }
+
+  form .fila input,
+  form .fila textarea {
+    width: 100%;
+    height: 60px;
+    font-size: 1.3rem;
+  }
+  form .fila2 div input,
+  form .fila2 div select {
+    width: 100%;
+    height: 60px;
+    font-size: 1.3rem;
+  }
+
+  form .fila2 div select {
+    padding: 5px 8px;
+  }
+
+  form .fila textarea {
+    height: 140px;
+  }
+
+  #id_direccion{
+    resize: none;
+    height: 100px;
+  }
+
+  .btnSubmit {
+    font-size: 1.2rem;
+    width: 100%;
+    height: 60px;
+  }
+
+}

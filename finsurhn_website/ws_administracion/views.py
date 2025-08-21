@@ -8,16 +8,17 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.hashers import make_password
 from google.cloud import storage
+from django.utils import timezone
 from django.core.files.storage import default_storage
 import datetime
-
+from django_ratelimit.decorators import ratelimit
 from django.conf import settings
 # Para poder mandar el correo con archivos
 from django.core.mail import send_mail, EmailMessage
 from django.db import transaction
 
-
 from clientes.utils import *
+from .services import *
 from importlib import reload
 reload(sys)
 import os, json
@@ -31,79 +32,233 @@ from empleados.models import *
 from .models import *
 from .forms import *
 
+# @minified_response
+# def inicio(request):
+#     # if request.user.is_authenticated:
+#     #     return redirect(reverse('ws_administracion:inicio_administracion'))
+
+#     # else:
+#     storage_client = storage.Client()
+#     bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
+#     listaSectores = []
+#     for s in Sectores.objects.filter(estado = True):
+#         if s.imagen == None or s.imagen == '':
+#             imagenNube = ''
+#         else:
+            
+#             direccionImagenNube = str(s.imagen)
+#             if default_storage.exists(direccionImagenNube) == True:
+#                 blob = bucket.blob(direccionImagenNube)
+
+#                 imagenNube = blob.generate_signed_url(
+#                     version = "v4",
+#                     expiration = datetime.timedelta(hours = 1),
+#                     method = "GET"
+#                 )
+#             else:
+#                 imagenNube = ''
+
+#         listaSectores.append({
+#             'descripcion_sector': s.descripcion_sector,
+#             'imagen': imagenNube,
+#             'imagendos': s.imagen
+#         })
+    
+#     lista_empleo = []
+#     for ie in Informacion_Empleo.objects.filter(estado = True).order_by('orden').exclude(num_vacantes = 0):
+#         info_empleo = {}
+#         info_empleo.update({
+#             'id': ie.id,
+#             'idcargo': ie.idcargo,
+#             'cargo': Cargo.objects.get(id = int(ie.idcargo)).cargo,
+#             'descripcion': ie.descripcion,
+#             'num_vacantes': ie.num_vacantes,
+#             'ciudad': ie.ciudad,
+#             'orden': ie.orden,
+#             'imagen': ie.imagen,
+#             'estado': ie.estado
+#         })
+#         lista_empleo.append(info_empleo)
+    
+#     return render(request, 'inicio.html', {
+#         'form': ContactanosForm(),
+#         'sectores': listaSectores,
+#         'valores': Valores_Empresa.objects.all().order_by('valor'),
+#         'info_empleo': lista_empleo,
+#         'galeria_empresa': Galeria_Empresa.objects.filter(estado = True).order_by('orden')
+#     })
+
 @minified_response
-def inicio(request):
-    if request.user.is_authenticated:
-        return redirect(reverse('ws_administracion:inicio_administracion'))
-
-    else:
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
-        listaSectores = []
-        for s in Sectores.objects.filter(estado = True):
-            if s.imagen == None or s.imagen == '':
-                imagenNube = ''
-            else:
-                
-                direccionImagenNube = str(s.imagen)
-                if default_storage.exists(direccionImagenNube) == True:
-                    blob = bucket.blob(direccionImagenNube)
-
-                    imagenNube = blob.generate_signed_url(
-                        version = "v4",
-                        expiration = datetime.timedelta(hours = 1),
-                        method = "GET"
-                    )
-                else:
-                    imagenNube = ''
-
-            listaSectores.append({
-                'descripcion_sector': s.descripcion_sector,
-                'imagen': imagenNube,
-                'imagendos': s.imagen
-            })
-        
-        lista_empleo = []
-        for ie in Informacion_Empleo.objects.filter(estado = True).order_by('orden').exclude(num_vacantes = 0):
-            info_empleo = {}
-            info_empleo.update({
-                'id': ie.id,
-                'idcargo': ie.idcargo,
-                'cargo': Cargo.objects.get(id = int(ie.idcargo)).cargo,
-                'descripcion': ie.descripcion,
-                'num_vacantes': ie.num_vacantes,
-                'ciudad': ie.ciudad,
-                'orden': ie.orden,
-                'imagen': ie.imagen,
-                'estado': ie.estado
-            })
-            lista_empleo.append(info_empleo)
-        
-        return render(request, 'inicio.html', {
-            'form': ContactanosForm(),
-            'sectores': listaSectores,
-            'valores': Valores_Empresa.objects.all().order_by('valor'),
-            'info_empleo': lista_empleo,
-            'galeria_empresa': Galeria_Empresa.objects.filter(estado = True).order_by('orden')
+def index(request):
+    # if request.user.is_authenticated:
+    #     return redirect(reverse('ws_administracion:inicio_administracion'))
+    # else:  
+    
+    lista_empleo = []
+    for ie in Informacion_Empleo.objects.filter(estado = True).order_by('orden').exclude(num_vacantes = 0):
+        info_empleo = {}
+        info_empleo.update({
+            'id': ie.id,
+            'idcargo': ie.idcargo,
+            'cargo': Cargo.objects.get(id = int(ie.idcargo)).cargo,
+            'descripcion': ie.descripcion,
+            'num_vacantes': ie.num_vacantes,
+            'ciudad': ie.ciudad,
+            'orden': ie.orden,
+            'imagen': ie.imagen,
+            'estado': ie.estado
         })
+        lista_empleo.append(info_empleo)
+        
+    return render(request, "web/index.html", {
+        'form': ContactForm(),
+        'galeria_empresa': Galeria_Empresa.objects.filter(estado = True).order_by('orden'),
+        'info_empleo': lista_empleo,
+    })
 
-@csrf_exempt
+@minified_response
+def acercade(request):
+    # if request.user.is_authenticated:
+    #     return redirect(reverse('ws_administracion:inicio_administracion'))
+    # else:
+    valores_db = Valores_Empresa.objects.all().order_by('valor')
+    
+    valores_svg = [
+        { "src": "img/confianza.svg", "alt": "Confianza"},
+        { "src": "img/integridad.svg", "alt": "Integridad"},
+        { "src": "img/pasion.svg", "alt": "Pasión"},
+        { "src": "img/respeto.svg", "alt": "Respeto"},
+        { "src": "img/servicio.svg", "alt": "Servicio"},
+    ]
+    
+    valores = list(zip(valores_db, valores_svg))
+    
+    return render(request, 'web/acercade.html', {
+        'valores': valores,
+    })
+
+@minified_response
+def solicitud(request):
+    return render(request, 'web/solicitud_credito.html')
+
+@minified_response
+def aplicar(request):
+    return render(request, 'web/aplicar_solicitud.html', {"form": SolicitudForm()})
+
+@minified_response
+def contacto(request):
+    # if request.user.is_authenticated:
+    #     return redirect(reverse('ws_administracion:inicio_administracion'))
+    # else:
+    return render(request, "web/contacto.html", {"form": ContactForm()})
+
+@minified_response
+def servicios(request):
+    # if request.user.is_authenticated:
+    #     return redirect(reverse('ws_administracion:inicio_administracion'))
+    # else:
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
+    listaSectores = []
+    for s in Sectores.objects.filter(estado = True):
+        if s.imagen == None or s.imagen == '':
+            imagenNube = ''
+        else:
+            direccionImagenNube = str(s.imagen)
+            if default_storage.exists(direccionImagenNube) == True:
+                blob = bucket.blob(direccionImagenNube)
+
+                imagenNube = blob.generate_signed_url(
+                    version = "v4",
+                    expiration = datetime.timedelta(hours = 1),
+                    method = "GET"
+                )
+            else:
+                imagenNube = ''
+
+        listaSectores.append({
+            'descripcion_sector': s.descripcion_sector,
+            'imagen': imagenNube,
+            'imagendos': s.imagen
+        })
+    return render(request, "web/servicios.html", { 'sectores': listaSectores })
+
+@minified_response
+def social(request):
+    # if request.user.is_authenticated:
+    #     return redirect(reverse('ws_administracion:inicio_administracion'))
+    # else:
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
+    listaRes = []
+    
+    responsabilidad = Responsabilidad_Social.objects.filter(estado = True)
+
+    for r in responsabilidad:
+        direccionImagenNube = str(r.imagen)
+        if default_storage.exists(direccionImagenNube) == True:
+            blob = bucket.blob(direccionImagenNube)
+
+            imagenNube = blob.generate_signed_url(
+                version = "v4",
+                expiration = datetime.timedelta(hours = 1),
+                method = "GET"
+            )
+        else:
+            imagenNube = ''
+
+        listaRes.append({
+            'id': r.id, 
+            'nombre': r.nombre, 
+            'descripcion': r.descripcion, 
+            'estado': r.estado, 
+            'nombreImagen': str(r.imagen),
+            'imagen': imagenNube,
+            'fecha_realizacion': r.fecha_realizacion
+        })
+    
+    return render(request, "web/social.html", { 'imagenes': listaRes})
+
+def inicio_sesion(request):
+    return render(request, 'login.html')
+
+def ratelimited_view(request, exception):
+    return JsonResponse({
+        'resultado': 'false', 
+        'error': 'Demasiados intentos de inicio de sesión. Por favor espere 5 minutos.'
+    }, status=429)
+
+@ratelimit(key = 'ip', rate='2/m')
 def ajax_inicio_session(request):
+    # was_limited = getattr(request, 'limited', False)
+    # if was_limited:
+    #     return JsonResponse({
+    #         'resultado': 'false',
+    #         'error': 'Demasiados intentos. Intente de nuevo en unos minutos.'
+    #     })
+    
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest': 
         try:
-            usuario = authenticate(username = request.POST.get('txtUsuario'), password = request.POST.get('txtContrasena'))
+            usuario = authenticate(
+                username = request.POST.get('txtUsuario'),
+                password = request.POST.get('txtContrasena')
+                )
+                        
             if usuario is not None:
                 if usuario.is_active:
-                    if Empleado.objects.filter(usuario = int( usuario.pk )):
-                        login(request, usuario) 
-
+                    # if Empleado.objects.filter(usuario = int( usuario.pk )):k
+                    login(request, usuario) 
+                    
+                    if usuario.is_staff or usuario.is_superuser:
                         return JsonResponse({'resultado': 'true', 'url': reverse('ws_administracion:inicio_administracion')})
-                            
-                    elif Cliente.objects.filter(usuario = int( usuario.pk )):
-                        return JsonResponse({'resultado': 'false', 'error': 'Los Usuarios de Clientes no tienen Acceso a este Sistema.'})
-
                     else:
-                        return JsonResponse({'resultado': 'false', 'error': 'Usuario Sin Asignar'})
+                        return JsonResponse({'resultado': 'false', 'error': 'No tienes permisos para acceder a esta sección.'})
+
+                    # elif Cliente.objects.filter(usuario = int( usuario.pk )):
+                    #     return JsonResponse({'resultado': 'false', 'error': 'Los Usuarios de Clientes no tienen Acceso a este Sistema.'})
+
+                    # else:
+                    #     return JsonResponse({'resultado': 'false', 'error': 'Usuario Sin Asignar'})
 
                 else:
                     return JsonResponse({'resultado': 'false', 'error': 'Usuario Inactivo'})
@@ -118,8 +273,10 @@ def ajax_inicio_session(request):
                 nombre_area = str( request.resolver_match.func.__name__ ), 
                 usuario_registro = request.user.id
             )
+            
+            print(f"Error: {e}")
 
-            return JsonResponse({'resultado': 'error'})
+            return JsonResponse({'resultado': f'error {str(e)}'})
 
     else:
         return render(request, '404.html')
@@ -153,7 +310,7 @@ def inicio_administracion(request):
     return render(request, 'inicio_administracion.html')
 
 
-@login_required()
+@login_required
 @csrf_exempt
 def ajax_obtener_imagen_google_cloud(request):
 	if request.method == "GET" and request.headers.get('x-requested-with') == 'XMLHttpRequest': 
@@ -256,7 +413,6 @@ def ajax_gestion_galeria_empresa_agregar(request):
     else:
         return redirect(reverse('inicio'))
 
- 
 @login_required
 def ajax_gestion_galeria_empresa_editar(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -347,6 +503,76 @@ def ajax_gestion_galeria_empresa_editar_datagrid(request):
         return redirect(reverse('inicio'))
     
     
+@login_required
+@csrf_exempt
+def ajax_gestion_galeria_empresa_editar_orden(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data_json = {}
+        try:
+            if 'key' in request.POST and request.POST['key'].isnumeric() == True:
+
+                # Creando instancia de objeto a guardar
+                info_empleo = Informacion_Empleo.objects.get( id = int(request.POST['key']) )
+
+                # Si viene la lista de datos en el POST
+                if request.POST.getlist('data')[0]:
+                    datos_list = json.loads(request.POST.getlist('data')[0])
+
+                    # Si viene orden y si es numerico
+                    if 'orden' in datos_list:
+                        info_empleo.orden = int(datos_list['orden'])
+
+                    if 'estado' in datos_list:
+                        info_empleo.estado = int(datos_list['estado'])
+
+                    # GUARDANDO
+                    try:
+                        info_empleo.save()
+                        data_json.update({'exito': 'Se han Actualizado los Datos'})
+                        return JsonResponse((data_json), safe = False)
+                    except ValueError as e:
+                        data_json.update({'error': 'No se han Actualizado los Datos'})
+                        return JsonResponse((data_json), safe = False)
+
+                else:
+                    data_json.update({'error': 'Datos no Válidos'})
+                    return JsonResponse((data_json), safe = False)
+
+            else:
+                data_json.update({'error': 'Key no Válida'})
+                return JsonResponse((data_json), safe = False)
+
+        except Exception as e:
+            data_json.update({'error': 'Hubo una Excepción, no se ha Actualizado'})
+            return JsonResponse((data_json), safe = False)
+    else:
+        return redirect(reverse('inicio'))
+    
+@login_required
+@csrf_exempt
+def ajax_gestion_galeria_empresa_eliminar(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data_json, data_form = {}, request.POST.copy()
+        try:
+            if 'dato_pk' in data_form and data_form['dato_pk'].isnumeric() == True:
+                galeria = Galeria_Empresa.objects.get(id=int(data_form['dato_pk']))
+                # Eliminar la imagen si existe
+                if galeria.imagen and default_storage.exists(str(galeria.imagen)):
+                    default_storage.delete(str(galeria.imagen))
+                galeria.delete()
+                data_json.update({'exito': 'Se ha eliminado el registro correctamente'})
+                return JsonResponse(data_json, safe=False)
+            else:
+                data_json.update({'error': 'Key no Válida'})
+                return JsonResponse(data_json, safe=False)
+        except Exception as e:
+            data_json.update({'error': 'Hubo una Excepción, no se ha eliminado'})
+            print(f"Error: {e}")
+            return JsonResponse(data_json, safe=False)
+    else:
+        return redirect(reverse('inicio'))
+
+
 ################################################################################################
 ################################################################################################
                             # CRUD: VALORES DE LA EMPRESA
@@ -361,6 +587,7 @@ def valores_empresa(request):
     return render(request, 'valores_empresa.html')
     
 @login_required   
+@csrf_exempt 
 def ajax_valores_empresa_listar(request):
     if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         try:
@@ -655,104 +882,324 @@ def ajax_redes_sociales_empresa_editar_datagrid(request):
     else:
         return redirect(reverse('inicio'))
     
-
 @login_required
+@csrf_exempt
 def ajax_redes_sociales_empresa_eliminar(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        data_json = {}
-        
+        data_json, data_form = {}, request.POST.copy()
         try:
-            with transaction.atomic(using = 'finsurhn_ws_db'):
-                if 'key' in request.POST and request.POST['key'].isnumeric() == True:
-                    valores = Valores_Empresa.objects.get(id = int(request.POST['key']))
-                    valores.delete()
-                else:
-                    data_json.update({'error': 'Key no Válida'})
-            
-        except DatabaseError as errorInterno:
-            raise errorInterno #LOS ERRORES VAN A DAR A BaseException
-
-        except BaseException as e:
-            almacenarErroresExcepciones(
-                descripcion_error = str(e), 
-                aplicacion_id = 11,
-                nombre_area = str( request.resolver_match.func.__name__ ), 
-                usuario_registro = request.user.id
-            )
-            data_json.update({'error': 'No se han eliminado los datos'})
-            return JsonResponse((data_json), safe = False)
-        
-        else:
-            data_json.update({'exito': 'Se han eliminado los datos'});
-            return JsonResponse((data_json), safe = False)
-    
+            if 'dato_pk' in data_form and data_form['dato_pk'].isnumeric() == True:
+                red_social = Redes_Sociales.objects.get(id=int(data_form['dato_pk']))
+                # Eliminar la imagen si existe
+                if red_social.imagen and default_storage.exists(str(red_social.imagen)):
+                    default_storage.delete(str(red_social.imagen))
+                red_social.delete()
+                data_json.update({'exito': 'Se ha eliminado el registro correctamente'})
+                return JsonResponse(data_json, safe=False)
+            else:
+                data_json.update({'error': 'Key no Válida'})
+                return JsonResponse(data_json, safe=False)
+        except Exception as e:
+            data_json.update({'error': 'Hubo una Excepción, no se ha eliminado'})
+            print(f"Error: {e}")
+            return JsonResponse(data_json, safe=False)
     else:
-        return redirect(reverse('inicio'))
+        return redirect(reverse('inicio')) 
     
-
+    
 
 ################################################################################################
 ################################################################################################
                     # FORMULARIO CONTACTANOS -- INICIO -- SESIÓN NO INICIADA #
 ################################################################################################
 ################################################################################################
-@csrf_exempt 
+
+@csrf_exempt
 def ajax_contactanos(request):
-    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        data_json, form= {}, {}
+    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        data, form = {}, {} 
         try:
-            form = ContactanosForm(data=request.POST)
+            form = ContactForm(data=request.POST)
             
             if form.is_valid():
-                name = 'Comentario - Finsurhn_Website'
-                correo_remitente = settings.EMAIL_HOST_USER
-                correo_destinatario = 'recursoshumanosfinsur@gmail.com'
-                mensaje_correo = '''
-                    
-INFORMACIÓN DE CONTACTO
-Finsurhn Website System
-
-Nombre Completo: '''+ form.cleaned_data['nombre_completo'] + '''
-Número de Identidad: '''+ form.cleaned_data['num_identidad'] + '''
-Ciudad: '''+ form.cleaned_data['ciudad'] + '''
-Correo Electrónico: '''+ form.cleaned_data['correo'] + '''
-Número de Teléfono: '''+ form.cleaned_data['telefono'] + '''
-Número de Celular: ''' + form.cleaned_data['celular'] + '''
-
-CONSULTA DE REMITENTE: 
-''' + form.cleaned_data['asunto']
                 
-                try:
-                    send_mail(name, mensaje_correo, correo_remitente, [correo_destinatario])
+                titulo = 'Comentario - Finsurhn_Website'
+                correo_remitente = settings.EMAIL_HOST_USER
+                correo_destinatario = 'esli.mendoza@uph.edu.hn'
+
+                mensaje_correo = f'''
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ 
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+            }}
+            .container {{ 
+                max-width: 600px;
+                background-color: #fff;
+                margin: auto;
+                border-radius: 10px;
+                border: #333333 solid 1px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }}
+            .header {{
+                text-align: center;
+                background-color: #F0910C;
+                color: #ffffff;
+                padding: 15px;
+                border-radius: 8px 8px 0 0;
+            }}
+            .header h2 {{
+                margin: 0;
+            }}
+            .content {{
+                padding: 10px 10px;
+                color: #333333;
+            }}
+            .content p {{
+                margin: 10px 0;
+            }}
+            .footer {{
+                text-align: center;
+                font-size: 12px;
+                color: #888888;
+                margin-top: 30px;
+                border-top: 1px solid #eeeeee;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2>Información de Contacto</h2>
+            </div>
+            <div class="content">
+                <p><strong>Nombre:</strong> {form.cleaned_data['nombre']}</p>
+                <p><strong>Apellido:</strong> {form.cleaned_data['apellido']}</p>
+                <p><strong>Correo Electrónico:</strong> {form.cleaned_data['email']}</p>
+                <hr>
+                <h2 style="text-align: center;"><strong>Mensaje:</strong></h2>
+                <p>
+                    {form.cleaned_data['mensaje']}
+                </p>
+            </div>
+            <div class="footer">
+            Inversiones Financieras del Sur © 2025
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
+                try:  
+                    nueva_consulta = Consulta(
+                        nombre=form.cleaned_data['nombre'],
+                        apellido=form.cleaned_data['apellido'],
+                        correo=form.cleaned_data['email'],
+                        mensaje=form.cleaned_data['mensaje'],
+                    )
+                    nueva_consulta.save()
+                    email = EmailMessage(
+                        titulo,
+                        mensaje_correo,
+                        correo_remitente,
+                        [correo_destinatario],
+                    )
+                    email.content_subtype = "html"
+                    email.send()
                     
+                    return JsonResponse({'exito': 'Su solicitud de contacto ha sido enviada'}, safe = False)
+                
                 except Exception as e:
                     if str(type(e)) == "<class 'smtplib.SMTPAuthenticationError'>":
                         # Autorización de aplicaciones poco seguras
                         # https://myaccount.google.com/lesssecureapps
-                        
-                        data_json.update({'error': 'Correo del sistema desactivado'})
-                        return JsonResponse((data_json), safe = False)
-                    
+
+                        data.update({'error': 'Correo del sistema desactivado'})
+                        return JsonResponse((data), safe = False)
                     else:
-                        data_json.update({'error': 'Correo Electrónico inválido'})
-                        return JsonResponse((data_json), safe = False)
-                
-                else:
-                    data_json.update({'exito': 'Su solicitud de contacto ha sido enviada'})
-                    return JsonResponse((data_json), safe = False)
-
-            else:
-                data_json.update({'error': 'Datos inválido, su solicitud no ha sido enviada, lo sentimos'})
-                return JsonResponse((data_json), safe = False)
-        
+                        data.update({'error': 'Correo Electrónico inválido'})
+                        print(f"error: {e}")
+                        return JsonResponse((data), safe = False)
+            else: 
+                data.update({'exito': 'Su solicitud de contacto ha sido enviada'})
+                return JsonResponse((data), safe = False)
+            
         except BaseException as e:
-            data_json.update({'error': 'Hubo una Excepción, no se ha Actualizado'})
-            return JsonResponse((data_json), safe = False)
-        
+            data.update({'error': 'Hubo una excepción, no se ha actualizado'})
+            return JsonResponse((data), safe = False)
     else:
-        return redirect(reverse('inicio'))
+        return redirect(reverse("inicio"))
 
-
+@csrf_exempt
+def ajax_solicitud_credito(request):
+    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        data_json, info_solicitud, form  = {}, {}, SolicitudForm(request.POST)
+        try:
+            sucursal_choices = dict(SolicitudForm.SUCURSALES[1:])
+            forma_pago_choices = dict(SolicitudForm.FORMAS_PAGO[1:])
+            
+            info_solicitud = {
+                'identificacion' : request.POST.get('identificacion', ''),
+                'primerNombre' : request.POST.get('primerNombre', ''),
+                'segundoNombre' : request.POST.get('segundoNombre', ''),
+                'primerApellido' : request.POST.get('primerApellido', ''),
+                'segundoApellido' : request.POST.get('segundoApellido', ''),
+                'correo' : request.POST.get('correo', ''),
+                'sucursal' : {
+                    'id' : request.POST.get('sucursal', ''),
+                    'nombre': sucursal_choices.get(request.POST.get('sucursal'), '')}, 
+                'celular' : request.POST.get('celular', ''),
+                'direccion' : request.POST.get('direccion', ''),
+                'formaPago' : {
+                    'id' : request.POST.get('formaDePago', ''),
+                    'nombre' : forma_pago_choices.get(request.POST.get('formaDePago'), '')},
+                'montoSolicitado' : request.POST.get('montoSolicitado', ''),
+                'descripcionTipoIngreso' : request.POST.get('descripcionTipoIngreso', '')
+            }
+            
+            if form.is_valid():
+                
+                identificacion = request.POST.get('identificacion')
+                
+                if Solicitud.objects.filter(identificacion=identificacion).exists():
+                    return JsonResponse({
+                        'error': 'El número de identificación ya está registrado.'
+                    }, status=400, safe=False)
+                
+                try:
+                    sucursal = Sucursal.objects.get(id=request.POST.get('sucursal'))    
+                    forma_pago = FormaPago.objects.get(id=request.POST.get('formaDePago'))    
+                    nueva_solicitud = Solicitud(
+                        identificacion=identificacion,
+                        primerNombre=request.POST.get('primerNombre'),
+                        segundoNombre=request.POST.get('segundoNombre'),
+                        primerApellido=request.POST.get('primerApellido'),
+                        segundoApellido=request.POST.get('segundoApellido'),
+                        correo=request.POST.get('correo'),
+                        sucursal=sucursal,
+                        celular=request.POST.get('celular'),
+                        direccion=request.POST.get('direccion'),
+                        formaPago=forma_pago,
+                        montoSolicitado=request.POST.get('montoSolicitado'),
+                        descripcionTipoIngreso=request.POST.get('descripcionTipoIngreso')
+                    )
+                    nueva_solicitud.save()
+                    #ENVIAR CORREO ELECTRÓNICO
+                    titulo = 'Solicitud de Crédito - Finsurhn_Website'
+                    correo_remitente = settings.EMAIL_HOST_USER
+                    correo_destinatario = 'esli.mendoza@uph.edu.hn'
+                    mensaje_correo = f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style type="text/css">
+            body {{
+                font-family: 'Arial', sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+            .header {{
+                text-align: center;
+                margin-bottom: 25px;
+                border-bottom: 2px solid #FFB412;
+                padding-bottom: 10px;
+            }}
+            .card {{
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }}
+            h2 {{
+                color: #2C2C2C;
+                margin: 0;
+            }}
+            h3 {{
+                color: #8d8282;
+                margin-top: 0;
+                border-bottom: 1px dashed #2C2C2C;
+                font-size: 1.3rem;
+                padding-bottom: 5px;
+                display: inline-block;
+            }}
+            .footer {{
+                text-align: center;
+                margin-top: 30px;
+                color: #7f8c8d;
+                font-size: 0.9em;
+            }}
+            .logo {{
+                max-width: 150px;
+                margin-bottom: 15px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <img src="https://i.postimg.cc/jShL9tFg/LOGO-COMPLETO.png" alt="Logo Finsur" class="logo">
+            <h2>INFORMACIÓN DE SOLICITUD DE CRÉDITO</h2>
+        </div>
+        
+        <div class="card">
+            <h3>📌 Datos Personales</h3>
+            <p><strong>No. Identidad:</strong> {info_solicitud['identificacion']}</p>
+            <p><strong>Nombre Completo:</strong> {info_solicitud['primerNombre']} {info_solicitud['segundoNombre']} {info_solicitud['primerApellido']} {info_solicitud['segundoApellido']}</p>
+            <p><strong>Celular:</strong> {info_solicitud['celular']}</p>
+        </div>
+        
+        <div class="card">
+            <h3>🏦 Datos del Crédito</h3>
+            <p><strong>Sucursal:</strong> {info_solicitud['sucursal']['nombre']}</p>
+            <p><strong>Forma de Pago:</strong> {info_solicitud['formaPago']['nombre']}</p>
+            <p><strong>Monto Solicitado:</strong> L. {float(info_solicitud['montoSolicitado']):,.2f}</p>
+        </div>
+        
+        <div class="card" style="background: #fff; border: 1px solid #eee;">
+            <h3>📝 Descripción del Tipo de Ingreso</h3>
+            <p style="white-space: pre-line; background: #fff; padding: 10px; border-radius: 4px;">{info_solicitud['descripcionTipoIngreso']}</p>
+        </div>
+        
+        <div class="footer">
+            <p>Solicitud recibida el: {timezone.now().strftime('%d/%m/%Y a las %H:%M')}</p>
+            <p style="font-size: 0.8em; margin-top: 5px;">© {timezone.now().year} Inversiones Financieras del Sur © 2025</p>
+        </div>
+    </body>
+    </html>
+    '''
+                    email = EmailMessage(
+                        titulo,
+                        mensaje_correo,
+                        correo_remitente,
+                        [correo_destinatario],
+                    )
+                    email.content_subtype = "html"
+                    email.send()
+                    return JsonResponse({'exito': 'Su solicitud de contacto ha sido enviada'}, safe=False)
+                except Exception as e:
+                    # print(f"Error al guardar o enviar correo: {e}")
+                    if str(type(e)) == "<class 'smtplib.SMTPAuthenticationError'>":
+                        return JsonResponse({'error': 'Correo del sistema desactivado'}, safe=False)
+                    else:
+                        return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500, safe=False)
+            else:
+                return JsonResponse({'error': 'Datos del formulario inválidos', 'detalles': form.errors}, status=400, safe=False)
+        except Exception as e:
+            print(f"Error: {e}")
+            return JsonResponse({'error': str(e)}, status=500, safe=False)
+    else:
+        return redirect(reverse("aplicar-solicitud"))
 
 
 ################################################################################################
@@ -820,15 +1267,14 @@ def ajax_informacion_empleo_vacante_correo(request, dato_pk):
                     'orden': ie.orden,
                     'imagen': ie.imagen,
                     'estado': ie.estado
-                }
-                            
+                }       
             form = empleo_contactoForm(data=request.POST, files=request.FILES)
             
             if form.is_valid():                  
                 
                 name = 'Sistema: Finsurhn_Website'
                 correo_remitente = settings.EMAIL_HOST_USER
-                correo_destinatario = 'ag.sam08@gmail.com'
+                correo_destinatario = 'esli.mendoza@uph.edu.hn'
                 mensaje_correo = '''
                     
  INFORMACIÓN DE EMPLEO
@@ -851,10 +1297,11 @@ CONSULTA DE REMITENTE:
                 
                 try:
                     archivo = request.FILES['curriculum']
-                    mail = EmailMessage(name, mensaje_correo, [correo_remitente], [correo_destinatario])
+                    mail = EmailMessage(name, mensaje_correo, correo_remitente, [correo_destinatario])
                     mail.attach(archivo.name, archivo.read(), archivo.content_type)
                     mail.send()
                     
+                    print(f"El correo con titulo: {name} ha sido enviado correctamente")
                 except Exception as e:
                     if str(type(e)) == "<class 'smtplib.SMTPAuthenticationError'>":
                         # Autorización de aplicaciones poco seguras
@@ -865,6 +1312,7 @@ CONSULTA DE REMITENTE:
                     
                     else:
                         data_json.update({'error': 'Correo Electrónico inválido'})
+                        print(f"error: {e}")
                         return JsonResponse((data_json), safe = False)
                 
                 else:
@@ -893,6 +1341,7 @@ def informacion_empleo(request):
     return render(request, 'informacion_empleo.html', {'form': Informacion_EmpleoForm()})
 
 @login_required
+@csrf_exempt
 def ajax_informacion_empleo_listar(request):
     if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         try:
@@ -904,8 +1353,8 @@ def ajax_informacion_empleo_listar(request):
     else:
         return redirect(reverse('inicio'))
     
-
 @login_required
+@csrf_exempt
 def ajax_informacion_empleo_agregar(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data_form, data_json = request.POST.copy(), {}
@@ -944,8 +1393,8 @@ def ajax_informacion_empleo_agregar(request):
     else:
         return redirect(reverse('inicio'))
     
-    
 @login_required
+@csrf_exempt
 def ajax_informacion_empleo_editar(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data_json, form, data_form = {}, {}, request.POST.copy()
@@ -1033,51 +1482,30 @@ def ajax_informacion_empleo_editar_datagrid(request):
     else:
         return redirect(reverse('inicio'))
     
-    
 @login_required
 @csrf_exempt
-def ajax_gestion_galeria_empresa_editar_orden(request):
+def ajax_informacion_empleo_eliminar(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        data_json = {}
+        data_json, data_form = {}, request.POST.copy()
         try:
-            if 'key' in request.POST and request.POST['key'].isnumeric() == True:
-
-                # Creando instancia de objeto a guardar
-                info_empleo = Informacion_Empleo.objects.get( id = int(request.POST['key']) )
-
-                # Si viene la lista de datos en el POST
-                if request.POST.getlist('data')[0]:
-                    datos_list = json.loads(request.POST.getlist('data')[0])
-
-                    # Si viene orden y si es numerico
-                    if 'orden' in datos_list:
-                        info_empleo.orden = int(datos_list['orden'])
-
-                    if 'estado' in datos_list:
-                        info_empleo.estado = int(datos_list['estado'])
-
-                    # GUARDANDO
-                    try:
-                        info_empleo.save()
-                        data_json.update({'exito': 'Se han Actualizado los Datos'})
-                        return JsonResponse((data_json), safe = False)
-                    except ValueError as e:
-                        data_json.update({'error': 'No se han Actualizado los Datos'})
-                        return JsonResponse((data_json), safe = False)
-
-                else:
-                    data_json.update({'error': 'Datos no Válidos'})
-                    return JsonResponse((data_json), safe = False)
-
+            if 'dato_pk' in data_form and data_form['dato_pk'].isnumeric() == True:
+                info_emplo = Informacion_Empleo.objects.get(id=int(data_form['dato_pk']))
+                # Eliminar la imagen si existe
+                if info_emplo.imagen and default_storage.exists(str(info_emplo.imagen)):
+                    default_storage.delete(str(info_emplo.imagen))
+                info_emplo.delete()
+                data_json.update({'exito': 'Se ha eliminado el registro correctamente'})
+                return JsonResponse(data_json, safe=False)
             else:
                 data_json.update({'error': 'Key no Válida'})
-                return JsonResponse((data_json), safe = False)
-
+                return JsonResponse(data_json, safe=False)
         except Exception as e:
-            data_json.update({'error': 'Hubo una Excepción, no se ha Actualizado'})
-            return JsonResponse((data_json), safe = False)
+            data_json.update({'error': 'Hubo una Excepción, no se ha eliminado'})
+            print(f"Error: {e}")
+            return JsonResponse(data_json, safe=False)
     else:
         return redirect(reverse('inicio'))
+    
 
 ################################################################################################
 ################################################################################################
@@ -1215,7 +1643,28 @@ def ajax_sala_videos_editar(request):
     else:
         return redirect(reverse('inicio'))
     
-
+@login_required
+@csrf_exempt
+def ajax_sala_videos_eliminar(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data_json, data_form = {}, request.POST.copy()
+        try:
+            if 'dato_pk' in data_form and data_form['dato_pk'].isnumeric() == True:
+                sala_videos = Sala_Videos.objects.get(id=int(data_form['dato_pk']))
+                
+                if sala_videos.imagen and default_storage.exists(str(sala_videos.imagen)):
+                    default_storage.delete(str(sala_videos.imagen))
+                sala_videos.delete()
+                data_json.update({'exito': 'Se ha eliminado correctamente'})
+                return JsonResponse(data_json, safe=False)
+            else:
+                data_json.update({'error': 'Key no válida'})
+        except Exception as e:
+            data_json.update({'error': 'Hubo una Excepción, no se ha eliminado'})
+            return JsonResponse(data_json, safe=False)
+    else:
+        return redirect(reverse('inicio'))
+    
 ################################################################################################
 ################################################################################################
                             # CRUD: Responsabilidad Social
@@ -1232,7 +1681,8 @@ def responsabilidad_social(request):
     form = R_SocialForm()
     return render(request, 'responsabilidad_social.html', {'form':form})
 
-
+@login_required
+@csrf_exempt
 def ajax_responsabilidad_social_listar(request):
     if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         try:
@@ -1279,6 +1729,7 @@ def ajax_responsabilidad_social_listar(request):
     
 
 @login_required
+@csrf_exempt
 def ajax_responsabilidad_social_agregar(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest' and not request.POST.get('dato_pk'):
         data_form, data_json = request.POST.copy(), {}
@@ -1312,8 +1763,8 @@ def ajax_responsabilidad_social_agregar(request):
         return redirect(reverse('inicio'))
     
     
-
 @login_required
+@csrf_exempt
 def ajax_responsabilidad_social_editar(request):
     if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data_json, form, data_form = {}, {}, request.POST.copy()
@@ -1350,8 +1801,35 @@ def ajax_responsabilidad_social_editar(request):
     else:
         return redirect(reverse('inicio'))
 
-
-    
+@login_required
+@csrf_exempt
+def ajax_responsabilidad_social_eliminar(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data_json, data_form = {}, request.POST.copy()
+        
+        try:
+            if 'dato_pk' in data_form and data_form['dato_pk'].isnumeric() == True:
+                r_social = Responsabilidad_Social.objects.get(id=int(data_form['dato_pk']))
+                
+                #Eliminar la imagen si existe
+                if r_social.imagen and default_storage.exists(str(r_social.imagen)):
+                    default_storage.delete(str(r_social.imagen))                
+                
+                #Eliminar el registro
+                r_social.delete()
+                
+                data_json.update({'exito': 'Se ha eliminado el registro correctamente'})
+                return JsonResponse((data_json), safe = False)
+            else:
+                data_json.update({'error': 'Key no Válida'})
+                return JsonResponse((data_json), safe = False)
+                
+        except BaseException as e:
+            data_json.update({'error': 'Hubo una Excepción, no se ha Actualizado'})
+            print(f"Error: {e}")
+            return JsonResponse((data_json), safe = False)
+    else:
+        return redirect(reverse('inicio'))
     
 ################################################################################################
 ################################################################################################
@@ -1681,4 +2159,243 @@ def ajax_cargo_listar(request):
             return JsonResponse(({'error': 'No se han cargado los datos del Cargo'}), safe = False)
     else:
         return redirect(reverse('inicio'))
+
+################################################################################################
+################################################################################################
+                            # LISTAR Y EDITAR: MISIÓN, VISIÓN Y HISTORIA
+################################################################################################
+################################################################################################
+
+@login_required    
+@minified_response
+def mision_vision_historia(request):
+    if verificarPermiso(request, request.resolver_match.func.__name__):
+        return render(request, 'sin_permiso.html', {'vista': request.resolver_match.func.__name__, 'url_anterior': request.META.get('HTTP_REFERER', None) or '/'})
+    return render(request, 'mvh_empresa.html')
     
+    
+@login_required
+def ajax_mvh_listar(request):
+    if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        try:
+            empresa = Empresa.objects.all().first() #Todo se obtiene desde la unica fila de la tabla Empresa
+            if not empresa:
+                return JsonResponse(({'error': 'No hay datos de la empresa'}))
+
+            data = ( 
+                {"id": 1, "tipo_informacion": "MISIÓN", "descripcion": empresa.mision},
+                {"id": 2, "tipo_informacion": "VISIÓN", "descripcion": empresa.vision},
+                {"id": 3, "tipo_informacion": "HISTORIA", "descripcion": empresa.historia},
+            )
+        
+            return JsonResponse(data, safe = False)
+        
+        except BaseException as e:
+            return JsonResponse(({'error': 'Ocurrió un error al cargar los datos'}), safe = False)
+    else:
+        return redirect(reverse('inicio'))
+    
+@login_required
+@csrf_exempt 
+def ajax_mvh_editar(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data_json = {}
+    
+        try:
+            if 'key' in request.POST and request.POST['key'].isnumeric() == True:
+                key = int(request.POST['key'])
+                if request.POST.getlist('data')[0]:
+                    with transaction.atomic(using = 'finsurhn_sp_db'):
+                        dato_list = json.loads(request.POST.getlist('data')[0])
+                        
+                        empresa = Empresa.objects.using('finsurhn_sp_db').all().first()
+                        
+                        if not empresa:
+                            data_json.update({'error': 'No se encontró la empresa'})
+                            return JsonResponse((data_json), safe = False)
+                        if key == 1 and 'descripcion' in dato_list:
+                            empresa.mision = dato_list['descripcion']
+                        elif key == 2 and 'descripcion' in dato_list:
+                            empresa.vision = dato_list['descripcion']      
+                        elif key == 3 and 'descripcion' in dato_list:   
+                            empresa.historia = dato_list['descripcion'] 
+                        else:
+                            data_json.update({'error': 'Key no Válida o datos incompletos'})
+                            return JsonResponse((data_json), safe = False)  
+                        
+                        empresa.save(using = 'finsurhn_sp_db')
+                        data_json.update({'exito': 'Se han Actualizado los Datos'})
+                        return JsonResponse((data_json), safe = False)
+                    
+                else:
+                    data_json.update({'error': 'Datos no válidos'})
+                    return JsonResponse((data_json), safe = False)
+            else:
+                data_json.update({'error': 'Key no Válida'})
+                return JsonResponse((data_json), safe = False)  
+            
+        except BaseException as e:
+            almacenarErroresExcepciones(
+                descripcion_error = str(e), 
+                aplicacion_id = 11,
+                nombre_area = str( request.resolver_match.func.__name__ ), 
+                usuario_registro = request.user.id
+            )
+            print(f"error lanzado en except : {e} ")
+            data_json.update({'error': 'Hubo una Excepción, no se ha Actualizado'})
+            return JsonResponse((data_json), safe = False)
+    else:
+        return redirect(reverse('inicio'))
+    
+@login_required    
+@minified_response
+def solicitudes_credito(request):
+    if verificarPermiso(request, request.resolver_match.func.__name__):
+        return render(request, 'sin_permiso.html', {'vista': request.resolver_match.func.__name__, 'url_anterior': request.META.get('HTTP_REFERER', None) or '/'})
+    return render(request, 'solicitudes_credito.html')
+
+def ajax_solicitudes_credito_listar(request):
+    if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        try:
+            solicitudes = []
+            for solicitud in Solicitud.objects.select_related('formaPago', 'sucursal').all():
+                solicitudes.append({
+                    'id': solicitud.id,
+                    'identificacion': solicitud.identificacion,
+                    'primerNombre': solicitud.primerNombre,
+                    'segundoNombre': solicitud.segundoNombre,
+                    'primerApellido': solicitud.primerApellido,
+                    'segundoApellido': solicitud.segundoApellido,
+                    'celular': solicitud.celular,
+                    'direccion': solicitud.direccion,
+                    'montoSolicitado': solicitud.montoSolicitado,
+                    'estado_id': solicitud.estado_id,
+                    'correo': solicitud.correo,
+                    'fechaEnvio': solicitud.fecha_envio,
+                    'descripcionTipoIngreso': solicitud.descripcionTipoIngreso,
+                    'formaPago': solicitud.formaPago.nombre if solicitud.formaPago else None,
+                    'sucursal': solicitud.sucursal.nombre if solicitud.sucursal else None,
+                })
+            return JsonResponse(solicitudes, safe=False)
+        except BaseException as e:
+            print(f"Error: {str(e)}")
+            return JsonResponse(({'error': 'Ocurrió un error al cargar los datos'}), safe=False)
+    else:
+        return redirect(reverse('inicio'))
+
+@csrf_exempt
+def ajax_solicitud_credito_actualizar_estado(request):
+    try:
+        key = request.POST.get('key')
+        data = json.loads(request.POST.get('data', '{}'))
+        
+        if not key or not data:
+            return JsonResponse({'error': 'Datos incompletos'}, safe=False)
+        
+        solicitud = Solicitud.objects.get(id=key)
+        estado_anterior = solicitud.estado_id
+        
+        if 'estado_id' in data:
+            nuevo_estado = int(data['estado_id'])
+            if not es_transicion_valida(estado_anterior, nuevo_estado):
+                return JsonResponse({'error': 'Transición de estado no permitida'}, safe=False)
+            
+            solicitud.estado_id = nuevo_estado
+            solicitud.save()
+
+            acciones_solicitud(solicitud, nuevo_estado, estado_anterior)
+
+            return JsonResponse({'exito': 'Estado actualizado correctamente'})
+        else:
+            return JsonResponse({'error': 'No se especificó el estado a actualizar'}, safe=False)
+            
+    except Solicitud.DoesNotExist:
+        return JsonResponse({'error': 'Solicitud no encontrada'}, safe=False)
+    except ValueError:
+        return JsonResponse({'error': 'Valor de estado inválido'}, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, safe=False)
+    
+@login_required    
+@minified_response
+def consultas(request):
+    if verificarPermiso(request, request.resolver_match.func.__name__):
+        return render(request, 'sin_permiso.html', {'vista': request.resolver_match.func.__name__, 'url_anterior': request.META.get('HTTP_REFERER', None) or '/'})
+    return render(request, 'consultas.html', {'form': RespuestaConsultaForm()})
+
+def ajax_consultas_listar(request):
+    if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        try:
+            consultas = Consulta.objects.all().values()
+            return JsonResponse(list(consultas), safe=False)
+        except:
+            return JsonResponse(({'error': 'Ocurrió un error al cargar los datos'}), safe=False)
+    else:
+        return redirect(reverse('inicio'))
+
+@csrf_exempt 
+def ajax_consultas_eliminar(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data_json = {}
+        try:
+            if 'key' in request.POST and request.POST['key'].isnumeric() == True:
+                consulta = Consulta.objects.get(id=int(request.POST['key']))
+                consulta.delete()
+                data_json.update({'exito': 'Se ha eliminado la consulta correctamente'})
+                return JsonResponse((data_json), safe = False)
+            else:
+                data_json.update({'error': 'Key no Válida'})
+                return JsonResponse((data_json), safe = False)
+        except BaseException as e:
+            data_json.update({'error': 'Hubo una Excepción, no se ha Actualizado'})
+            return JsonResponse((data_json), safe = False)
+    else:
+        return redirect(reverse('inicio'))
+
+@login_required
+@csrf_exempt
+def ajax_consultas_responder(request):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data_json = {}
+        data_form = request.POST.copy()
+        print(f"Datos recibidos: {data_form}")
+
+        try:
+            if 'key' in data_form and data_form['key'].isnumeric() == True:
+                consulta_id = int(data_form['key'])
+                print(consulta_id)
+                consulta = Consulta.objects.get(id=consulta_id)
+                
+                respuesta = data_form.get('respuesta', '').strip()
+                if not respuesta:
+                    raise ValueError("La respuesta no puede estar vacía")
+
+                # Envío de correo
+                send_mail(
+                    subject="Respuesta a su consulta",
+                    message=respuesta,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[data_form.get('email')],
+                    fail_silently=False
+                )
+
+                consulta.respondido = True
+                consulta.fecha_respuesta = timezone.now()
+                consulta.save()
+
+                data_json['exito'] = 'Respuesta enviada correctamente'
+                return JsonResponse(data_json)
+
+            else:
+                data_json['error'] = 'ID de consulta inválido'
+                return JsonResponse(data_json, status=400)
+
+        except Consulta.DoesNotExist:
+            data_json['error'] = 'La consulta no existe'
+            return JsonResponse(data_json, status=404)
+            
+        except Exception as e:
+            data_json['error'] = str(e)
+            return JsonResponse(data_json, status=500)
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

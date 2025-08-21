@@ -1,0 +1,281 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="{% static 'css/web/modals.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/dist/sweetalert2.all.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="formContainer">
+      <h2>
+        Si cumples con los requisitos llena el formulario para aplicar a un crédito
+      </h2>
+      <form id="formularioSolicitud" action="{% url 'aplicar-solicitud' %}" method="POST" novalidate>
+        {% csrf_token %}
+        <div class="fila">
+          <label>Número de Identidad &#42;</label>
+          {{ form.identificacion }}
+        </div>
+        <div class="fila">
+          <label>Correo Electrónico &#42;</label>
+          {{ form.correo }}
+        </div>
+        <div class="fila2">
+          <div>
+            <label>Primer Nombre &#42;</label>
+            {{ form.primerNombre }}
+          </div>
+          <div>
+            <label>Segundo Nombre &#42;</label>
+            {{ form.segundoNombre }}
+          </div>
+        </div>
+        <div class="fila2">
+          <div>
+            <label>Primer Apellido &#42;</label>
+            {{ form.primerApellido }}
+          </div>
+          <div>
+            <label>Segundo Apellido &#42;</label>
+            {{ form.segundoApellido }}
+          </div>
+        </div>
+        <div class="fila2">
+          <div>
+            <label>Sucursal &#42;</label>
+            {{ form.sucursal }}
+          </div>
+          <div>
+            <label>Celular &#42;</label>
+            {{ form.celular }}
+          </div>
+        </div>
+        <div class="fila">
+          <label>Dirección &#42;</label>
+          {{ form.direccion }}
+        </div>
+        <div class="fila2">
+          <div>
+            <label>Forma de Pago &#42;</label>
+            {{ form.formaDePago }}
+          </div>
+          <div>
+            <label>Monto Solicitado &#42;</label>
+            {{ form.montoSolicitado }}
+          </div>
+        </div>
+        <div class="fila">
+          <label>Descripción del Tipo de Ingreso &#42;</label>
+          {{ form.descripcionTipoIngreso }}
+        </div>
+        <div class="btnContainer">
+          <button id="btnEnviar" type="submit" class="btnSubmit">
+            Enviar
+          </button>
+        </div>
+      </form>
+    </div>
+    <script>
+      $(document).ready(function() {
+
+        //Modal mensaje de exito
+        function mensajeSuccess(mensaje, titulo = '¡Éxito!'){
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            iconColor: 'white',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            customClass: {
+              popup: 'swal2-toast',
+              title: 'swal2-title-white',
+              content: 'swal2-content-white'
+          }
+        });
+
+        Toast.fire({
+          icon: 'success',
+          title: titulo,
+          text: mensaje,
+            didOpen: (toast) => {
+            toast.querySelector('.swal2-title').style.color = 'white';
+            toast.querySelector('.swal2-html-container').style.color = 'white';
+          }
+        })
+      }
+
+        //Modal mensaje de error
+        function mensajeError(mensaje, titulo = '¡Error!') {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            iconColor: 'white',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            customClass: {
+              popup: 'swal2-toast',
+              title: 'swal2-title-white',
+              content: 'swal2-content-white'
+          }
+        });
+
+        Toast.fire({
+          icon: 'error',
+          title: titulo,
+          text: mensaje,
+            didOpen: (toast) => {
+              toast.querySelector('.swal2-title').style.color = 'white';
+              toast.querySelector('.swal2-html-container').style.color = 'white';
+            }
+          })
+        }
+        
+        function validarNumeros(num){
+          const regex = /^\d+$/;
+          return regex.test(num);
+        }
+
+        function validarEmail(email){
+          const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return regex.test(email);
+        }
+
+        function soloAlfabeticos(cadena) {
+          const regex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/; 
+          return regex.test(cadena);
+        }
+
+        //Enviar los datos
+        $("#btnEnviar").on("click", function (event) {
+          event.preventDefault();
+
+          const $form = $("#formularioSolicitud");
+          const formData = $form.serialize();
+
+          const campos = [
+            {id: '#id_identificacion', mensaje: 'Ingrese su número de identidad.', tipo: 'numerico'},
+            {id: '#id_primerNombre', mensaje: 'Ingrese su primer nombre.', tipo: 'alfabetico'},
+            {id: '#id_correo', mensaje: 'Ingrese su correo electrónico.', tipo: 'email'},
+            {id: '#id_segundoNombre', mensaje: 'Ingrese su segundo nombre.', tipo: 'alfabetico'},
+            {id: '#id_primerApellido', mensaje: 'Ingrese su primer apellido.', tipo: 'alfabetico'},
+            {id: '#id_segundoApellido', mensaje: 'Ingrese su segundo apellido.', tipo: 'alfabetico'},
+            {id: '#id_sucursal', mensaje: 'Seleccione su sucursal más cercana.'},
+            {id: '#id_celular', mensaje: 'Ingrese su número de celular.', tipo: 'numerico'},
+            {id: '#id_direccion', mensaje: 'Ingrese su dirección'},
+            {id: '#id_formaDePago', mensaje: 'Seleccione una forma de pago.'},
+            {id: '#id_montoSolicitado', mensaje: 'Ingrese el monto solicitado.', tipo: 'numerico'},
+            {id: '#id_descripcionTipoIngreso', mensaje: 'Ingrese la descripción del tipo de ingreso.'},
+          ]
+
+          //Validar campos
+          for (const campo of campos){
+            const $elemento = $(campo.id);
+            const valor = $elemento.val().trim();
+
+            if(!valor){
+              $elemento.focus();
+              mensajeError(campo.mensaje);
+              return;
+            }
+
+            if(campo.tipo === 'alfabetico' && !soloAlfabeticos(valor)){
+              $elemento.focus();
+              mensajeError('Solo se permiten caracteres alfanuméricos.')
+              return;
+            }
+
+            if(campo.tipo === 'numerico' && !validarNumeros(valor)){
+              $elemento.focus();
+              mensajeError('Solo se permiten números.');
+              return;
+            }
+
+            if(campo.id === '#id_identificacion' && valor.length < 13){
+              $elemento.focus();
+              mensajeError('El número de identidad debe tener 13 dígitos.')
+              return;
+            }
+
+            if(campo.id === '#id_montoSolicitado' && Number(valor) <= 200){
+              $elemento.focus();
+              mensajeError('El monto solicitado no debe ser menor a 200.')
+              return;
+            }
+
+            if(campo.tipo === 'email' && !validarEmail(valor)){
+              $elemento.focus();
+              mensajeError('Ingrese un correo electrónico válido.')
+              return;
+            }
+            
+          }
+
+          //Modal de confirmación antes de enviar
+          Swal.fire({
+            title: "¿Seguro(a) que desea enviar la solicitud de crédito?",
+            text: "Verifica que los datos sean correctos.",
+            icon: "question",
+            showCancelButton: "Solicitar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: `var(--color-orange-50)`,
+            cancelButtonColor: `var(--color-gray-50)`
+          }).then((result) => {
+            if(result.isConfirmed){
+              
+              //Modal de carga
+              Swal.fire({
+                title: "Enviando datos.",
+                html: "Por favor espere mientras procesamos su solicitud de crédito...",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                }
+              });
+              
+              $.ajax({
+                url: "{% url 'ws_administracion:ajax_solicitud_credito' %}",
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                headers: { "X-CSRFToken": '{% csrf_token %}'},
+                success: function (respuesta){
+                  Swal.close();
+                  mensajeSuccess("¡Solicitud enviada correctamente!")
+                  $($form)[0].reset();
+                },
+                  complete: function(){
+                  $btnEnviar.pro('disabled', false).text('Enviar')
+                },
+                error: function (xhr){
+                  const data = xhr.responseJSON;
+                  console.log(data.error)
+
+                  if (data){
+                    if (data.error){                      
+                      mensajeError(data.error)
+                      $($form)[0].reset();
+                    }else{
+                      mensajeError("Ocurrió un error inesperado.")
+                      $($form)[0].reset();
+                    }
+                  }
+                },
+              });
+            }else{
+              $btnEnviar.prop('disabled', false).text('Enviar')
+            }
+          });
+
+        })
+
+      });
+    </script>
+  </body>
+</html>

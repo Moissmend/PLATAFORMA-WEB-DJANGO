@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="padding-top: 0px; height: 0px;" lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplicar Solicitud</title>
+    <link rel="stylesheet" href="{% static 'css/web/global.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/web/aplicar-solicitud.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/web/formulario-solicitud.css' %}" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'img/finsur.ico' %}"
+    />
+  </head>
+  <body style="padding-top: 0px; height: 0px;">
+    <div class="container">
+      <div class="infoContainer">
+        <div class="logo">
+          <img
+            style="width: 201px; height: 50px"
+            src="{% static 'img/Logo.png' %}"
+            alt="logo"
+          />
+        </div>
+        <div class="titulos">
+          <h1>Información general para aplicar a prestamo</h1>
+          <h4>
+            Puedes llenar el formulario en la parte inferior si cumples los
+            requisitos
+          </h4>
+        </div>
+
+        <div class="requisitos">
+          <ul>
+            <li>
+              <p>
+                <span>
+                  ¿Qué requisitos necesito para obtener un préstamo o crédito? </span
+                > Para obtener un crédito, necesita tener un negocio propio
+                con una vigencia de al menos 3 meses, ser mayor de 18 años,
+                presentar su documento de identidad y un recibo público.
+              </p>
+            </li>
+            <li>
+              <p>
+                <span>¿Dónde están ubicados sus agencias?</span> Lorem ipsum
+                dolor sit amet, consectetur adipiscing elit. Cras scelerisque
+                nulla sed sem tristique congue. Cras eleifend ante at quam
+                sagittis, eget malesuada ligula interdum. Proin eros magna,
+                luctus vitae lectus non, condimentum elementum justo. Mauris
+                sapien tortor, cursus quis leo sed, egestas laoreet orci.
+                Suspendisse rhoncus dictum cursus. Duis placerat tortor leo, vel
+                ullamcorper urna congue nec. Nunc congue, est et ultricies
+                dignissim, odio tortor malesuada odio, et commodo dui nunc non
+                lectus. Nunc imperdiet ex eu leo hendrerit semper. Fusce in
+                varius lorem. Morbi et lacinia nulla.
+              </p>
+            </li>
+            <li>
+              <p>
+                <span>¿Cuál es el monto máximo que prestan?</span> El monto del
+                crédito depende de la capacidad de su negocio
+              </p>
+            </li>
+            <li>
+              <p>
+                <span>
+                  ¿Revisan el historial crediticio en la Central de Riesgo? </span
+                > Sí, revisamos el historial crediticio en la Central de
+                Riesgo.
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        <p>
+          ¡Gracias por elegir Inversiones Financieras del Sur! Si tienes más
+          preguntas o necesitas asistencia adicional, no dudes en contactarnos
+          por llamanos al <span>2782-2223</span> Estamos aquí para ayudarte en
+          todo momento.
+        </p>
+      </div>
+
+          {% include 'components/formulario-solicitud.html' %}
+
+    </div>
+  </body>
+</html>

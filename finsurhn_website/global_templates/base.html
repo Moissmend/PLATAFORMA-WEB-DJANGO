@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html style="padding-top: 0px" lang="en">
 <head>
 	<meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,12 +16,19 @@
     <link rel="stylesheet" href="{% static 'css/custom/project/base.css' %}"> {# all css proyecto (todo el proyecto) #}
     <link rel="stylesheet" href="{% static 'css/custom/website/base_website.css' %}"> {# css el sitio web (no logueado) #}
 
+    {# Nuevos estilos navbar y footer #}
+    <link rel="stylesheet" href="{% static 'css/web/global.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/web/nav.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/web/footer.css' %}" />
+
+    {##}
+
     <link rel="stylesheet" href="{% static 'devextreme/css/dx.common.css' %}">
     <link rel="stylesheet" href="{% static 'devextreme/css/dx.light.compact.css' %}">
     
     {% block style %}{% endblock style %}
 </head>
-<body>
+<body style="padding-top: 0px">
 	{% block content %}
 			
 	{% endblock %}

@@ -1,0 +1,76 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 70px 0;
+    gap: 30px;
+    padding: 0 20px;
+}
+
+.infoContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    padding: 10px;
+}
+
+.logo{
+    margin-bottom: 15px;
+}
+
+.infoContainer p {
+    font-size: 16px;
+    line-height: normal;
+    text-align: left;
+}
+
+.titulos {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+}
+
+.titulos h1,
+.titulos h4{
+    font-weight: 500;
+}
+
+
+.requisitos ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 700px;
+    padding: 0 15px;
+}
+
+.requisitos ul li span {
+    font-weight: 500;
+}
+
+@media (max-width: 498px) {
+    .infoContainer{
+        padding: 0 10px;
+    }
+
+    .titulos h1 {
+        font-size: 1.5rem;
+    }
+
+    .titulos h4{
+        font-size: 1rem;
+    }
+
+    .infoContainer p {
+        font-size: 16px;
+        line-height: normal;
+    }
+
+}

@@ -1,0 +1,233 @@
+{% extends 'web/base_website.html' %}
+{% load static %}
+
+{% block title %} Social {% endblock title %}
+    
+    {% block extra_css %} 
+
+    <link rel="stylesheet" href="{% static 'css/custom/website/inicio.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom/website/inicio_tile_view.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom/project/base.css' %}"> {# all css proyecto (todo el proyecto) #}
+
+    <link rel="stylesheet" href="{% static 'css/web/proyeccion-social.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/web/galeria.css' %}" />
+
+    {% endblock %}
+
+{% block contenido %}
+
+    <section class="seccionInicio">
+      <div class="panelIzquierdo">
+        <div class="contenido">
+          <p>Proyección Social</p>
+        </div>
+      </div>
+
+      <div class="panelDerecho">
+        <div class="logoInicio">
+          <img src="{% static 'img/social.jpg' %}" alt="Logo" />
+        </div>
+      </div>
+    </section>
+
+    <section class="seccionResponsabilidad">
+      <div class="containerResponsabilidad">
+        <div class="item">
+          <svg
+            width="140"
+            height="120"
+            viewBox="0 0 160 124"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 16.0625C18 12.0014 19.475 8.10658 22.1005 5.23493C24.726 2.36328 28.287 0.75 32 0.75C35.713 0.75 39.274 2.36328 41.8995 5.23493C44.525 8.10658 46 12.0014 46 16.0625C46 20.1236 44.525 24.0184 41.8995 26.8901C39.274 29.7617 35.713 31.375 32 31.375C28.287 31.375 24.726 29.7617 22.1005 26.8901C19.475 24.0184 18 20.1236 18 16.0625ZM16 59.1836C13.5 62.2461 12 66.3203 12 70.75C12 75.1797 13.5 79.2539 16 82.3164V59.1562V59.1836ZM52.1 45.7031C44.675 52.8945 40 63.4219 40 75.125C40 84.5039 43 93.1172 48 99.8711V105.75C48 110.59 44.425 114.5 40 114.5H24C19.575 114.5 16 110.59 16 105.75V98.4219C6.55 93.5 0 82.9727 0 70.75C0 53.8242 12.525 40.125 28 40.125H36C42 40.125 47.55 42.1758 52.1 45.6758V45.7031ZM112 105.75V99.8711C117 93.1172 120 84.5039 120 75.125C120 63.4219 115.325 52.8945 107.9 45.6758C112.45 42.1758 118 40.125 124 40.125H132C147.475 40.125 160 53.8242 160 70.75C160 82.9727 153.45 93.5 144 98.4219V105.75C144 110.59 140.425 114.5 136 114.5H120C115.575 114.5 112 110.59 112 105.75ZM114 16.0625C114 12.0014 115.475 8.10658 118.101 5.23493C120.726 2.36328 124.287 0.75 128 0.75C131.713 0.75 135.274 2.36328 137.899 5.23493C140.525 8.10658 142 12.0014 142 16.0625C142 20.1236 140.525 24.0184 137.899 26.8901C135.274 29.7617 131.713 31.375 128 31.375C124.287 31.375 120.726 29.7617 118.101 26.8901C115.475 24.0184 114 20.1236 114 16.0625ZM144 59.1836V82.3438C146.5 79.2539 148 75.207 148 70.7773C148 66.3477 146.5 62.2734 144 59.2109V59.1836ZM80 0.75C84.2435 0.75 88.3131 2.59374 91.3137 5.87563C94.3143 9.15752 96 13.6087 96 18.25C96 22.8913 94.3143 27.3425 91.3137 30.6244C88.3131 33.9063 84.2435 35.75 80 35.75C75.7565 35.75 71.6869 33.9063 68.6863 30.6244C65.6857 27.3425 64 22.8913 64 18.25C64 13.6087 65.6857 9.15752 68.6863 5.87563C71.6869 2.59374 75.7565 0.75 80 0.75ZM60 75.125C60 79.5547 61.5 83.6016 64 86.6914V63.5312C61.5 66.6211 60 70.668 60 75.0977V75.125ZM96 63.5586V86.7188C98.5 83.6289 100 79.582 100 75.1523C100 70.7227 98.5 66.6484 96 63.5859V63.5586ZM112 75.125C112 87.3477 105.45 97.875 96 102.797V114.5C96 119.34 92.425 123.25 88 123.25H72C67.575 123.25 64 119.34 64 114.5V102.797C54.55 97.875 48 87.3477 48 75.125C48 58.1992 60.525 44.5 76 44.5H84C99.475 44.5 112 58.1992 112 75.125Z"
+              fill="#FFB412"
+            />
+          </svg>
+          <h1>Colaboradores</h1>
+        </div>
+
+        <div class="item">
+          <svg
+            width="140"
+            height="120"
+            viewBox="0 0 160 140"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clipPath="url(#clip0_200_20)">
+              <path
+                d="M80 0C88.4869 0 96.6263 3.68749 102.627 10.2513C108.629 16.815 112 25.7174 112 35C112 44.2826 108.629 53.185 102.627 59.7487C96.6263 66.3125 88.4869 70 80 70C71.5131 70 63.3737 66.3125 57.3726 59.7487C51.3714 53.185 48 44.2826 48 35C48 25.7174 51.3714 16.815 57.3726 10.2513C63.3737 3.68749 71.5131 0 80 0ZM10 17.5C15.525 17.5 20 22.3945 20 28.4375V39.375V61.25V72.2422C20 76.8906 21.675 81.3477 24.675 84.6289L37.45 98.6016C39.525 100.871 42.775 101.227 45.2 99.4492C48.425 97.0977 48.875 92.0938 46.125 89.1133L42.325 84.957L34.325 76.207C31.2 72.7891 31.2 67.2383 34.325 63.8203C37.45 60.4023 42.525 60.4023 45.65 63.8203L53.65 72.5703L57.45 76.7266L63.775 83.6445C69.025 89.3867 71.975 97.1797 71.975 105.301V126.875C71.975 134.121 66.6 140 59.975 140H43.3C39.05 140 34.975 138.168 31.975 134.887L7.025 107.57C2.525 102.648 0 95.9766 0 89.0039V61.25V43.75V28.4375C0 22.3945 4.475 17.5 10 17.5ZM150 17.5C155.525 17.5 160 22.3945 160 28.4375V43.75V61.25V89.0039C160 95.9766 157.475 102.648 152.975 107.57L128 134.887C125 138.168 120.925 140 116.675 140H100C93.375 140 88 134.121 88 126.875V105.301C88 97.1797 90.95 89.3867 96.2 83.6445L102.525 76.7266L106.325 72.5703L114.325 63.8203C117.45 60.4023 122.525 60.4023 125.65 63.8203C128.775 67.2383 128.775 72.7891 125.65 76.207L117.65 84.957L113.85 89.1133C111.1 92.1211 111.55 97.0977 114.775 99.4492C117.2 101.227 120.45 100.871 122.525 98.6016L135.3 84.6289C138.3 81.3477 139.975 76.8906 139.975 72.2422V61.25V39.375V28.4375C139.975 22.3945 144.45 17.5 149.975 17.5H150Z"
+                fill="#FFB412"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_200_20">
+                <rect width="160" height="140" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+          <h1>Recursos Naturales</h1>
+        </div>
+
+        <div class="item">
+          <svg
+            width="140"
+            height="120"
+            viewBox="0 0 160 140"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g clipPath="url(#clip0_198_18)">
+              <path
+                d="M36 0C41.3043 0 46.3914 2.30468 50.1421 6.40704C53.8929 10.5094 56 16.0734 56 21.875C56 27.6766 53.8929 33.2406 50.1421 37.343C46.3914 41.4453 41.3043 43.75 36 43.75C30.6957 43.75 25.6086 41.4453 21.8579 37.343C18.1071 33.2406 16 27.6766 16 21.875C16 16.0734 18.1071 10.5094 21.8579 6.40704C25.6086 2.30468 30.6957 0 36 0ZM128 0C133.304 0 138.391 2.30468 142.142 6.40704C145.893 10.5094 148 16.0734 148 21.875C148 27.6766 145.893 33.2406 142.142 37.343C138.391 41.4453 133.304 43.75 128 43.75C122.696 43.75 117.609 41.4453 113.858 37.343C110.107 33.2406 108 27.6766 108 21.875C108 16.0734 110.107 10.5094 113.858 6.40704C117.609 2.30468 122.696 0 128 0ZM0 81.6758C0 65.5703 11.95 52.5 26.675 52.5H37.35C41.325 52.5 45.1 53.457 48.5 55.1523C48.175 57.1211 48.025 59.1719 48.025 61.25C48.025 71.6953 52.225 81.0742 58.85 87.5C58.8 87.5 58.75 87.5 58.675 87.5H5.325C2.4 87.5 0 84.875 0 81.6758ZM101.325 87.5C101.275 87.5 101.225 87.5 101.15 87.5C107.8 81.0742 111.975 71.6953 111.975 61.25C111.975 59.1719 111.8 57.1484 111.5 55.1523C114.9 53.4297 118.675 52.5 122.65 52.5H133.325C148.05 52.5 160 65.5703 160 81.6758C160 84.9023 157.6 87.5 154.675 87.5H101.35H101.325ZM56 61.25C56 54.2881 58.5286 47.6113 63.0294 42.6884C67.5303 37.7656 73.6348 35 80 35C86.3652 35 92.4697 37.7656 96.9706 42.6884C101.471 47.6113 104 54.2881 104 61.25C104 68.2119 101.471 74.8887 96.9706 79.8116C92.4697 84.7344 86.3652 87.5 80 87.5C73.6348 87.5 67.5303 84.7344 63.0294 79.8116C58.5286 74.8887 56 68.2119 56 61.25ZM32 132.699C32 112.574 46.925 96.25 65.325 96.25H94.65C113.075 96.25 128 112.574 128 132.699C128 136.719 125.025 140 121.325 140H38.65C34.975 140 31.975 136.746 31.975 132.699H32Z"
+                fill="#FFB412"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_198_18">
+                <rect width="160" height="140" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+          <h1>Comunidad</h1>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccionImagenes">
+      {% if imagenes %}
+      <div class="containerImagenes">
+        <h1>GALERIA DE IMÁGENES</h1>
+        <div class="galeria">
+          {% for img in imagenes %}
+          <div class="itemImg">
+            <img src="{{ img.imagen }}" alt="{{ img.nombreImagen }}" class="img"/>
+          </div>
+         {% endfor %} 
+        </div> 
+      </div>
+      {% endif %}
+    </section>
+
+    <section style="height: auto;" class="seccionVideos">
+      <div id="div_SalaVideos" class="text-white" style="background-color: var(--color-orange-50); padding-top: 50px; padding-bottom: 20px;">
+          <div class="container-fluid">
+              <div class="row featurette justify-content-center">
+                  <div class="col-12 col-md-12">
+                      <div class="col-12 col-md-12" style="padding-bottom: 20px;">
+                          <h1 class="featurette-heading fw-bold text-center">SALA DE VIDEOS</h1>
+                      </div>
+                  </div>
+                  <div class="col-12 col-md-12 d-flex justify-content-center" style="padding-bottom: 20px;">
+                      <div id="TileVVideos"></div>
+                  </div>
+              </div>
+          </div>
+      </div> 
+
+      {# Modal de Sala de Videos #}
+      <div id="PopupSalaVideos" >
+          <div style="padding: 0px !important;" data-options="dxTemplate: { name: 'tituloPopupSalaVideos' }">
+              <h5 class="fw-bold" style="color: white; background-color: var(--color-orange-50); padding: 3px 0px 3px 0px !important; margin: 0px; text-align: center; font-size: 18px">Video</h5>
+          </div>
+          <div style="padding: 0px !important; height: 100% !important;" data-options="dxTemplate: { name: 'contenidoPopupSalaVideos' }">
+              <div class="card dx-theme-accent-as-border-color" style="height: 100% !important; margin: 0px !important;">
+                  <div style="padding: 5px !important; height: 100% !important;">
+                      <iframe id="videoSalaVideo" style="height: 350px; width: 100%;" src="" title="YOUTUBE VIDEO PLAYER" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </section>
+
+
+{% endblock %}
+
+    {% block extra_script %} 
+
+  <script type="text/javascript">
+    $(function(){
+        //SALA DE VIDEOS
+        $('#PopupSalaVideos').dxPopup({
+            contentTemplate: "contenidoPopupSalaVideos",
+            height: "auto",
+            showTitle: true,
+            titleTemplate: "tituloPopupSalaVideos",
+            visible: false,
+            dragEnabled: true,
+            closeOnOutsideClick: true,
+            shading: true,
+            wrapperAttr: {
+				class: "dxPopupWidthVideos"
+			}
+            //resizeEnabled : true 
+        })
+
+        $('#TileVVideos').dxTileView({
+            dataSource: new DevExpress.data.CustomStore({
+                key: "id",
+                loadMode: "raw",
+                load: function(loadOptions) {
+                    return $.getJSON("{% url 'ws_administracion:ajax_sala_videos_listar' %}", {'dxTileVideo': 1})
+                        .done(function(response){
+                            if (response.length == 0 || response == [] || response == ""){
+                                $('#a_SalaVideos').hide();
+                                $('#div_SalaVideos').hide();
+                            }
+                        })
+                        .fail(function() { throw "Error al Cargar los Datos, Actualice la Página Web!" });
+                },
+            }),
+            height: 300,
+            baseItemHeight: 300,
+            baseItemWidth: 450,
+            hint: 'Click, Ver Más',
+            itemMargin: 10,
+            showScrollbar: true,
+            tabIndex:0,
+            hoverStateEnabled: true,
+            direction: 'horizontal',
+            onItemClick: function (e) {           
+                var popup = $("#PopupSalaVideos").dxPopup("instance");
+                popup.show();
+                var content = popup.content();
+            
+                content.css({
+                    "padding": 4
+                })
+            
+                popup.option("position", {
+                    my: "center",
+                    at: "center"
+                })
+                
+                $("#videoSalaVideo").attr("src", `https://www.youtube.com/embed/${e.itemData.link}`);
+
+                popup.repaint();
+            },
+            itemTemplate: function(itemData, itemIndex, itemElement){
+                itemElement.append(`
+                    <div class="thumbnail">
+                        <div class="image view view-first">
+                            <img style="width: 100%; height: 100%;" src="${itemData.imagen}" alt="${itemData.nombre}"/>
+                            <div class="mask">
+                                <p style="font-size: 14px;">${itemData.nombre}</p>
+                                <div class="tools">
+                                    <i class="bi bi-youtube"> Ver Más</i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                  
+                `);
+            },
+        });
+    })
+  </script>
+
+    {% endblock %}
+
+
+
